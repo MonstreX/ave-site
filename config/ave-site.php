@@ -1,47 +1,55 @@
 <?php
 
 return [
-    // Database
-    'table_prefix' => 'site_',
 
-    // Pages
+    /*
+     * Route for Home Page
+     */
     'route_home_page' => 'home',
+
+    /*
+     * Default model table name to find records
+     */
     'default_model_table' => 'pages',
+
+    /*
+     * Default slug field name
+     */
     'default_slug_field' => 'slug',
+
+    /*
+     * Models namespace for DataService
+     */
     'models_namespace' => 'Monstrex\\AveSite\\Models\\',
 
-    // Templates
+    /*
+     * If false will use ave-site 404 error handler
+     */
+    'use_legacy_error_handler' => false,
+
+    /*
+     *  Name of the Template
+     */
     'template' => 'site',
+
+    /*
+     *  Root Extendable Template
+     */
     'template_master' => 'layouts.master',
+
+    /*
+     *  Main Layout Template
+     */
     'template_layout' => 'layouts.main',
-    'template_page' => 'pages.page',
-    'template_filters' => null, // Class for custom Liquid filters
 
-    // SEO
-    'seo_title_template' => '%page_title% | %site_title%',
+    /*
+     *  Page Template
+     */
+    'template_page'   => 'pages.page',
 
-    // Block Groups (Regions)
-    'block_groups' => [
-        'header' => 'Header',
-        'footer' => 'Footer',
-        'sidebar' => 'Sidebar',
-        'content' => 'Content',
-    ],
+    /*
+     *  Template custom filters class
+     */
+    'template_filters' => null,
 
-    // Navigation (for Ave Admin)
-    'navigation' => [
-        'group' => 'Site CMS',
-        'sort' => 100,
-        'icon' => 'globe-alt',
-    ],
-
-    // Image Processing
-    'image_quality' => 85,
-    'image_cache_dir' => 'cached',
-
-    // Forms
-    'form_route_name' => 'ave-site.form.submit',
-    'recaptcha_enabled' => false,
-    'recaptcha_site_key' => env('RECAPTCHA_SITE_KEY'),
-    'recaptcha_secret_key' => env('RECAPTCHA_SECRET_KEY'),
 ];
