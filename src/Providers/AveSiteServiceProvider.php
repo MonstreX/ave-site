@@ -9,7 +9,7 @@ use Monstrex\AveSite\Services\{
     ImageProcessingService,
     LiquidTemplateService,
     PageService,
-    BlockRenderService,
+    BlockService,
     SettingsService,
     ChunkService
 };
@@ -26,7 +26,7 @@ class AveSiteServiceProvider extends ServiceProvider
         $this->app->singleton(ImageProcessingService::class);
         $this->app->singleton(LiquidTemplateService::class);
         $this->app->singleton(PageService::class);
-        $this->app->singleton(BlockRenderService::class);
+        $this->app->singleton(BlockService::class);
         $this->app->singleton(SettingsService::class);
         $this->app->singleton(ChunkService::class);
     }
