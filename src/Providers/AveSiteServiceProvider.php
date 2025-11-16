@@ -10,7 +10,6 @@ use Monstrex\AveSite\Services\{
     DataService,
     SiteService,
     ImageProcessingService,
-    LiquidTemplateService,
     PageService,
     BlockService,
     SettingsService,
@@ -29,7 +28,6 @@ class AveSiteServiceProvider extends ServiceProvider
         $this->app->singleton(DataService::class);
         $this->app->singleton(SiteService::class);
         $this->app->singleton(ImageProcessingService::class);
-        $this->app->singleton(LiquidTemplateService::class);
         $this->app->singleton(PageService::class);
         $this->app->singleton(BlockService::class);
         $this->app->singleton(SettingsService::class);

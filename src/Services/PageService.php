@@ -14,7 +14,6 @@ use Schema;
 class PageService implements PageContract
 {
     protected DataService $dataService;
-    protected LiquidTemplateService $liquidService;
     protected SiteService $siteService;
 
     // Settings
@@ -55,11 +54,9 @@ class PageService implements PageContract
 
     public function __construct(
         DataService $dataService,
-        LiquidTemplateService $liquidService,
         SiteService $siteService
     ) {
         $this->dataService = $dataService;
-        $this->liquidService = $liquidService;
         $this->siteService = $siteService;
     }
 

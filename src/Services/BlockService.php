@@ -5,7 +5,9 @@ namespace Monstrex\AveSite\Services;
 use Monstrex\AveSite\Contracts\BlockContract;
 use Monstrex\AveSite\Models\Block;
 use Monstrex\AveSite\Models\BlockRegion;
+use Monstrex\AveSite\Templates\Template;
 use Illuminate\Support\Str;
+use Webwizo\Shortcodes\Facades\Shortcode;
 
 /**
  * BlockService - Renders blocks and block regions with Liquid templates
@@ -15,14 +17,10 @@ class BlockService implements BlockContract
     protected const EXCEPT = 0;
     protected const ONLY = 1;
 
-    protected LiquidTemplateService $liquidService;
     protected DataService $dataService;
 
-    public function __construct(
-        LiquidTemplateService $liquidService,
-        DataService $dataService
-    ) {
-        $this->liquidService = $liquidService;
+    public function __construct(DataService $dataService)
+    {
         $this->dataService = $dataService;
     }
 
@@ -140,8 +138,9 @@ class BlockService implements BlockContract
             ],
         ]);
 
-        // Render content with Liquid
-        return $this->liquidService->render($block->content, $vars);
+        // Render content with Liquid template engine (via Template wrapper)
+        $template = new Template(Shortcode::compile($block->content));
+        return $template->render($vars);
     }
 
     /**
