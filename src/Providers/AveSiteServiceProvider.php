@@ -3,6 +3,8 @@
 namespace Monstrex\AveSite\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\Facades\Blade;
 use Monstrex\AveSite\Commands\InstallCommand;
 use Monstrex\AveSite\Services\{
     DataService,
@@ -14,6 +16,7 @@ use Monstrex\AveSite\Services\{
     SettingsService,
     ChunkService
 };
+use Monstrex\AveSite\Facades;
 
 class AveSiteServiceProvider extends ServiceProvider
 {
@@ -31,6 +34,9 @@ class AveSiteServiceProvider extends ServiceProvider
         $this->app->singleton(BlockService::class);
         $this->app->singleton(SettingsService::class);
         $this->app->singleton(ChunkService::class);
+
+        // Register facades
+        $this->registerAliases();
     }
 
     public function boot(): void
@@ -56,6 +62,12 @@ class AveSiteServiceProvider extends ServiceProvider
         if (!$this->app->runningInConsole()) {
             app(SettingsService::class)->applyRuntimeConfig();
         }
+
+        // Register shortcodes
+        $this->registerShortcodes();
+
+        // Register Blade directives
+        $this->registerBlades();
 
         // Publishable resources
         if ($this->app->runningInConsole()) {
@@ -93,5 +105,92 @@ class AveSiteServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             // ResourceManager not available (Ave not loaded)
         }
+    }
+
+    /**
+     * Register Facades
+     */
+    protected function registerAliases(): void
+    {
+        $aliases = [
+            'AveSite' => [
+                'Facade' => Facades\AveSite::class,
+                'Alias' => 'ave-site',
+                'Class' => app(SiteService::class),
+            ],
+            'AveData' => [
+                'Facade' => Facades\AveData::class,
+                'Alias' => 'ave-data',
+                'Class' => app(DataService::class),
+            ],
+            'AvePage' => [
+                'Facade' => Facades\AvePage::class,
+                'Alias' => 'ave-page',
+                'Class' => app(PageService::class),
+            ],
+            'AveBlock' => [
+                'Facade' => Facades\AveBlock::class,
+                'Alias' => 'ave-block',
+                'Class' => app(BlockService::class),
+            ],
+        ];
+
+        $loader = AliasLoader::getInstance();
+        foreach ($aliases as $key => $alias) {
+            $loader->alias($key, $alias['Facade']);
+            $this->app->singleton($alias['Alias'], function () use($alias) {
+                return $alias['Class'];
+            });
+        }
+
+        // Register Shortcode facade alias if package is installed
+        if (class_exists(\Webwizo\Shortcodes\Facades\Shortcode::class)) {
+            $this->app->booting(function() {
+                $loader = AliasLoader::getInstance();
+                $loader->alias('Shortcode', \Webwizo\Shortcodes\Facades\Shortcode::class);
+            });
+        }
+    }
+
+    /**
+     * Register Shortcodes
+     */
+    protected function registerShortcodes(): void
+    {
+        // Only register if shortcodes package is installed
+        if (!class_exists(\Webwizo\Shortcodes\Facades\Shortcode::class)) {
+            return;
+        }
+
+        \Shortcode::register('block', 'Monstrex\AveSite\Templates\CustomShortcodes@block');
+        \Shortcode::register('form', 'Monstrex\AveSite\Templates\CustomShortcodes@form');
+        \Shortcode::register('div', 'Monstrex\AveSite\Templates\CustomShortcodes@div');
+        \Shortcode::register('image', 'Monstrex\AveSite\Templates\CustomShortcodes@image');
+    }
+
+    /**
+     * Register Blade Directives
+     */
+    protected function registerBlades(): void
+    {
+        Blade::directive('renderBlock', function ($expression) {
+            $expression = trim($expression, "\'\"");
+            return "<?php echo \Monstrex\AveSite\Facades\AveBlock::render({$expression}); ?>";
+        });
+
+        Blade::directive('renderForm', function ($expression) {
+            return "<?php
+                \$args = explode(',', {$expression});
+                \$form = isset(\$args[0]) ? \$args[0] : null;
+                \$subject = isset(\$args[1]) ? \$args[1] : null;
+                \$suffix = isset(\$args[2]) ? \$args[2] : null;
+                echo \Monstrex\AveSite\Facades\AveBlock::renderForm(trim(\$form, \"'\\\" \"), \$subject, trim(\$suffix, \"'\\\" \"));
+            ?>";
+        });
+
+        Blade::directive('renderRegion', function ($expression) {
+            $expression = trim($expression, "\'\"");
+            return "<?php echo \Monstrex\AveSite\Facades\AveBlock::renderRegion({$expression}); ?>";
+        });
     }
 }
