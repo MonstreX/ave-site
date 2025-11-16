@@ -44,14 +44,8 @@ class AveSiteServiceProvider extends ServiceProvider
         // Migrations
         $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
 
-        // Views
-        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'ave-site');
-
         // Translations
         $this->loadTranslationsFrom(__DIR__.'/../../lang', 'ave-site');
-
-        // Routes
-        $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
 
         // Register Ave Resources
         if (!$this->app->runningInConsole()) {
@@ -74,10 +68,6 @@ class AveSiteServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../../config/ave-site.php' => config_path('ave-site.php'),
             ], 'ave-site-config');
-
-            $this->publishes([
-                __DIR__.'/../../resources/views' => resource_path('views/vendor/ave-site'),
-            ], 'ave-site-views');
 
             // Register commands
             $this->commands([
