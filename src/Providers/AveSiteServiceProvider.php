@@ -48,9 +48,9 @@ class AveSiteServiceProvider extends ServiceProvider
             $this->registerAveResources();
         }
 
-        // Apply runtime config (settings override)
+        // Override Laravel config from database settings
         if (!$this->app->runningInConsole()) {
-            app(SettingsService::class)->applyRuntimeConfig();
+            $this->overrideConfig();
         }
 
         // Register shortcodes
@@ -178,5 +178,37 @@ class AveSiteServiceProvider extends ServiceProvider
             $expression = trim($expression, "\'\"");
             return "<?php echo \Monstrex\AveSite\Facades\AveBlock::renderRegion({$expression}); ?>";
         });
+    }
+
+    /**
+     * Override Laravel config from database settings
+     * (similar to voyager-site's overrideConfig)
+     */
+    protected function overrideConfig(): void
+    {
+        $settingsService = app(SettingsService::class);
+
+        // Apply general settings
+        $general = $settingsService->getGroup('general');
+        if (isset($general['site_title'])) {
+            config(['app.name' => $general['site_title']]);
+        }
+        if (isset($general['debug_mode'])) {
+            config(['app.debug' => (bool)$general['debug_mode']]);
+        }
+
+        // Apply mail settings
+        $mail = $settingsService->getGroup('mail');
+        if (!empty($mail)) {
+            config([
+                'mail.from.address' => $mail['from_address'] ?? config('mail.from.address'),
+                'mail.from.name' => $mail['from_name'] ?? config('mail.from.name'),
+                'mail.mailers.smtp.host' => $mail['smtp_host'] ?? config('mail.mailers.smtp.host'),
+                'mail.mailers.smtp.port' => (int)($mail['smtp_port'] ?? config('mail.mailers.smtp.port')),
+                'mail.mailers.smtp.encryption' => $mail['smtp_encryption'] ?? config('mail.mailers.smtp.encryption'),
+                'mail.mailers.smtp.username' => $mail['smtp_username'] ?? config('mail.mailers.smtp.username'),
+                'mail.mailers.smtp.password' => $mail['smtp_password'] ?? config('mail.mailers.smtp.password'),
+            ]);
+        }
     }
 }
