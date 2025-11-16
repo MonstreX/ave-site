@@ -6,7 +6,7 @@ use Monstrex\AveSite\Contracts\DataContract;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Intervention\Image\Facades\Image;
+use Monstrex\Ave\Media\ImageProcessor;
 use Schema;
 
 class DataService implements DataContract
@@ -317,19 +317,23 @@ class DataService implements DataContract
 
         if (!Storage::disk(config('filesystems.default'))->exists($target_path_full)) {
             try {
-                $image = Image::make(Storage::disk(config('filesystems.default'))->get($image_url));
+                // Use Ave ImageProcessor instead of Intervention Image
+                $fullPath = Storage::disk(config('filesystems.default'))->path($image_url);
+                $processor = new ImageProcessor();
+                $processor->read($fullPath);
 
+                // Resize/Crop using Ave ImageProcessor methods
                 if ($width && $height) {
-                    $image->fit($width, $height);
+                    $processor->cover((int)$width, (int)$height); // Crop to exact size
                 } elseif ($width || $height) {
-                    $image->resize($width, $height, function ($constraint) {
-                        $constraint->aspectRatio();
-                    });
+                    $processor->scale((int)$width, (int)$height); // Maintain aspect ratio
                 }
 
-                $image->encode($format, $quality);
+                // Encode with format and quality
+                $encoded = $processor->encode($format, $quality);
 
-                Storage::disk(config('filesystems.default'))->put($target_path_full, (string) $image, 'public');
+                // Save to storage
+                Storage::disk(config('filesystems.default'))->put($target_path_full, $encoded, 'public');
             } catch (\Exception $e) {
                 return $e->getMessage();
             }

@@ -9,7 +9,6 @@ use Monstrex\AveSite\Commands\InstallCommand;
 use Monstrex\AveSite\Services\{
     DataService,
     SiteService,
-    ImageProcessingService,
     PageService,
     BlockService,
     SettingsService,
@@ -27,7 +26,6 @@ class AveSiteServiceProvider extends ServiceProvider
         // Register services as singletons
         $this->app->singleton(DataService::class);
         $this->app->singleton(SiteService::class);
-        $this->app->singleton(ImageProcessingService::class);
         $this->app->singleton(PageService::class);
         $this->app->singleton(BlockService::class);
         $this->app->singleton(SettingsService::class);
