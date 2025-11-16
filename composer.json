@@ -1,0 +1,50 @@
+{
+    "name": "monstrex/ave-site",
+    "description": "Site CMS extension for Ave Admin Panel",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["laravel", "admin", "cms", "ave", "site"],
+    "authors": [
+        {
+            "name": "MonstreX",
+            "email": "dev@monstrex.dev"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^11.0|^12.0",
+        "monstrex/ave": "^2.0|dev-master",
+        "liquid/liquid": "^1.5"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0|^10.0",
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Monstrex\\AveSite\\": "src/"
+        },
+        "files": [
+            "src/Helpers/general.php",
+            "src/Helpers/pages.php",
+            "src/Helpers/blocks.php",
+            "src/Helpers/chunks.php",
+            "src/Helpers/settings.php",
+            "src/Helpers/images.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Monstrex\\AveSite\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Monstrex\\AveSite\\Providers\\AveSiteServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
