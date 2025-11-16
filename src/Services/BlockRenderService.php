@@ -11,14 +11,14 @@ use Monstrex\AveSite\Models\BlockRegion;
 class BlockRenderService
 {
     protected LiquidTemplateService $liquidService;
-    protected DataSourceService $dataSourceService;
+    protected DataService $dataService;
 
     public function __construct(
         LiquidTemplateService $liquidService,
-        DataSourceService $dataSourceService
+        DataService $dataService
     ) {
         $this->liquidService = $liquidService;
-        $this->dataSourceService = $dataSourceService;
+        $this->dataService = $dataService;
     }
 
     /**
@@ -92,7 +92,7 @@ class BlockRenderService
 
         // Get datasources if defined
         $datasources = $options['datasources'] ?? [];
-        $data = $this->dataSourceService->getDataSources($datasources);
+        $data = $this->dataService->getDataSources($datasources);
 
         // Merge with block data
         $vars = array_merge($data, [

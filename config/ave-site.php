@@ -8,6 +8,7 @@ return [
     'route_home_page' => 'home',
     'default_model_table' => 'pages',
     'default_slug_field' => 'slug',
+    'models_namespace' => 'Monstrex\\AveSite\\Models\\',
 
     // Templates
     'template' => 'site',

@@ -10,16 +10,16 @@ use Illuminate\Support\Facades\View;
  */
 class PageService
 {
-    protected DataSourceService $dataSourceService;
+    protected DataService $dataService;
     protected LiquidTemplateService $liquidService;
     protected ?Page $page = null;
     protected array $data = [];
 
     public function __construct(
-        DataSourceService $dataSourceService,
+        DataService $dataService,
         LiquidTemplateService $liquidService
     ) {
-        $this->dataSourceService = $dataSourceService;
+        $this->dataService = $dataService;
         $this->liquidService = $liquidService;
     }
 
@@ -66,7 +66,7 @@ class PageService
 
         // Load datasources
         $datasources = $options['datasources'] ?? [];
-        $data = $this->dataSourceService->getDataSources($datasources);
+        $data = $this->dataService->getDataSources($datasources);
 
         // Render content with Liquid if it contains liquid syntax
         $content = $this->page->content;

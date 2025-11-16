@@ -5,7 +5,7 @@ namespace Monstrex\AveSite\Providers;
 use Illuminate\Support\ServiceProvider;
 use Monstrex\AveSite\Commands\InstallCommand;
 use Monstrex\AveSite\Services\{
-    DataSourceService,
+    DataService,
     ImageProcessingService,
     LiquidTemplateService,
     PageService,
@@ -22,7 +22,7 @@ class AveSiteServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../../config/ave-site.php', 'ave-site');
 
         // Register services as singletons
-        $this->app->singleton(DataSourceService::class);
+        $this->app->singleton(DataService::class);
         $this->app->singleton(ImageProcessingService::class);
         $this->app->singleton(LiquidTemplateService::class);
         $this->app->singleton(PageService::class);
