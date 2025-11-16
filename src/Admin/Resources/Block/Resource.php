@@ -90,7 +90,7 @@ class Resource extends BaseResource
                 Div::make('col-12 col-md-6')->schema([
                     Select::make('region_id')
                         ->label(__('ave-site::resources_blocks.fields.region'))
-                        ->options(fn () => static::getRegionOptions())
+                        ->options(static::getRegionOptions())
                         ->required(),
                 ]),
             ]),

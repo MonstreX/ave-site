@@ -81,7 +81,7 @@ class Resource extends BaseResource
                 Div::make('col-12 col-md-6')->schema([
                     Select::make('parent_id')
                         ->label(__('ave-site::resources_pages.fields.parent'))
-                        ->options(fn () => static::getParentOptions())
+                        ->options(static::getParentOptions())
                         ->default(-1),
                 ]),
             ]),

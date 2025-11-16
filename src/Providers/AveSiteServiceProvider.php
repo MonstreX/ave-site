@@ -40,7 +40,7 @@ class AveSiteServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../../resources/views', 'ave-site');
 
         // Translations
-        $this->loadTranslationsFrom(__DIR__.'/../../resources/lang', 'ave-site');
+        $this->loadTranslationsFrom(__DIR__.'/../../lang', 'ave-site');
 
         // Routes
         $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
