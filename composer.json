@@ -14,7 +14,8 @@
         "php": "^8.2",
         "laravel/framework": "^11.0|^12.0",
         "monstrex/ave": "^2.0|dev-master",
-        "liquid/liquid": "^1.5"
+        "liquid/liquid": "^1.4.44",
+        "webwizo/laravel-shortcodes": "^1.0.27"
     },
     "require-dev": {
         "orchestra/testbench": "^9.0|^10.0",
@@ -25,12 +26,7 @@
             "Monstrex\\AveSite\\": "src/"
         },
         "files": [
-            "src/Helpers/general.php",
-            "src/Helpers/pages.php",
-            "src/Helpers/blocks.php",
-            "src/Helpers/chunks.php",
-            "src/Helpers/settings.php",
-            "src/Helpers/images.php"
+            "src/Helpers/helpers.php"
         ]
     },
     "autoload-dev": {
