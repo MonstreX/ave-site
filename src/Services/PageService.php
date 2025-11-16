@@ -2,114 +2,476 @@
 
 namespace Monstrex\AveSite\Services;
 
+use Monstrex\AveSite\Contracts\PageContract;
 use Monstrex\AveSite\Models\Page;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\View;
+use Schema;
 
 /**
- * PageService - Loads and renders pages
+ * PageService - Loads and renders pages with full VoyagerPage functionality
  */
-class PageService
+class PageService implements PageContract
 {
     protected DataService $dataService;
     protected LiquidTemplateService $liquidService;
-    protected ?Page $page = null;
-    protected array $data = [];
+    protected SiteService $siteService;
+
+    // Settings
+    protected array $settings = [];
+
+    // MODEL Title if present
+    protected ?string $title = null;
+
+    // Loaded MODEL Record
+    protected ?Model $content = null;
+
+    // Parents chain
+    protected array $parents = [];
+
+    // Header page image
+    protected ?string $banner = null;
+
+    // Attached Models Records
+    protected $dataSources = null;
+
+    // Children of current page
+    protected $children = null;
+
+    // Templates
+    protected ?string $template = null;
+    protected ?string $templateMaster = null;
+    protected ?string $templateLayout = null;
+    protected ?string $templatePage = null;
+
+    // Breadcrumbs
+    protected array $breadcrumbs = [];
+
+    // SEO Data
+    protected ?string $seoTitleTemplate = null;
+    protected ?string $seoTitle = null;
+    protected ?string $metaDescription = null;
+    protected ?string $metaKeywords = null;
 
     public function __construct(
         DataService $dataService,
-        LiquidTemplateService $liquidService
+        LiquidTemplateService $liquidService,
+        SiteService $siteService
     ) {
         $this->dataService = $dataService;
         $this->liquidService = $liquidService;
+        $this->siteService = $siteService;
     }
 
-    /**
-     * Create/load page by slug or alias
-     *
-     * @param string|Page $alias Page slug, Page model, or alias
-     * @param string|null $modelSlug Not used currently (for compatibility)
-     * @return self
+    /*
+     * Get Title
      */
-    public function create($alias, ?string $modelSlug = null): self
+    public function getTitle()
     {
-        // If already a Page model
-        if ($alias instanceof Page) {
-            $this->page = $alias;
-            return $this;
+        return $this->title;
+    }
+
+    /*
+     * Get Current Page
+     */
+    public function getPage()
+    {
+        return $this;
+    }
+
+    /*
+     * Get Current Content
+     */
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    /*
+     * Get Data Sources
+     */
+    public function getDataSources()
+    {
+        return $this->dataSources;
+    }
+
+    /*
+     * Get SEO Title
+     */
+    public function getSeoTitle()
+    {
+        return $this->seoTitle;
+    }
+
+    /*
+     * Get SEO Description
+     */
+    public function getSeoDescription()
+    {
+        return $this->metaDescription;
+    }
+
+    /*
+     * Get SEO Keywords
+     */
+    public function getSeoKeywords()
+    {
+        return $this->metaKeywords;
+    }
+
+    /*
+     * Set Title
+     */
+    public function setTitle(string $title)
+    {
+        $this->title = $title;
+    }
+
+    /*
+     * Set Current Page
+     */
+    public function setPage(Model $content)
+    {
+        return $this->create($content, $this->siteService->getSettings());
+    }
+
+    /*
+     * Set Current Content
+     */
+    public function setContent(Model $content)
+    {
+        $this->content = $content;
+    }
+
+    /*
+     * Set Data Sources
+     */
+    public function setDataSources($dataSources)
+    {
+        $this->dataSources = $dataSources;
+    }
+
+    /*
+     * Set SEO Title
+     */
+    public function setSeoTitle(string $title)
+    {
+        $this->seoTitle = $title;
+    }
+
+    /*
+     * Set SEO Description
+     */
+    public function setSeoDescription(string $description)
+    {
+        $this->metaDescription = $description;
+    }
+
+    /*
+     * Set SEO Keywords
+     */
+    public function setSeoKeywords(string $keywords)
+    {
+        $this->metaKeywords = $keywords;
+    }
+
+    /*
+     * Init Templates names
+     */
+    public function setTemplates(Model $content, array $settings)
+    {
+        $page_templates = json_decode($content->options, true);
+
+        $this->template = $page_templates['template'] ?? $settings['template'];
+        $this->templateMaster = $page_templates['template_master'] ?? $settings['template_master'];
+        $this->templateLayout = $page_templates['template_layout'] ?? $settings['template_layout'];
+        $this->templatePage = $page_templates['template_page'] ?? $settings['template_page'];
+    }
+
+    /*
+     * Set Master Template
+     */
+    public function setMasterTemplate(string $template)
+    {
+        $this->templateMaster = $template;
+    }
+
+    /*
+     * Set Layout Template
+     */
+    public function setLayoutTemplate(string $template)
+    {
+        $this->templateLayout = $template;
+    }
+
+    /*
+     * Set Page Template
+     */
+    public function setPageTemplate(string $template)
+    {
+        $this->templatePage = $template;
+    }
+
+    /*
+     * Init SEO Data
+     */
+    public function setSeo(Model $content, array $settings)
+    {
+        // Get SEO fields
+        $seo_title = $content->seo_title ?? '';
+        $meta_description = $content->seo_description ?? '';
+        $meta_keywords = $content->seo_keywords ?? '';
+
+        // TITLE
+        $page_title = $content->title ?? '';
+        $this->seoTitle = $this->getFirstNotEmpty([
+            $seo_title,
+            !empty($page_title) ? $page_title : '',
+            $settings['seo_title'],
+            $settings['site_title']
+        ]);
+
+        // Apply template if present
+        if (!empty($settings['seo_title_template'])) {
+            $title = str_replace('%site_title%', $settings['site_title'], $settings['seo_title_template']);
+            $title = str_replace('%seo_title%', $this->seoTitle, $title);
+            $this->seoTitle = $title;
         }
 
-        // Find page by slug
-        $this->page = Page::published()->where('slug', $alias)->first();
+        // DESCRIPTION
+        $this->metaDescription = $this->getFirstNotEmpty([
+            $meta_description,
+            $settings['meta_description'],
+            $settings['site_description']
+        ]);
 
-        if (!$this->page) {
-            abort(404, "Page not found: {$alias}");
+        // KEYWORDS
+        $this->metaKeywords = $this->getFirstNotEmpty([
+            $meta_keywords,
+            $settings['meta_keywords'],
+        ]);
+
+        $this->seoTitle = $this->seoTitle ?? '';
+        $this->metaDescription = $this->metaDescription ?? '';
+        $this->metaKeywords = $this->metaKeywords ?? '';
+    }
+
+    /*
+     * Clear and Add the First breadcrumb with Home Page Route
+     */
+    public function startBreadcrumbs()
+    {
+        $this->breadcrumbs = [];
+        $this->addBreadcrumbs('Home', route(config('ave-site.route_home_page', 'home')));
+    }
+
+    /*
+     * Add breadcrumb element
+     */
+    public function addBreadcrumbs($label, $url = '#')
+    {
+        $this->breadcrumbs[] = [
+            'label' => $label,
+            'url' => $url
+        ];
+    }
+
+    /*
+     * Returns Breadcrumbs array
+     */
+    public function getBreadcrumbs()
+    {
+        return $this->breadcrumbs;
+    }
+
+    /*
+     * Build breadcrumbs from parents
+     */
+    public function buildBreadcrumbs()
+    {
+        foreach ($this->parents as $key => $parent) {
+            $route_name = 'page'; // Default route for pages
+            $this->addBreadcrumbs($parent->title, route($route_name, $parent->slug));
+        }
+    }
+
+    /*
+     * Get parents chain (except current page)
+     */
+    public function setParents(Model $page = null, $parent_field = 'parent_id')
+    {
+        if (!$page) {
+            $page = $this->content;
+        }
+
+        $parents = [];
+        $current = $page;
+
+        // Collect all parents in current model
+        while (!empty($current->{$parent_field})) {
+            $current = $this->dataService->findFirst((int)$current->{$parent_field}, 'pages');
+            if ($current) {
+                $parents[] = $current;
+            } else {
+                break;
+            }
+        }
+
+        $this->parents = array_reverse($parents);
+
+        return $this->parents;
+    }
+
+    /*
+     * Get Parents Chain
+     */
+    public function getParents()
+    {
+        return $this->parents;
+    }
+
+    /*
+     * Set Children for the given content. Parent field should consist parent ID
+     */
+    public function setChildren(string $parent_field)
+    {
+        if ($this->content && Schema::hasColumn($this->content->getTable(), $parent_field)) {
+            $this->children = $this->dataService->findByField(
+                $this->content->getTable(),
+                $parent_field,
+                (int)$this->content->id
+            );
+        }
+
+        return $this->children;
+    }
+
+    /*
+     * Get Children
+     */
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    /*
+     * Create Page
+     */
+    public function create(Model $content, array $settings)
+    {
+        // If we don't have related Data
+        if (!$content) {
+            abort(404);
+        }
+
+        // General settings
+        $this->settings = $settings;
+
+        // Model Content
+        $this->content = $content;
+
+        $this->title = $this->content->title ?? '';
+
+        // Templates
+        $this->setTemplates($content, $settings);
+
+        // SEO
+        $this->setSeo($content, $settings);
+
+        // Breadcrumbs
+        $this->startBreadcrumbs();
+
+        // Set parents chain
+        $this->setParents();
+
+        // Set page header banner
+        $this->setBanner($content, $this->parents, $this->siteService->setting('theme.theme_banner_image', ''));
+
+        // Attach Data Sets if present
+        $options = json_decode($this->content->options, true);
+        if ($options && isset($options['datasources'])) {
+            $this->dataSources = $this->dataService->getDataSources($options['datasources']);
         }
 
         return $this;
     }
 
-    /**
-     * Render page view
-     *
-     * @param string|null $customView Custom Blade view path
-     * @param array $additionalData Additional data to pass to view
-     * @return string Rendered HTML
+    /*
+     * Returns rendered VIEW using PAGE Vars
      */
-    public function view(?string $customView = null, ?array $additionalData = []): string
+    public function view(string $template_layout = null, array $data = null)
     {
-        if (!$this->page) {
-            abort(500, 'Page not loaded. Call create() first.');
+        $this->addBreadcrumbs($this->title);
+
+        $viewPath = $template_layout ?? $this->settings['template'] . '.' . $this->templateLayout;
+
+        return view($viewPath)->with([
+            'template' => $this->settings['template'],
+            'template_master' => $this->settings['template'] . '.' . $this->settings['template_master'],
+            'template_page' => $this->settings['template'] . '.' . $this->templatePage,
+            'breadcrumbs' => $this->breadcrumbs,
+            'banner' => $this->banner,
+            'title' => $this->title,
+            'page' => $this->content,
+            'parents' => $this->parents,
+            'children' => $this->children,
+            'data_sources' => $this->dataSources,
+            'seo' => [
+                'title' => $this->getSeoTitle(),
+                'description' => $this->getSeoDescription(),
+                'keywords' => $this->getSeoKeywords(),
+            ],
+            'data' => $data,
+        ])->render();
+    }
+
+    /*
+     * Set Banner Image (header page image)
+     */
+    public function setBanner(Model $page, array $parents, string $default_banner)
+    {
+        $banner = '';
+
+        // Try to get banner from page options
+        $options = json_decode($page->options, true);
+        if (isset($options['banner'])) {
+            $banner = $options['banner'];
         }
 
-        // Parse options
-        $options = json_decode($this->page->options, true) ?? [];
+        // If no banner, try parents
+        if (empty($banner)) {
+            foreach (array_reverse($parents) as $parent) {
+                $parentOptions = json_decode($parent->options, true);
+                if (isset($parentOptions['banner']) && !empty($parentOptions['banner'])) {
+                    $banner = $parentOptions['banner'];
+                    break;
+                }
+            }
 
-        // Load datasources
-        $datasources = $options['datasources'] ?? [];
-        $data = $this->dataService->getDataSources($datasources);
-
-        // Render content with Liquid if it contains liquid syntax
-        $content = $this->page->content;
-        if ($this->hasLiquidSyntax($content)) {
-            $content = $this->liquidService->render($content, $data);
+            // If we don't have any attached banner in our models we use global settings banner
+            if (empty($banner)) {
+                $banner = $default_banner;
+            }
         }
 
-        // Prepare view data
-        $viewData = array_merge($data, $additionalData, [
-            'page' => $this->page,
-            'content' => $content,
-        ]);
+        $this->banner = $banner;
 
-        // Determine view
-        $view = $customView ?? $options['view'] ?? 'ave-site::pages.default';
-
-        // Check if view exists
-        if (!View::exists($view)) {
-            // Fallback to default
-            $view = 'ave-site::pages.default';
-        }
-
-        return view($view, $viewData)->render();
+        return $banner;
     }
 
     /**
-     * Get loaded page
+     * Get first not empty value from array
      *
-     * @return Page|null
+     * @param array $values
+     * @return mixed
      */
-    public function getPage(): ?Page
+    protected function getFirstNotEmpty(array $values)
     {
-        return $this->page;
-    }
-
-    /**
-     * Check if content has Liquid template syntax
-     *
-     * @param string $content
-     * @return bool
-     */
-    protected function hasLiquidSyntax(string $content): bool
-    {
-        return str_contains($content, '{{') || str_contains($content, '{%');
+        foreach ($values as $value) {
+            if (!empty($value)) {
+                return $value;
+            }
+        }
+        return null;
     }
 }
