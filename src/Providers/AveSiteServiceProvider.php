@@ -77,13 +77,17 @@ class AveSiteServiceProvider extends ServiceProvider
         try {
             $resourceManager = app(\Monstrex\Ave\Core\ResourceManager::class);
 
-            $resourceManager->register([
+            $resources = [
                 \Monstrex\AveSite\Admin\Resources\Page\Resource::class,
                 \Monstrex\AveSite\Admin\Resources\Block\Resource::class,
                 \Monstrex\AveSite\Admin\Resources\BlockRegion\Resource::class,
                 \Monstrex\AveSite\Admin\Resources\Chunk\Resource::class,
                 \Monstrex\AveSite\Admin\Resources\Setting\Resource::class,
-            ]);
+            ];
+
+            foreach ($resources as $resourceClass) {
+                $resourceManager->register($resourceClass);
+            }
         } catch (\Exception $e) {
             // ResourceManager not available (Ave not loaded)
         }
