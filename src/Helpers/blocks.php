@@ -1,3 +1,0 @@
-<?php
-
-// Block helper functions

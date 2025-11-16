@@ -18,11 +18,6 @@ return [
     'default_slug_field' => 'slug',
 
     /*
-     * Models namespace for DataService
-     */
-    'models_namespace' => 'Monstrex\\AveSite\\Models\\',
-
-    /*
      * If false will use ave-site 404 error handler
      */
     'use_legacy_error_handler' => false,

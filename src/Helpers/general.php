@@ -1,3 +1,0 @@
-<?php
-
-// General helper functions

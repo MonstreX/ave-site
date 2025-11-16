@@ -165,7 +165,8 @@ class DataService implements DataContract
         }
 
         // Try to find model by namespace convention
-        $namespace = config('ave-site.models_namespace', 'Monstrex\\AveSite\\Models\\');
+        // Hardcoded namespace for ave-site package models
+        $namespace = 'Monstrex\\AveSite\\Models\\';
         $modelName = Str::studly(Str::singular($modelSlug));
         $modelClass = $namespace . $modelName;
 
