@@ -102,7 +102,7 @@ class InstallCommand extends Command
             [
                 'title' => 'Регионы блоков',
                 'icon' => 'voyager-resize-full',
-                'resource_slug' => 'site-regions',
+                'resource_slug' => 'site-block-regions',
                 'order' => 3,
             ],
             [
