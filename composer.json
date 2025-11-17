@@ -23,7 +23,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Monstrex\\AveSite\\": "src/"
+            "Monstrex\\AveSite\\": "src/",
+            "Monstrex\\AveSite\\Database\\Seeders\\": "database/seeders/"
         },
         "files": [
             "src/Helpers/helpers.php"

@@ -10,9 +10,11 @@ return new class extends Migration
     {
         Schema::create('ave_site_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('key')->unique();
-            $table->string('group')->index();
-            $table->longText('fields'); // JSON схема полей
+            $table->integer('order')->unsigned()->default(0); // Sort order in admin menu
+            $table->string('title')->nullable(); // Display title in admin menu
+            $table->string('key')->unique(); // Unique identifier (general, mail, seo, theme)
+            $table->string('group')->index(); // Grouping (currently same as key)
+            $table->longText('fields'); // JSON schema with all fields
             $table->timestamps();
         });
     }

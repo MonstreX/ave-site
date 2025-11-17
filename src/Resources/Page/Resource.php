@@ -1,6 +1,6 @@
 <?php
 
-namespace Monstrex\AveSite\Admin\Resources\Page;
+namespace Monstrex\AveSite\Resources\Page;
 
 use Monstrex\AveSite\Models\Page as PageModel;
 use Monstrex\Ave\Core\Columns\Column;

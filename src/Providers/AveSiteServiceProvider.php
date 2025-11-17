@@ -40,12 +40,16 @@ class AveSiteServiceProvider extends ServiceProvider
         // Migrations
         $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
 
+        // Views
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'ave-site');
+
         // Translations
         $this->loadTranslationsFrom(__DIR__.'/../../lang', 'ave-site');
 
         // Register Ave Resources
         if (!$this->app->runningInConsole()) {
             $this->registerAveResources();
+            $this->registerRoutes();
         }
 
         // Load localizations from database
@@ -83,11 +87,11 @@ class AveSiteServiceProvider extends ServiceProvider
             $resourceManager = app(\Monstrex\Ave\Core\ResourceManager::class);
 
             $resources = [
-                \Monstrex\AveSite\Admin\Resources\Page\Resource::class,
-                \Monstrex\AveSite\Admin\Resources\Block\Resource::class,
-                \Monstrex\AveSite\Admin\Resources\BlockRegion\Resource::class,
-                \Monstrex\AveSite\Admin\Resources\Localization\Resource::class,
-                \Monstrex\AveSite\Admin\Resources\Setting\Resource::class,
+                \Monstrex\AveSite\Resources\Page\Resource::class,
+                \Monstrex\AveSite\Resources\Block\Resource::class,
+                \Monstrex\AveSite\Resources\BlockRegion\Resource::class,
+                \Monstrex\AveSite\Resources\Localization\Resource::class,
+                \Monstrex\AveSite\Resources\Setting\Resource::class,
             ];
 
             foreach ($resources as $resourceClass) {
@@ -96,6 +100,18 @@ class AveSiteServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             // ResourceManager not available (Ave not loaded)
         }
+    }
+
+    protected function registerRoutes(): void
+    {
+        $settingsController = 'Monstrex\AveSite\Http\Controllers\SettingsController';
+
+        \Route::middleware(['web', 'admin'])->group(function () use ($settingsController) {
+            \Route::get('/admin/site-settings/{key}/edit', $settingsController.'@edit')
+                ->name('ave-site.settings.edit');
+            \Route::put('/admin/site-settings/{key}', $settingsController.'@update')
+                ->name('ave-site.settings.update');
+        });
     }
 
     /**

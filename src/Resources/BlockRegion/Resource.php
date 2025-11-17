@@ -1,6 +1,6 @@
 <?php
 
-namespace Monstrex\AveSite\Admin\Resources\BlockRegion;
+namespace Monstrex\AveSite\Resources\BlockRegion;
 
 use Monstrex\AveSite\Models\BlockRegion as BlockRegionModel;
 use Monstrex\Ave\Core\Columns\Column;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Monstrex\AveSite\Admin\Resources\Localization;
+namespace Monstrex\AveSite\Resources\Localization;
 
 use Monstrex\AveSite\Models\Localization as LocalizationModel;
 use Monstrex\Ave\Core\Columns\Column;

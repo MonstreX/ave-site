@@ -8,7 +8,7 @@ class Setting extends Model
 {
     protected $table = 'ave_site_settings';
 
-    protected $fillable = ['key', 'group', 'fields'];
+    protected $fillable = ['key', 'group', 'title', 'order', 'fields'];
 
     // Scopes
     public function scopeByKey($query, string $key)
