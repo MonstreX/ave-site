@@ -217,7 +217,8 @@ function setupMediaHandlers() {
             const confirmed = await window.Ave.confirm('Are you sure you want to remove this media?', {
                 title: 'Remove Media',
                 confirmText: 'Remove',
-                cancelText: 'Cancel'
+                cancelText: 'Cancel',
+                variant: 'danger'
             });
 
             if (confirmed) {
