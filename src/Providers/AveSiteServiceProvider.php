@@ -113,6 +113,8 @@ class AveSiteServiceProvider extends ServiceProvider
                 ->name('ave-site.settings.edit');
             \Route::put('/admin/site-settings/{key}', $settingsController.'@update')
                 ->name('ave-site.settings.update');
+            \Route::get('/admin/site-settings/test-mail', $settingsController.'@testMail')
+                ->name('ave-site.settings.test-mail');
         });
     }
 

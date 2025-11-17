@@ -151,6 +151,13 @@ class AveSiteSettingsSeeder extends Seeder
                     ],
                     'class' => 'col-md-12',
                 ],
+                'test_mail' => [
+                    'label' => 'Send Test Email',
+                    'type' => 'route',
+                    'value' => 'ave-site.settings.test-mail',
+                    'icon' => 'voyager-mail',
+                    'class' => 'col-md-12',
+                ],
             ],
         ];
 

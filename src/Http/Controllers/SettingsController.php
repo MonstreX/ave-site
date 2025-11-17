@@ -5,6 +5,7 @@ namespace Monstrex\AveSite\Http\Controllers;
 use Illuminate\Http\Request;
 use Monstrex\AveSite\Models\Setting;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Mail;
 
 class SettingsController extends Controller
 {
@@ -95,5 +96,37 @@ class SettingsController extends Controller
         $settings->save();
 
         return back()->with('success', "Settings '{$settings->title}' updated successfully");
+    }
+
+    /**
+     * Send test email
+     */
+    public function testMail()
+    {
+        try {
+            $mailSettings = Setting::where('key', 'mail')->first();
+            if (!$mailSettings) {
+                return back()->with('error', 'Mail settings not found');
+            }
+
+            $config = json_decode($mailSettings->fields);
+            $toAddress = $config->fields->to_address->value ?? null;
+            $fromAddress = $config->fields->from_address->value ?? null;
+            $fromName = $config->fields->from_name->value ?? null;
+
+            if (!$toAddress || !$fromAddress) {
+                return back()->with('error', 'Email recipient and sender address must be configured');
+            }
+
+            Mail::raw('This is a test email from your website settings.', function ($message) use ($toAddress, $fromAddress, $fromName) {
+                $message->to($toAddress)
+                        ->from($fromAddress, $fromName)
+                        ->subject('Test Email from Site Settings');
+            });
+
+            return back()->with('success', 'Test email sent successfully to ' . $toAddress);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to send test email: ' . $e->getMessage());
+        }
     }
 }
