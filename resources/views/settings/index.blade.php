@@ -146,29 +146,39 @@
                                     {!! $help_code !!}
 
                                     @if(isset($field->value) && !empty($field->value))
+                                        @php
+                                            $path = (string) $field->value;
+                                            $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+                                            $isImage = in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                                            $fileName = basename($path);
+                                        @endphp
                                         <div class="media-preview-wrapper" data-field-name="{{$key_field}}">
-                                            @php
-                                                $isImage = strpos($field->value, '.jpg') !== false ||
-                                                           strpos($field->value, '.jpeg') !== false ||
-                                                           strpos($field->value, '.png') !== false ||
-                                                           strpos($field->value, '.gif') !== false;
-                                            @endphp
-                                            @if($isImage)
-                                                <div class="media-preview-image">
-                                                    <img src="{{ $field->value }}" alt="Preview">
-                                                    <a href="#" class="media-preview-delete" data-field="{{$key_field}}" title="Remove media">
-                                                        <i class="voyager-x"></i>
-                                                    </a>
+                                            <div class="media-item media-item--settings-preview">
+                                                <div class="media-preview">
+                                                    @if($isImage)
+                                                        <img src="{{ $field->value }}" alt="{{ $fileName }}">
+                                                    @else
+                                                        <div class="media-file-icon">
+                                                            <svg class="icon"><use href="#file"></use></svg>
+                                                        </div>
+                                                    @endif
+
+                                                    <div class="media-action-holder">
+                                                        <button type="button"
+                                                                class="media-action media-preview-delete"
+                                                                data-field="{{$key_field}}"
+                                                                title="Remove media">
+                                                            <svg class="icon"><use href="#delete"></use></svg>
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            @else
-                                                <div class="media-preview-file">
-                                                    <i class="voyager-file-text"></i>
-                                                    <span>{{ basename($field->value) }}</span>
-                                                    <a href="#" class="media-preview-delete" data-field="{{$key_field}}" title="Remove media">
-                                                        <i class="voyager-x"></i>
-                                                    </a>
+
+                                                <div class="media-item-footer">
+                                                    <div class="media-item-footer-line">
+                                                        <div class="media-filename" title="{{ $fileName }}">{{ $fileName }}</div>
+                                                    </div>
                                                 </div>
-                                            @endif
+                                            </div>
                                         </div>
                                     @endif
 
@@ -241,5 +251,15 @@ if (window.aveEvents) {
     document.addEventListener('DOMContentLoaded', setupMediaHandlers);
 }
 </script>
+
+<style>
+.media-item--settings-preview {
+    max-width: 200px;
+}
+
+.media-item--settings-preview .media-preview {
+    height: 200px;
+}
+</style>
 
 @endsection
