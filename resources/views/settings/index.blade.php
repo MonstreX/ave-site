@@ -162,38 +162,6 @@
     </form>
 </div>
 
-<style>
-    .voyager .code h3 {
-        background: #62a8ea;
-        color: #fefefe;
-        display: flex;
-        line-height: 20px;
-        padding: 10px 20px;
-        margin: 0 0 15px 0;
-        border-radius: 2px;
-    }
-
-    .voyager .code h3 i {
-        margin-right: 10px;
-    }
-
-    span.config-help {
-        color: #2a8dea;
-        font-size: 12px;
-        display: block;
-        margin-top: 5px;
-    }
-
-    span.config-help i {
-        color: #e01313;
-        font-style: normal;
-    }
-
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-</style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Handle media removal
