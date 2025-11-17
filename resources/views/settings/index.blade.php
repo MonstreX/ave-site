@@ -258,7 +258,7 @@ if (window.aveEvents) {
 }
 
 .media-item--settings-preview .media-preview {
-    height: 200px;
+    aspect-ratio: auto;
 }
 </style>
 
