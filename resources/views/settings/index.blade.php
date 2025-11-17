@@ -218,16 +218,17 @@ function setupMediaHandlers() {
                 title: 'Remove Media',
                 confirmText: 'Remove',
                 cancelText: 'Cancel',
-                variant: 'danger'
+                variant: 'error'
             });
 
             if (confirmed) {
+                const form = document.querySelector('form');
                 const input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = 'remove_media';
                 input.value = field;
-                document.querySelector('form').appendChild(input);
-                document.querySelector('form').submit();
+                form.appendChild(input);
+                form.submit();
             }
         });
     });
