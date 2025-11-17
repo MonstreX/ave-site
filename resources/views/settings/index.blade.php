@@ -173,7 +173,7 @@
             <button type="submit" class="btn btn-primary">
                 <i class="voyager-save"></i> Save Settings
             </button>
-            <a href="{{ route('ave.resources.index', ['resource' => 'site-settings']) }}" class="btn btn-secondary">
+            <a href="{{ url()->previous() }}" class="btn btn-secondary">
                 Cancel
             </a>
         </div>
