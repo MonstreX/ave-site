@@ -170,7 +170,7 @@
         </div>
 
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12 mb-30">
                 <button type="submit" class="btn btn-primary">
                     <i class="voyager-save"></i> Save Settings
                 </button>
