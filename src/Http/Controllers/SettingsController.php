@@ -8,6 +8,12 @@ use Illuminate\Routing\Controller;
 
 class SettingsController extends Controller
 {
+    public function __construct()
+    {
+        // Require authentication for all settings routes
+        $this->middleware('auth');
+    }
+
     /**
      * Show settings edit form
      */
