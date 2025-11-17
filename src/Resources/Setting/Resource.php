@@ -96,14 +96,18 @@ class Resource extends BaseResource
                         ->required(),
                 ]),
             ]),
-
-            CodeEditor::make('fields')
-                ->label(__('ave-site::resources_settings.fields.fields'))
-                ->language('json')
-                ->theme('github')
-                ->height(400)
-                ->autoHeight(true)
-                ->required(),
+            
+            Row::make()->schema([
+                Col::make(12)->schema([
+                    CodeEditor::make('fields')
+                        ->label(__('ave-site::resources_settings.fields.fields'))
+                        ->language('json')
+                        ->theme('github')
+                        ->height(400)
+                        ->autoHeight(true)
+                        ->required(),
+                ]),
+            ]),
         ]);
     }
 }
