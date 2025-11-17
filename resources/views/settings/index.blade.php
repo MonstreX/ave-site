@@ -208,26 +208,39 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Handle media removal using Ave modal
+    // Handle media removal
     document.querySelectorAll('.media-preview-delete').forEach(function(btn) {
-        btn.addEventListener('click', async function(e) {
+        btn.addEventListener('click', function(e) {
             e.preventDefault();
             const field = this.dataset.field;
 
-            const confirmed = await window.Ave.confirm('Are you sure you want to remove this media?', {
-                title: 'Remove Media',
-                confirmText: 'Remove',
-                cancelText: 'Cancel'
-            });
+            // Wait for Ave modal to be available, fallback to browser confirm
+            const confirmRemoval = async () => {
+                let confirmed = false;
 
-            if (confirmed) {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'remove_media';
-                input.value = field;
-                document.querySelector('form').appendChild(input);
-                document.querySelector('form').submit();
-            }
+                if (window.Ave && window.Ave.confirm) {
+                    // Use Ave modal if available
+                    confirmed = await window.Ave.confirm('Are you sure you want to remove this media?', {
+                        title: 'Remove Media',
+                        confirmText: 'Remove',
+                        cancelText: 'Cancel'
+                    });
+                } else {
+                    // Fallback to browser confirm
+                    confirmed = confirm('Are you sure you want to remove this media?');
+                }
+
+                if (confirmed) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'remove_media';
+                    input.value = field;
+                    document.querySelector('form').appendChild(input);
+                    document.querySelector('form').submit();
+                }
+            };
+
+            confirmRemoval();
         });
     });
 });
