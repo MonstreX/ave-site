@@ -6,7 +6,7 @@
 <div class="container-fluid">
     <div class="row mb-3">
         <div class="col-12">
-            <a href="{{ route('ave.resources.index', ['resource' => 'site-settings']) }}" class="btn btn-secondary btn-sm">
+            <a href="{{ url()->previous() }}" class="btn btn-secondary btn-sm">
                 <i class="voyager-arrow-left"></i> Back
             </a>
             <h1 class="page-title">

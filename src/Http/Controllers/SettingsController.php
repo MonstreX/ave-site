@@ -94,7 +94,6 @@ class SettingsController extends Controller
         $settings->fields = json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         $settings->save();
 
-        return redirect()->route('ave.resources.index', ['resource' => 'site-settings'])
-            ->with('success', "Settings '{$settings->title}' updated successfully");
+        return back()->with('success', "Settings '{$settings->title}' updated successfully");
     }
 }
