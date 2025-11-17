@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Blade;
 use Monstrex\AveSite\Commands\InstallCommand;
+use Monstrex\AveSite\Models\Setting;
 use Monstrex\AveSite\Services\{
     DataService,
     SiteService,
