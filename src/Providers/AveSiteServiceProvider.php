@@ -12,7 +12,7 @@ use Monstrex\AveSite\Services\{
     PageService,
     BlockService,
     SettingsService,
-    ChunkService
+    LocalizationService
 };
 use Monstrex\AveSite\Facades;
 
@@ -29,7 +29,7 @@ class AveSiteServiceProvider extends ServiceProvider
         $this->app->singleton(PageService::class);
         $this->app->singleton(BlockService::class);
         $this->app->singleton(SettingsService::class);
-        $this->app->singleton(ChunkService::class);
+        $this->app->singleton(LocalizationService::class);
 
         // Register facades
         $this->registerAliases();
@@ -46,6 +46,11 @@ class AveSiteServiceProvider extends ServiceProvider
         // Register Ave Resources
         if (!$this->app->runningInConsole()) {
             $this->registerAveResources();
+        }
+
+        // Load localizations from database
+        if (!$this->app->runningInConsole()) {
+            $this->loadLocalizations();
         }
 
         // Override Laravel config from database settings
@@ -81,7 +86,7 @@ class AveSiteServiceProvider extends ServiceProvider
                 \Monstrex\AveSite\Admin\Resources\Page\Resource::class,
                 \Monstrex\AveSite\Admin\Resources\Block\Resource::class,
                 \Monstrex\AveSite\Admin\Resources\BlockRegion\Resource::class,
-                \Monstrex\AveSite\Admin\Resources\Chunk\Resource::class,
+                \Monstrex\AveSite\Admin\Resources\Localization\Resource::class,
                 \Monstrex\AveSite\Admin\Resources\Setting\Resource::class,
             ];
 
@@ -178,6 +183,20 @@ class AveSiteServiceProvider extends ServiceProvider
             $expression = trim($expression, "\'\"");
             return "<?php echo \Monstrex\AveSite\Facades\AveBlock::renderRegion({$expression}); ?>";
         });
+    }
+
+    /**
+     * Load localizations from database
+     */
+    protected function loadLocalizations(): void
+    {
+        try {
+            $localizationService = app(LocalizationService::class);
+            $localizationService->loadLocalizations();
+        } catch (\Exception $e) {
+            // Table may not exist during initial setup
+            // Log silently to avoid breaking the application
+        }
     }
 
     /**

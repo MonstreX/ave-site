@@ -6,18 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
-        Schema::create('site_chunks', function (Blueprint $table) {
+        Schema::create('site_localizations', function (Blueprint $table) {
             $table->id();
             $table->string('key')->unique();
-            $table->longText('value');
+            $table->text('en')->nullable();
+            $table->text('ru')->nullable();
             $table->timestamps();
+
+            $table->index('key');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('site_chunks');
+        Schema::dropIfExists('site_localizations');
     }
 };

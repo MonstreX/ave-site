@@ -66,11 +66,11 @@ class InstallCommand extends Command
             ->whereNull('parent_id')
             ->max('order') ?? 0;
 
-        // Create "Контент" group
+        // Create "Content" group
         $contentGroupId = \DB::table('ave_menu_items')->insertGetId([
             'menu_id' => $menuId,
             'parent_id' => null,
-            'title' => 'Контент',
+            'title' => __('ave-site::install.menu_content_group'),
             'status' => 1,
             'icon' => 'voyager-images',
             'route' => null,
@@ -88,27 +88,27 @@ class InstallCommand extends Command
         // Content group items
         $contentItems = [
             [
-                'title' => 'Страницы',
+                'title' => __('ave-site::install.menu_pages'),
                 'icon' => 'voyager-file-text',
                 'resource_slug' => 'site-pages',
                 'order' => 1,
             ],
             [
-                'title' => 'Блоки',
-                'icon' => 'voyager-window-list',
+                'title' => __('ave-site::install.menu_blocks'),
+                'icon' => 'voyager-puzzle',
                 'resource_slug' => 'site-blocks',
                 'order' => 2,
             ],
             [
-                'title' => 'Регионы блоков',
+                'title' => __('ave-site::install.menu_block_regions'),
                 'icon' => 'voyager-resize-full',
                 'resource_slug' => 'site-block-regions',
                 'order' => 3,
             ],
             [
-                'title' => 'Чанки',
-                'icon' => 'voyager-code',
-                'resource_slug' => 'site-chunks',
+                'title' => __('ave-site::install.menu_localizations'),
+                'icon' => 'voyager-font',
+                'resource_slug' => 'site-localizations',
                 'order' => 4,
             ],
         ];
@@ -137,7 +137,7 @@ class InstallCommand extends Command
         \DB::table('ave_menu_items')->insert([
             'menu_id' => $menuId,
             'parent_id' => null,
-            'title' => 'Настройки сайта',
+            'title' => __('ave-site::install.menu_settings'),
             'status' => 1,
             'icon' => 'voyager-settings',
             'route' => null,
