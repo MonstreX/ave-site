@@ -161,6 +161,19 @@
                                     <input type="file" id="{{$key_field}}" class="form-control-file" name="{{$key_field}}">
                                 </div>
 
+                            @elseif($field->type === 'route')
+                                <div class="form-group {{ $class }}">
+                                    @php
+                                        $routeName = $field->value ?? '';
+                                        $routeUrl = route($routeName);
+                                        $icon = $field->icon ?? 'voyager-link';
+                                    @endphp
+                                    <a href="{{ $routeUrl }}" class="btn btn-primary btn-setting-route">
+                                        <i class="{{ $icon }}"></i>
+                                        <span>{{ $field->label }}</span>
+                                    </a>
+                                </div>
+
                             @endif
 
                         @endif
