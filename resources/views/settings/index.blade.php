@@ -2,14 +2,16 @@
 
 @section('page_title', $title)
 
-@section('content')
+@section('page_header')
 <div class="page-header">
     <h1 class="page-title">
         <i class="voyager-settings"></i> {{ $title }}
     </h1>
 </div>
+@endsection
 
-<div class="container-fluid">
+@section('content')
+<div class="page-content">
     @if ($errors->any())
         <div class="alert alert-danger">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -22,12 +24,12 @@
         </div>
     @endif
 
-    <form action="{{ route('ave-site.settings.update', $key) }}" method="POST" enctype="multipart/form-data">
-        {{ csrf_field() }}
-        {{ method_field('PUT') }}
+    <div class="panel panel-bordered">
+        <div class="panel-body">
+            <form action="{{ route('ave-site.settings.update', $key) }}" method="POST" enctype="multipart/form-data">
+                {{ csrf_field() }}
+                {{ method_field('PUT') }}
 
-        <div class="panel panel-bordered">
-            <div class="panel-body">
                 <div class="row">
                     @foreach($config->fields as $key_field => $field)
 
@@ -158,14 +160,17 @@
                         @endif
                     @endforeach
                 </div>
-            </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="voyager-save"></i> Save Settings
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
-
-        <button type="submit" class="btn btn-primary">
-            <i class="voyager-save"></i> Save Settings
-        </button>
-
-    </form>
+    </div>
 </div>
 
 <script>
