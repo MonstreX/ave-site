@@ -3,6 +3,12 @@
 @section('page_title', $title)
 
 @section('content')
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="voyager-settings"></i> {{ $title }}
+    </h1>
+</div>
+
 <div class="container-fluid">
     @if ($errors->any())
         <div class="alert alert-danger">
