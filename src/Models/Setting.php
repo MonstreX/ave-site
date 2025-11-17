@@ -35,8 +35,8 @@ class Setting extends Model
         $result = [];
 
         foreach ($decoded['fields'] as $fieldKey => $fieldConfig) {
-            // Пропускаем секции
-            if (isset($fieldConfig['type']) && $fieldConfig['type'] === 'section') {
+            // Пропускаем секции и маршруты (они не содержат данные для сохранения)
+            if (isset($fieldConfig['type']) && in_array($fieldConfig['type'], ['section', 'route'])) {
                 continue;
             }
 
