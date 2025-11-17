@@ -53,7 +53,7 @@ class Resource extends BaseResource
                 ->sortable(true)
                 ->searchable(true)
                 ->bold()
-                ->linkAction('edit'),
+                ->linkUrl(fn ($model) => route('ave-site.settings.edit', $model->key)),
 
             BadgeColumn::make('key')
                 ->label(__('ave-site::resources_settings.columns.key'))
