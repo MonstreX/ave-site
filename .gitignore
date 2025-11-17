@@ -3,6 +3,7 @@
 composer.lock
 package-lock.json
 .phpunit.result.cache
+.phpunit.cache/
 .env
 .DS_Store
 Thumbs.db
