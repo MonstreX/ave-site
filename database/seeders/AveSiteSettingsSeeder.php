@@ -9,6 +9,8 @@ class AveSiteSettingsSeeder extends Seeder
 {
     public function run(): void
     {
+        $t = 'ave-site::seeders.settings';
+
         /**
          * GENERAL SETTINGS
          */
@@ -17,33 +19,33 @@ class AveSiteSettingsSeeder extends Seeder
                 'section_main' => [
                     'type' => 'section',
                     'icon' => 'voyager-tools',
-                    'label' => 'General Settings',
+                    'label' => trans("$t.general.section_main"),
                 ],
                 'site_title' => [
-                    'label' => 'Site Title',
+                    'label' => trans("$t.general.site_title"),
                     'type' => 'text',
-                    'value' => 'My Website',
+                    'value' => trans("$t.general.site_title_value"),
                     'class' => 'col-md-12',
                 ],
                 'site_description' => [
-                    'label' => 'Site Description',
+                    'label' => trans("$t.general.site_description"),
                     'type' => 'text',
-                    'value' => 'Website description',
+                    'value' => trans("$t.general.site_description_value"),
                     'class' => 'col-md-12',
                 ],
                 'section_pages' => [
                     'type' => 'section',
                     'icon' => 'voyager-documentation',
-                    'label' => 'Pages Settings',
+                    'label' => trans("$t.general.section_pages"),
                 ],
                 'site_home_page' => [
-                    'label' => 'Home Page ID',
+                    'label' => trans("$t.general.site_home_page"),
                     'type' => 'number',
                     'value' => '1',
                     'class' => 'col-md-12',
                 ],
                 'site_404_page' => [
-                    'label' => '404 Page ID',
+                    'label' => trans("$t.general.site_404_page"),
                     'type' => 'number',
                     'value' => '2',
                     'class' => 'col-md-12',
@@ -51,16 +53,16 @@ class AveSiteSettingsSeeder extends Seeder
                 'section_system' => [
                     'type' => 'section',
                     'icon' => 'voyager-exclamation',
-                    'label' => 'System Settings',
+                    'label' => trans("$t.general.section_system"),
                 ],
                 'site_app_name' => [
-                    'label' => 'Application Name',
+                    'label' => trans("$t.general.site_app_name"),
                     'type' => 'text',
-                    'value' => 'My App',
+                    'value' => trans("$t.general.site_app_name_value"),
                     'class' => 'col-md-12',
                 ],
                 'debug_mode' => [
-                    'label' => 'Debug Mode',
+                    'label' => trans("$t.general.debug_mode"),
                     'type' => 'checkbox',
                     'value' => '0',
                     'class' => 'col-md-12',
@@ -72,7 +74,7 @@ class AveSiteSettingsSeeder extends Seeder
             'key' => 'general',
             'group' => 'general',
         ], [
-            'title' => 'General',
+            'title' => trans("$t.general.title"),
             'order' => 1,
             'fields' => json_encode($generalFields, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
         ]);
@@ -83,76 +85,76 @@ class AveSiteSettingsSeeder extends Seeder
         $mailFields = [
             'fields' => [
                 'to_address' => [
-                    'label' => 'Email Recipient',
+                    'label' => trans("$t.mail.to_address"),
                     'type' => 'text',
-                    'value' => 'admin@example.com',
+                    'value' => trans("$t.mail.to_address_value"),
                     'class' => 'col-md-12',
                 ],
                 'from_name' => [
-                    'label' => 'From Name',
+                    'label' => trans("$t.mail.from_name"),
                     'type' => 'text',
-                    'value' => 'My Website',
+                    'value' => trans("$t.mail.from_name_value"),
                     'class' => 'col-md-12',
                 ],
                 'from_address' => [
-                    'label' => 'From Email',
+                    'label' => trans("$t.mail.from_address"),
                     'type' => 'text',
-                    'value' => 'noreply@example.com',
+                    'value' => trans("$t.mail.from_address_value"),
                     'class' => 'col-md-12',
                 ],
                 'section_smtp' => [
                     'type' => 'section',
                     'icon' => 'voyager-mail',
-                    'label' => 'SMTP Configuration',
+                    'label' => trans("$t.mail.section_smtp"),
                 ],
                 'smtp_driver' => [
-                    'label' => 'Mail Driver',
+                    'label' => trans("$t.mail.smtp_driver"),
                     'type' => 'dropdown',
                     'value' => 'smtp',
                     'options' => [
-                        'smtp' => 'SMTP',
-                        'mailgun' => 'Mailgun',
-                        'log' => 'Log',
+                        'smtp' => trans("$t.mail.smtp_driver_option_smtp"),
+                        'mailgun' => trans("$t.mail.smtp_driver_option_mailgun"),
+                        'log' => trans("$t.mail.smtp_driver_option_log"),
                     ],
                     'class' => 'col-md-12',
                 ],
                 'smtp_host' => [
-                    'label' => 'SMTP Host',
+                    'label' => trans("$t.mail.smtp_host"),
                     'type' => 'text',
-                    'value' => 'smtp.mailtrap.io',
+                    'value' => trans("$t.mail.smtp_host_value"),
                     'class' => 'col-md-12',
                 ],
                 'smtp_port' => [
-                    'label' => 'SMTP Port',
+                    'label' => trans("$t.mail.smtp_port"),
                     'type' => 'number',
-                    'value' => '2525',
+                    'value' => trans("$t.mail.smtp_port_value"),
                     'class' => 'col-md-12',
                 ],
                 'smtp_username' => [
-                    'label' => 'SMTP Username',
+                    'label' => trans("$t.mail.smtp_username"),
                     'type' => 'text',
                     'value' => '',
                     'class' => 'col-md-12',
                 ],
                 'smtp_password' => [
-                    'label' => 'SMTP Password',
+                    'label' => trans("$t.mail.smtp_password"),
                     'type' => 'text',
                     'value' => '',
                     'class' => 'col-md-12',
                 ],
                 'smtp_encryption' => [
-                    'label' => 'SMTP Encryption',
+                    'label' => trans("$t.mail.smtp_encryption"),
                     'type' => 'radio',
                     'value' => 'tls',
                     'options' => [
-                        'none' => 'None',
-                        'ssl' => 'SSL',
-                        'tls' => 'TLS',
+                        'none' => trans("$t.mail.smtp_encryption_option_none"),
+                        'ssl' => trans("$t.mail.smtp_encryption_option_ssl"),
+                        'tls' => trans("$t.mail.smtp_encryption_option_tls"),
                     ],
                     'class' => 'col-md-12',
                 ],
                 'test_mail' => [
-                    'label' => 'Send Test Email',
+                    'label' => trans("$t.mail.test_mail"),
                     'type' => 'route',
                     'value' => 'ave-site.settings.test-mail',
                     'icon' => 'voyager-mail',
@@ -165,7 +167,7 @@ class AveSiteSettingsSeeder extends Seeder
             'key' => 'mail',
             'group' => 'mail',
         ], [
-            'title' => 'Mail',
+            'title' => trans("$t.mail.title"),
             'order' => 2,
             'fields' => json_encode($mailFields, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
         ]);
@@ -176,25 +178,25 @@ class AveSiteSettingsSeeder extends Seeder
         $seoFields = [
             'fields' => [
                 'seo_title_template' => [
-                    'label' => 'Title Template',
+                    'label' => trans("$t.seo.seo_title_template"),
                     'type' => 'text',
-                    'value' => '%site_title% | %seo_title%',
+                    'value' => trans("$t.seo.seo_title_template_value"),
                     'class' => 'col-md-12',
                 ],
                 'seo_title' => [
-                    'label' => 'Default SEO Title',
+                    'label' => trans("$t.seo.seo_title"),
                     'type' => 'text',
                     'value' => '',
                     'class' => 'col-md-12',
                 ],
                 'meta_description' => [
-                    'label' => 'Meta Description',
+                    'label' => trans("$t.seo.meta_description"),
                     'type' => 'textarea',
                     'value' => '',
                     'class' => 'col-md-12',
                 ],
                 'meta_keywords' => [
-                    'label' => 'Meta Keywords',
+                    'label' => trans("$t.seo.meta_keywords"),
                     'type' => 'textarea',
                     'value' => '',
                     'class' => 'col-md-12',
@@ -206,7 +208,7 @@ class AveSiteSettingsSeeder extends Seeder
             'key' => 'seo',
             'group' => 'seo',
         ], [
-            'title' => 'SEO',
+            'title' => trans("$t.seo.title"),
             'order' => 3,
             'fields' => json_encode($seoFields, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
         ]);
@@ -217,19 +219,19 @@ class AveSiteSettingsSeeder extends Seeder
         $themeFields = [
             'fields' => [
                 'theme_logo' => [
-                    'label' => 'Logo',
+                    'label' => trans("$t.theme.theme_logo"),
                     'type' => 'media',
                     'value' => '',
                     'class' => 'col-md-12',
                 ],
                 'theme_favicon' => [
-                    'label' => 'Favicon',
+                    'label' => trans("$t.theme.theme_favicon"),
                     'type' => 'media',
                     'value' => '',
                     'class' => 'col-md-12',
                 ],
                 'theme_banner_image' => [
-                    'label' => 'Banner Image',
+                    'label' => trans("$t.theme.theme_banner_image"),
                     'type' => 'media',
                     'value' => '',
                     'class' => 'col-md-12',
@@ -241,7 +243,7 @@ class AveSiteSettingsSeeder extends Seeder
             'key' => 'theme',
             'group' => 'theme',
         ], [
-            'title' => 'Theme',
+            'title' => trans("$t.theme.title"),
             'order' => 4,
             'fields' => json_encode($themeFields, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
         ]);
