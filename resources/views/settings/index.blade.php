@@ -1,6 +1,6 @@
-@extends('ave::layouts.app')
+@extends('ave::layouts.master')
 
-@section('title', $title)
+@section('page_title', $title)
 
 @section('content')
 <div class="container-fluid">
@@ -204,9 +204,6 @@
     }
 </style>
 
-@endsection
-
-@section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Handle media removal
@@ -224,4 +221,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
 @endsection
