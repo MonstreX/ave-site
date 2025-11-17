@@ -25,6 +25,8 @@ return [
         'test_email_failed' => 'Failed to send test email: :error',
         'settings_not_found' => 'Settings group not found',
         'email_not_configured' => 'Email recipient and sender address must be configured',
+        'to_address_not_configured' => 'Email recipient address is not configured. Please configure "Email Recipient" field first.',
+        'smtp_not_configured' => 'SMTP settings are not configured. Please configure SMTP host, port, username, and password',
         'validation_errors' => 'Please fix the following errors:',
     ],
     'field_types' => [
