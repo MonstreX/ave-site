@@ -206,8 +206,77 @@
     </form>
 </div>
 
-<script type="module">
-import { confirm } from '/vendor/ave/js/modules/ui/modals.js';
+<script>
+/**
+ * Modal dialog functions - simplified version for media removal
+ */
+function createConfirmModal(message, options = {}) {
+    return new Promise((resolve) => {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.setAttribute('data-ave-modal', '');
+        modal.setAttribute('data-modal-dynamic', 'true');
+
+        const title = options.title || 'Confirm';
+        const confirmText = options.confirmText || 'Confirm';
+        const cancelText = options.cancelText || 'Cancel';
+
+        modal.innerHTML = `
+            <div class="modal-background" data-ave-modal-close></div>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">${title}</h4>
+                        <button class="close" data-ave-modal-dismiss type="button">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>${message}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-default" data-modal-cancel type="button">${cancelText}</button>
+                        <button class="btn btn-modal-confirm" data-modal-confirm type="button">${confirmText}</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const confirmBtn = modal.querySelector('[data-modal-confirm]');
+        const cancelBtn = modal.querySelector('[data-modal-cancel]');
+        const dismissBtn = modal.querySelector('[data-ave-modal-dismiss]');
+        const background = modal.querySelector('[data-ave-modal-close]');
+
+        const cleanup = () => {
+            modal.classList.remove('is-active');
+            setTimeout(() => modal.remove(), 300);
+        };
+
+        confirmBtn.addEventListener('click', () => {
+            resolve(true);
+            cleanup();
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            resolve(false);
+            cleanup();
+        });
+
+        dismissBtn.addEventListener('click', () => {
+            resolve(false);
+            cleanup();
+        });
+
+        background.addEventListener('click', () => {
+            resolve(false);
+            cleanup();
+        });
+
+        document.body.appendChild(modal);
+        requestAnimationFrame(() => {
+            modal.classList.add('is-active');
+            modal.setAttribute('aria-hidden', 'false');
+        });
+    });
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     // Handle media removal
@@ -216,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const field = this.dataset.field;
 
-            const confirmed = await confirm('Are you sure you want to remove this media?', {
+            const confirmed = await createConfirmModal('Are you sure you want to remove this media?', {
                 title: 'Remove Media',
                 confirmText: 'Remove',
                 cancelText: 'Cancel'
