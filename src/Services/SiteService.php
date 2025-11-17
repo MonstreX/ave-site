@@ -40,14 +40,20 @@ class SiteService implements SiteContract
         $settings = Setting::all();
 
         foreach ($settings as $setting) {
-            $fields = json_decode($setting->fields, true);
+            $decoded = json_decode($setting->fields, true);
 
-            if (!is_array($fields)) {
+            if (!is_array($decoded) || !isset($decoded['fields'])) {
                 continue;
             }
 
-            foreach ($fields as $field_name => $field_value) {
-                $this->setting_cache[$setting->group][$field_name] = $field_value;
+            // Extract values from nested structure: fields.fields.field_name.value
+            foreach ($decoded['fields'] as $field_name => $field_config) {
+                // Skip sections and routes
+                if (isset($field_config['type']) && in_array($field_config['type'], ['section', 'route'])) {
+                    continue;
+                }
+
+                $this->setting_cache[$setting->key][$field_name] = $field_config['value'] ?? null;
             }
         }
     }

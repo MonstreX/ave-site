@@ -5,6 +5,7 @@ namespace Monstrex\AveSite\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Schema;
 use Monstrex\AveSite\Commands\InstallCommand;
 use Monstrex\AveSite\Models\Setting;
 use Monstrex\AveSite\Services\{
@@ -109,12 +110,13 @@ class AveSiteServiceProvider extends ServiceProvider
         $settingsController = 'Monstrex\AveSite\Http\Controllers\SettingsController';
 
         \Route::middleware(['web', \Monstrex\Ave\Http\Middleware\SetLocaleMiddleware::class])->group(function () use ($settingsController) {
+            // Test mail route MUST be before {key} route to match correctly
+            \Route::get('/admin/site-settings/test-mail', $settingsController.'@testMail')
+                ->name('ave-site.settings.test-mail');
             \Route::get('/admin/site-settings/{key}/edit', $settingsController.'@edit')
                 ->name('ave-site.settings.edit');
             \Route::put('/admin/site-settings/{key}', $settingsController.'@update')
                 ->name('ave-site.settings.update');
-            \Route::get('/admin/site-settings/test-mail', $settingsController.'@testMail')
-                ->name('ave-site.settings.test-mail');
         });
     }
 
@@ -221,33 +223,61 @@ class AveSiteServiceProvider extends ServiceProvider
 
     /**
      * Override Laravel config from database settings
-     * (similar to voyager-site's overrideConfig)
+     * Based on filament-site implementation for Laravel 12
      */
     protected function overrideConfig(): void
     {
-        $settingsService = app(SettingsService::class);
+        try {
+            // Check if table exists first
+            if (!Schema::hasTable('ave_site_settings')) {
+                return;
+            }
 
-        // Apply general settings
-        $general = $settingsService->getGroup('general');
-        if (isset($general['site_title'])) {
-            config(['app.name' => $general['site_title']]);
-        }
-        if (isset($general['debug_mode'])) {
-            config(['app.debug' => (bool)$general['debug_mode']]);
-        }
+            $settingsService = app(SettingsService::class);
+            $mail = $settingsService->getGroup('mail');
 
-        // Apply mail settings
-        $mail = $settingsService->getGroup('mail');
-        if (!empty($mail)) {
+            if (empty($mail)) {
+                return;
+            }
+
+            // Trim all mail settings
+            $mail = collect($mail)
+                ->map(fn ($value) => is_string($value) ? trim($value) : $value)
+                ->all();
+
+            $driver = strtolower((string) ($mail['smtp_driver'] ?? config('mail.default', 'smtp')));
+            $encryptionSource = strtoupper((string) ($mail['smtp_encryption'] ?? config('mail.mailers.smtp.encryption')));
+            $encryption = $encryptionSource === 'NONE' ? null : strtolower($encryptionSource);
+
+            // Set mail driver and from address
             config([
+                'mail.default' => $driver,
                 'mail.from.address' => $mail['from_address'] ?? config('mail.from.address'),
                 'mail.from.name' => $mail['from_name'] ?? config('mail.from.name'),
-                'mail.mailers.smtp.host' => $mail['smtp_host'] ?? config('mail.mailers.smtp.host'),
-                'mail.mailers.smtp.port' => (int)($mail['smtp_port'] ?? config('mail.mailers.smtp.port')),
-                'mail.mailers.smtp.encryption' => $mail['smtp_encryption'] ?? config('mail.mailers.smtp.encryption'),
-                'mail.mailers.smtp.username' => $mail['smtp_username'] ?? config('mail.mailers.smtp.username'),
-                'mail.mailers.smtp.password' => $mail['smtp_password'] ?? config('mail.mailers.smtp.password'),
             ]);
+
+            // Merge SMTP settings with existing config (preserves scheme, url, local_domain, etc.)
+            if ($driver === 'smtp') {
+                config([
+                    'mail.mailers.smtp' => array_replace_recursive(config('mail.mailers.smtp', []), [
+                        'transport' => 'smtp',
+                        'host' => $mail['smtp_host'] ?? config('mail.mailers.smtp.host'),
+                        'port' => isset($mail['smtp_port']) ? (int) $mail['smtp_port'] : config('mail.mailers.smtp.port'),
+                        'username' => $mail['smtp_username'] ?? config('mail.mailers.smtp.username'),
+                        'password' => $mail['smtp_password'] ?? config('mail.mailers.smtp.password'),
+                        'encryption' => $encryption,
+                        'timeout' => 10, // 10 seconds timeout to prevent hanging
+                    ]),
+                ]);
+            }
+
+            // Apply general settings
+            $general = $settingsService->getGroup('general');
+            if (!empty($general['site_title'])) {
+                config(['app.name' => $general['site_title']]);
+            }
+        } catch (\Exception $e) {
+            // Silently fail during setup
         }
     }
 
