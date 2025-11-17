@@ -38,7 +38,7 @@
         </div>
     @endif
 
-    <form action="{{ route('ave-site.settings.update', $key) }}" method="POST" enctype="multipart/form-data">
+    <form id="settings-form" action="{{ route('ave-site.settings.update', $key) }}" method="POST" enctype="multipart/form-data">
         {{ csrf_field() }}
         {{ method_field('PUT') }}
 
@@ -222,7 +222,7 @@ function setupMediaHandlers() {
             });
 
             if (confirmed) {
-                const form = document.querySelector('form');
+                const form = document.getElementById('settings-form');
                 const input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = 'remove_media';
