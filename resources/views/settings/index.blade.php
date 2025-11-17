@@ -207,28 +207,19 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Handle media removal
-    document.querySelectorAll('.media-preview-delete').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const field = this.dataset.field;
+// Initialize media removal handlers when Ave is loaded
+if (window.aveEvents) {
+    window.aveEvents.on('ave:loaded', (Ave) => {
+        document.querySelectorAll('.media-preview-delete').forEach(function(btn) {
+            btn.addEventListener('click', async function(e) {
+                e.preventDefault();
+                const field = this.dataset.field;
 
-            // Wait for Ave modal to be available, fallback to browser confirm
-            const confirmRemoval = async () => {
-                let confirmed = false;
-
-                if (window.Ave && window.Ave.confirm) {
-                    // Use Ave modal if available
-                    confirmed = await window.Ave.confirm('Are you sure you want to remove this media?', {
-                        title: 'Remove Media',
-                        confirmText: 'Remove',
-                        cancelText: 'Cancel'
-                    });
-                } else {
-                    // Fallback to browser confirm
-                    confirmed = confirm('Are you sure you want to remove this media?');
-                }
+                const confirmed = await Ave.confirm('Are you sure you want to remove this media?', {
+                    title: 'Remove Media',
+                    confirmText: 'Remove',
+                    cancelText: 'Cancel'
+                });
 
                 if (confirmed) {
                     const input = document.createElement('input');
@@ -238,12 +229,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.querySelector('form').appendChild(input);
                     document.querySelector('form').submit();
                 }
-            };
-
-            confirmRemoval();
+            });
         });
     });
-});
+}
 </script>
 
 @endsection
