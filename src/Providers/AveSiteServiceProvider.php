@@ -108,7 +108,7 @@ class AveSiteServiceProvider extends ServiceProvider
     {
         $settingsController = 'Monstrex\AveSite\Http\Controllers\SettingsController';
 
-        \Route::middleware(['web'])->group(function () use ($settingsController) {
+        \Route::middleware(['web', \Monstrex\Ave\Http\Middleware\SetLocaleMiddleware::class])->group(function () use ($settingsController) {
             \Route::get('/admin/site-settings/{key}/edit', $settingsController.'@edit')
                 ->name('ave-site.settings.edit');
             \Route::put('/admin/site-settings/{key}', $settingsController.'@update')
