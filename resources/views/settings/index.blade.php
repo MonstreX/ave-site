@@ -14,24 +14,22 @@
 <div class="page-content">
     @if (session('success'))
         <div class="alert alert-success">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <h4>Success!</h4>
-            <p>{{ session('success') }}</p>
+            <i class="voyager-check"></i>
+            <strong>Success:</strong> {{ session('success') }}
         </div>
     @endif
 
     @if (session('error'))
         <div class="alert alert-danger">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <h4>Error!</h4>
-            <p>{{ session('error') }}</p>
+            <i class="voyager-x"></i>
+            <strong>Error:</strong> {{ session('error') }}
         </div>
     @endif
 
     @if ($errors->any())
         <div class="alert alert-danger">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <h4>Please fix the following errors:</h4>
+            <i class="voyager-x"></i>
+            <strong>Error:</strong> Please fix the following errors:
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
