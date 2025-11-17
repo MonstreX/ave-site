@@ -132,7 +132,7 @@
                                     {!! $help_code !!}
 
                                     @if(isset($field->value) && !empty($field->value))
-                                        <div class="form-group mb-2" data-field-name="{{$key_field}}">
+                                        <div class="media-preview-wrapper" data-field-name="{{$key_field}}">
                                             @php
                                                 $isImage = strpos($field->value, '.jpg') !== false ||
                                                            strpos($field->value, '.jpeg') !== false ||
@@ -140,15 +140,21 @@
                                                            strpos($field->value, '.gif') !== false;
                                             @endphp
                                             @if($isImage)
-                                                <img src="{{ $field->value }}" style="max-width: 200px; height: auto; display: block; margin-bottom: 10px;">
+                                                <div class="media-preview-image">
+                                                    <img src="{{ $field->value }}" alt="Preview">
+                                                    <a href="#" class="media-preview-delete" data-field="{{$key_field}}" title="Remove media">
+                                                        <i class="voyager-x"></i>
+                                                    </a>
+                                                </div>
                                             @else
-                                                <div style="margin-bottom: 10px;">
-                                                    <i class="voyager-file-text"></i> {{ basename($field->value) }}
+                                                <div class="media-preview-file">
+                                                    <i class="voyager-file-text"></i>
+                                                    <span>{{ basename($field->value) }}</span>
+                                                    <a href="#" class="media-preview-delete" data-field="{{$key_field}}" title="Remove media">
+                                                        <i class="voyager-x"></i>
+                                                    </a>
                                                 </div>
                                             @endif
-                                            <a href="#" class="btn btn-danger btn-sm remove-media" data-field="{{$key_field}}">
-                                                <i class="voyager-trash"></i> Remove
-                                            </a>
                                         </div>
                                     @endif
 
@@ -173,19 +179,30 @@
     </div>
 </div>
 
-<script>
+<script type="module">
+import { confirm } from '/vendor/ave/js/modules/ui/modals.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     // Handle media removal
-    document.querySelectorAll('.remove-media').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
+    document.querySelectorAll('.media-preview-delete').forEach(function(btn) {
+        btn.addEventListener('click', async function(e) {
             e.preventDefault();
             const field = this.dataset.field;
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'remove_media';
-            input.value = field;
-            document.querySelector('form').appendChild(input);
-            document.querySelector('form').submit();
+
+            const confirmed = await confirm('Are you sure you want to remove this media?', {
+                title: 'Remove Media',
+                confirmText: 'Remove',
+                cancelText: 'Cancel'
+            });
+
+            if (confirmed) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'remove_media';
+                input.value = field;
+                document.querySelector('form').appendChild(input);
+                document.querySelector('form').submit();
+            }
         });
     });
 });
