@@ -70,7 +70,7 @@ class AveSiteSettingsSeeder extends Seeder
             ],
         ];
 
-        Setting::firstOrCreate([
+        Setting::updateOrCreate([
             'key' => 'general',
             'group' => 'general',
         ], [
@@ -163,7 +163,7 @@ class AveSiteSettingsSeeder extends Seeder
             ],
         ];
 
-        Setting::firstOrCreate([
+        Setting::updateOrCreate([
             'key' => 'mail',
             'group' => 'mail',
         ], [
@@ -204,7 +204,7 @@ class AveSiteSettingsSeeder extends Seeder
             ],
         ];
 
-        Setting::firstOrCreate([
+        Setting::updateOrCreate([
             'key' => 'seo',
             'group' => 'seo',
         ], [
@@ -239,7 +239,7 @@ class AveSiteSettingsSeeder extends Seeder
             ],
         ];
 
-        Setting::firstOrCreate([
+        Setting::updateOrCreate([
             'key' => 'theme',
             'group' => 'theme',
         ], [
