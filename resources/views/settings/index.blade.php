@@ -4,17 +4,6 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="row mb-3">
-        <div class="col-12">
-            <a href="{{ url()->previous() }}" class="btn btn-secondary btn-sm">
-                <i class="voyager-arrow-left"></i> Back
-            </a>
-            <h1 class="page-title">
-                <i class="voyager-settings"></i> {{ $title }}
-            </h1>
-        </div>
-    </div>
-
     @if ($errors->any())
         <div class="alert alert-danger">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -31,26 +20,23 @@
         {{ csrf_field() }}
         {{ method_field('PUT') }}
 
-        <div class="card">
-            <div class="card-body">
+        <div class="panel panel-bordered">
+            <div class="panel-body">
                 <div class="row">
                     @foreach($config->fields as $key_field => $field)
 
                         @php $class = isset($field->class) ? $field->class : "col-md-12" @endphp
 
                         @if(isset($field->type) && $field->type === 'section')
-                            <div class="col-md-12">
-                                <h3 class="settings-section-title">
-                                    @if(isset($field->icon))
-                                        <i class="{{ $field->icon }}"></i>
-                                    @endif
-                                    <span>{{ $field->label }}</span>
-                                </h3>
-                                <hr>
-                            </div>
+                            <h3 class="col-md-12">
+                                @if(isset($field->icon))
+                                    <i class="{{ $field->icon }}"></i>
+                                @endif
+                                <span>{{ $field->label }}</span>
+                            </h3>
                         @else
 
-                            @php $help_code = "<span class='settings-help text-muted'><small><strong>site_setting</strong>(<i>'" . $key . "." . $key_field . "'</i>)</small></span>" @endphp
+                            @php $help_code = "<span class='config-help'><strong>site_setting</strong>(<i>'" . $key . "." . $key_field . "'</i>)</span>" @endphp
 
                             @if($field->type === 'text')
                                 <div class="form-group {{ $class }}">
@@ -169,34 +155,38 @@
             </div>
         </div>
 
-        <div class="form-group mt-3">
-            <button type="submit" class="btn btn-primary">
-                <i class="voyager-save"></i> Save Settings
-            </button>
-            <a href="{{ url()->previous() }}" class="btn btn-secondary">
-                Cancel
-            </a>
-        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="voyager-save"></i> Save Settings
+        </button>
 
     </form>
 </div>
 
 <style>
-    .settings-section-title {
-        font-size: 1.3rem;
-        color: #2c3e50;
-        margin-top: 20px;
-        margin-bottom: 10px;
+    .voyager .code h3 {
+        background: #62a8ea;
+        color: #fefefe;
+        display: flex;
+        line-height: 20px;
+        padding: 10px 20px;
+        margin: 0 0 15px 0;
+        border-radius: 2px;
     }
 
-    .settings-section-title i {
+    .voyager .code h3 i {
         margin-right: 10px;
     }
 
-    .settings-help {
+    span.config-help {
+        color: #2a8dea;
+        font-size: 12px;
         display: block;
         margin-top: 5px;
-        font-size: 0.85rem;
+    }
+
+    span.config-help i {
+        color: #e01313;
+        font-style: normal;
     }
 
     .form-group {
