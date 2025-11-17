@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
 {
-    protected $table = 'site_settings';
+    protected $table = 'ave_site_settings';
 
     protected $fillable = ['key', 'group', 'fields'];
 

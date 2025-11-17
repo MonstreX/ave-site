@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('site_localizations', function (Blueprint $table) {
+        Schema::create('ave_site_localizations', function (Blueprint $table) {
             $table->id();
             $table->string('key')->unique();
             $table->text('en')->nullable();
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('site_localizations');
+        Schema::dropIfExists('ave_site_localizations');
     }
 };

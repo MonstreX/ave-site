@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BlockRegion extends Model
 {
-    protected $table = 'site_block_regions';
+    protected $table = 'ave_site_block_regions';
 
     protected $fillable = ['key', 'name'];
 

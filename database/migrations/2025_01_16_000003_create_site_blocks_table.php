@@ -8,11 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('site_blocks', function (Blueprint $table) {
+        Schema::create('ave_site_blocks', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->string('key')->unique();
-            $table->foreignId('region_id')->nullable()->constrained('site_block_regions')->nullOnDelete();
+            $table->foreignId('region_id')->nullable()->constrained('ave_site_block_regions')->nullOnDelete();
             $table->integer('order')->default(0);
             $table->boolean('status')->default(true);
 
@@ -36,6 +36,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('site_blocks');
+        Schema::dropIfExists('ave_site_blocks');
     }
 };

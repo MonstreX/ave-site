@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('site_pages', function (Blueprint $table) {
+        Schema::create('ave_site_pages', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('parent_id')->default(-1)->index(); // -1 для корневых
             $table->integer('order')->default(0);
@@ -34,6 +34,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('site_pages');
+        Schema::dropIfExists('ave_site_pages');
     }
 };

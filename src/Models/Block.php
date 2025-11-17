@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Block extends Model
 {
-    protected $table = 'site_blocks';
+    protected $table = 'ave_site_blocks';
 
     protected $fillable = [
         'title', 'key', 'region_id', 'order', 'status',

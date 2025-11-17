@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('site_settings', function (Blueprint $table) {
+        Schema::create('ave_site_settings', function (Blueprint $table) {
             $table->id();
             $table->string('key')->unique();
             $table->string('group')->index();
@@ -19,6 +19,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('site_settings');
+        Schema::dropIfExists('ave_site_settings');
     }
 };

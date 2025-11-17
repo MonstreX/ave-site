@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\{HasMany, BelongsTo};
 
 class Page extends Model
 {
-    protected $table = 'site_pages';
+    protected $table = 'ave_site_pages';
 
     protected $fillable = [
         'parent_id', 'order', 'title', 'slug', 'content', 'media',

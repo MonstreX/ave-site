@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Cache;
  */
 class Localization extends Model
 {
-    protected $table = 'site_localizations';
+    protected $table = 'ave_site_localizations';
 
     protected $guarded = [];
 
@@ -29,7 +29,7 @@ class Localization extends Model
     public function loadLocalizations(): void
     {
         $locale = app()->getLocale();
-        $cacheKey = "site_localizations.{$locale}";
+        $cacheKey = "ave_site_localizations.{$locale}";
 
         try {
             // Try to get from cache first
@@ -67,11 +67,11 @@ class Localization extends Model
     protected static function booted(): void
     {
         static::saved(function (self $model) {
-            Cache::forget("site_localizations.*");
+            Cache::forget("ave_site_localizations.*");
         });
 
         static::deleted(function (self $model) {
-            Cache::forget("site_localizations.*");
+            Cache::forget("ave_site_localizations.*");
         });
     }
 

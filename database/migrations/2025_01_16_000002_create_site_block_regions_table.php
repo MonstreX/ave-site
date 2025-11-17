@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('site_block_regions', function (Blueprint $table) {
+        Schema::create('ave_site_block_regions', function (Blueprint $table) {
             $table->id();
             $table->string('key')->unique();
             $table->string('name');
@@ -18,6 +18,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('site_block_regions');
+        Schema::dropIfExists('ave_site_block_regions');
     }
 };
