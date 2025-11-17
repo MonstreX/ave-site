@@ -4,8 +4,9 @@ namespace Monstrex\AveSite\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Monstrex\AveSite\Models\Setting;
+use Monstrex\AveSite\Notifications\TestMailNotification;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 
 class SettingsController extends Controller
 {
@@ -100,37 +101,49 @@ class SettingsController extends Controller
 
     /**
      * Send test email
+     * Based on filament-site implementation
      */
     public function testMail(Request $request)
     {
         try {
-            $mailSettings = Setting::where('key', 'mail')->first();
-            if (!$mailSettings) {
-                return redirect()->route('ave-site.settings.edit', 'mail')
-                    ->with('error', trans('ave-site::resources_settings.messages.settings_not_found'));
+            $toAddress = site_setting('mail.to_address');
+
+            if (!$toAddress) {
+                return view('ave-site::settings.mail-sent')->with([
+                    'title' => trans('ave-site::notifications.test_mail_title'),
+                    'content' => null,
+                    'error' => trans('ave-site::resources_settings.messages.to_address_not_configured')
+                ]);
             }
 
-            $config = json_decode($mailSettings->fields);
-            $toAddress = $config->fields->to_address->value ?? null;
-            $fromAddress = $config->fields->from_address->value ?? null;
-            $fromName = $config->fields->from_name->value ?? null;
+            // Handle multiple recipients separated by comma
+            $emails = collect(explode(',', $toAddress))
+                ->map(fn ($address) => trim($address))
+                ->filter()
+                ->values()
+                ->all();
 
-            if (!$toAddress || !$fromAddress) {
-                return redirect()->route('ave-site.settings.edit', 'mail')
-                    ->with('error', trans('ave-site::resources_settings.messages.email_not_configured'));
+            if (empty($emails)) {
+                return view('ave-site::settings.mail-sent')->with([
+                    'title' => trans('ave-site::notifications.test_mail_title'),
+                    'content' => null,
+                    'error' => trans('ave-site::resources_settings.messages.to_address_not_configured')
+                ]);
             }
 
-            Mail::raw('This is a test email from your website settings.', function ($message) use ($toAddress, $fromAddress, $fromName) {
-                $message->to($toAddress)
-                        ->from($fromAddress, $fromName)
-                        ->subject('Test Email from Site Settings');
-            });
+            Notification::route('mail', $emails)->notify(new TestMailNotification());
 
-            return redirect()->route('ave-site.settings.edit', 'mail')
-                ->with('success', trans('ave-site::resources_settings.messages.test_email_sent', ['address' => $toAddress]));
+            return view('ave-site::settings.mail-sent')->with([
+                'title' => trans('ave-site::notifications.test_mail_title'),
+                'content' => trans('ave-site::notifications.test_mail_success_message'),
+                'error' => null
+            ]);
         } catch (\Exception $e) {
-            return redirect()->route('ave-site.settings.edit', 'mail')
-                ->with('error', trans('ave-site::resources_settings.messages.test_email_failed', ['error' => $e->getMessage()]));
+            return view('ave-site::settings.mail-sent')->with([
+                'title' => trans('ave-site::notifications.test_mail_title'),
+                'content' => null,
+                'error' => $e->getMessage()
+            ]);
         }
     }
 }
