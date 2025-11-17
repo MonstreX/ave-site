@@ -95,7 +95,7 @@ class SettingsController extends Controller
         $settings->fields = json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         $settings->save();
 
-        return back()->with('success', "Settings '{$settings->title}' updated successfully");
+        return back()->with('success', trans('ave-site::resources_settings.messages.updated_successfully', ['title' => $settings->title]));
     }
 
     /**
@@ -107,7 +107,7 @@ class SettingsController extends Controller
             $mailSettings = Setting::where('key', 'mail')->first();
             if (!$mailSettings) {
                 return redirect()->route('ave-site.settings.edit', 'mail')
-                    ->with('error', 'Mail settings not found');
+                    ->with('error', trans('ave-site::resources_settings.messages.settings_not_found'));
             }
 
             $config = json_decode($mailSettings->fields);
@@ -117,7 +117,7 @@ class SettingsController extends Controller
 
             if (!$toAddress || !$fromAddress) {
                 return redirect()->route('ave-site.settings.edit', 'mail')
-                    ->with('error', 'Email recipient and sender address must be configured');
+                    ->with('error', trans('ave-site::resources_settings.messages.email_not_configured'));
             }
 
             Mail::raw('This is a test email from your website settings.', function ($message) use ($toAddress, $fromAddress, $fromName) {
@@ -127,10 +127,10 @@ class SettingsController extends Controller
             });
 
             return redirect()->route('ave-site.settings.edit', 'mail')
-                ->with('success', 'Test email sent successfully to ' . $toAddress);
+                ->with('success', trans('ave-site::resources_settings.messages.test_email_sent', ['address' => $toAddress]));
         } catch (\Exception $e) {
             return redirect()->route('ave-site.settings.edit', 'mail')
-                ->with('error', 'Failed to send test email: ' . $e->getMessage());
+                ->with('error', trans('ave-site::resources_settings.messages.test_email_failed', ['error' => $e->getMessage()]));
         }
     }
 }

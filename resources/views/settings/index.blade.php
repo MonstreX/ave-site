@@ -29,7 +29,7 @@
     @if ($errors->any())
         <div class="alert alert-danger">
             <i class="voyager-x"></i>
-            <strong>Error:</strong> Please fix the following errors:
+            <strong>Error:</strong> @lang('ave-site::resources_settings.messages.validation_errors')
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
