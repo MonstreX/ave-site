@@ -50,6 +50,7 @@ class AveSiteServiceProvider extends ServiceProvider
         if (!$this->app->runningInConsole()) {
             $this->registerAveResources();
             $this->registerRoutes();
+            $this->registerBreadcrumbs();
         }
 
         // Load localizations from database
@@ -244,6 +245,46 @@ class AveSiteServiceProvider extends ServiceProvider
                 'mail.mailers.smtp.username' => $mail['smtp_username'] ?? config('mail.mailers.smtp.username'),
                 'mail.mailers.smtp.password' => $mail['smtp_password'] ?? config('mail.mailers.smtp.password'),
             ]);
+        }
+    }
+
+    /**
+     * Register breadcrumb resolvers for Settings pages
+     */
+    protected function registerBreadcrumbs(): void
+    {
+        try {
+            $breadcrumbService = app(\Monstrex\Ave\Services\BreadcrumbService::class);
+
+            // Register resolver for Settings edit page
+            $breadcrumbService->register('ave-site.settings.edit', function ($request) {
+                $key = $request->route('key');
+                $setting = Setting::where('key', $key)->first();
+
+                if (!$setting) {
+                    return null;
+                }
+
+                $dashboardRoute = \Illuminate\Support\Facades\Route::has('ave.dashboard')
+                    ? route('ave.dashboard')
+                    : null;
+
+                return collect([
+                    [
+                        'url' => $dashboardRoute ? $dashboardRoute . '/resource/site-settings' : null,
+                        'label' => 'Site Settings',
+                        'icon' => null,
+                    ],
+                    [
+                        'url' => null,
+                        'label' => $setting->title,
+                        'icon' => null,
+                        'active' => true,
+                    ],
+                ]);
+            });
+        } catch (\Exception $e) {
+            // BreadcrumbService may not be available if Ave is not fully loaded
         }
     }
 }
