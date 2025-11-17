@@ -112,10 +112,9 @@ if (!function_exists('site_settings_group')) {
     function site_settings_group($key)
     {
         if (\Schema::hasTable('ave_site_settings')) {
-            $settings = \DB::table('ave_site_settings')->where('group', $key)->first();
+            $settings = \Monstrex\AveSite\Models\Setting::byGroup($key)->first();
             if ($settings) {
-                $fields = json_decode($settings->fields, true);
-                return $fields ?? [];
+                return $settings->getFieldsArray();
             }
         }
         return [];

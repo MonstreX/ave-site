@@ -44,6 +44,12 @@ class AveSiteSettingsSeeder extends Seeder
                     'value' => '1',
                     'class' => 'col-md-12',
                 ],
+                'site_403_page' => [
+                    'label' => trans("$t.general.site_403_page"),
+                    'type' => 'number',
+                    'value' => '1',
+                    'class' => 'col-md-12',
+                ],
                 'site_404_page' => [
                     'label' => trans("$t.general.site_404_page"),
                     'type' => 'number',
@@ -61,10 +67,21 @@ class AveSiteSettingsSeeder extends Seeder
                     'value' => trans("$t.general.site_app_name_value"),
                     'class' => 'col-md-12',
                 ],
-                'debug_mode' => [
-                    'label' => trans("$t.general.debug_mode"),
-                    'type' => 'checkbox',
-                    'value' => '0',
+                'section_captcha' => [
+                    'type' => 'section',
+                    'icon' => 'voyager-puzzle',
+                    'label' => trans("$t.general.section_captcha"),
+                ],
+                'site_captcha_site_key' => [
+                    'label' => trans("$t.general.site_captcha_site_key"),
+                    'type' => 'text',
+                    'value' => '',
+                    'class' => 'col-md-12',
+                ],
+                'site_captcha_secret_key' => [
+                    'label' => trans("$t.general.site_captcha_secret_key"),
+                    'type' => 'text',
+                    'value' => '',
                     'class' => 'col-md-12',
                 ],
             ],

@@ -140,23 +140,30 @@
                                     <textarea class="form-control code-editor" name="{{$key_field}}" id="{{$key_field}}" rows="8">{{ $field->value ?? '' }}</textarea>
                                 </div>
 
-                            @elseif($field->type === 'media')
+                            @elseif(in_array($field->type, ['media', 'image']))
                                 <div class="form-group {{ $class }}">
                                     <label for="{{$key_field}}">{{ $field->label }}</label>
                                     {!! $help_code !!}
 
-                                    @if(isset($field->value) && !empty($field->value))
-                                        @php
-                                            $path = (string) $field->value;
-                                            $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-                                            $isImage = in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
-                                            $fileName = basename($path);
-                                        @endphp
+                                    @php
+                                        $mediaItem = $settings->getMediaItem($key_field);
+                                        $displayPath = $mediaItem ? $mediaItem->url() : (is_string($field->value) ? $field->value : null);
+                                        $fileName = $mediaItem?->file_name ?? ($displayPath ? basename($displayPath) : null);
+                                        $isImage = $mediaItem
+                                            ? str_starts_with($mediaItem->mime_type, 'image/')
+                                            : ($displayPath ? in_array(strtolower(pathinfo($displayPath, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']) : false);
+                                        $fileSize = $mediaItem?->size;
+                                        $sizeLabel = $fileSize
+                                            ? (function_exists('humanFileSize') ? humanFileSize($fileSize) : number_format($fileSize / 1024, 1) . ' KB')
+                                            : null;
+                                    @endphp
+
+                                    @if(!empty($displayPath))
                                         <div class="media-preview-wrapper" data-field-name="{{$key_field}}">
                                             <div class="media-item media-item--settings-preview">
                                                 <div class="media-preview">
                                                     @if($isImage)
-                                                        <img src="{{ $field->value }}" alt="{{ $fileName }}">
+                                                        <img src="{{ $displayPath }}" alt="{{ $fileName }}">
                                                     @else
                                                         <div class="media-file-icon">
                                                             <svg class="icon"><use href="#file"></use></svg>
@@ -176,6 +183,9 @@
                                                 <div class="media-item-footer">
                                                     <div class="media-item-footer-line">
                                                         <div class="media-filename" title="{{ $fileName }}">{{ $fileName }}</div>
+                                                        @if($sizeLabel)
+                                                            <div class="media-size">{{ $sizeLabel }}</div>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>

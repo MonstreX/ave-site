@@ -273,8 +273,8 @@ class AveSiteServiceProvider extends ServiceProvider
 
             // Apply general settings
             $general = $settingsService->getGroup('general');
-            if (!empty($general['site_title'])) {
-                config(['app.name' => $general['site_title']]);
+            if (!empty($general['site_app_name'])) {
+                config(['app.name' => $general['site_app_name']]);
             }
         } catch (\Exception $e) {
             // Silently fail during setup

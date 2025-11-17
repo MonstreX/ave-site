@@ -3,10 +3,11 @@
 namespace Monstrex\AveSite\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Monstrex\AveSite\Models\Setting;
-use Monstrex\AveSite\Notifications\TestMailNotification;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Notification;
+use Monstrex\Ave\Media\Facades\Media as MediaFacade;
+use Monstrex\AveSite\Models\Setting;
+use Monstrex\AveSite\Notifications\TestMailNotification;
 
 class SettingsController extends Controller
 {
@@ -27,6 +28,7 @@ class SettingsController extends Controller
             abort(404, "Settings group '{$key}' not found");
         }
 
+        $settings->load('media');
         $config = json_decode($settings->fields);
 
         return view('ave-site::settings.index', [
@@ -50,44 +52,37 @@ class SettingsController extends Controller
 
         $config = json_decode($settings->fields);
 
-        // Handle image removal
-        if ($request->has('remove_image')) {
+        $removeField = $request->has('remove_image')
+            ? trim($request->remove_image)
+            : ($request->has('remove_media') ? trim($request->remove_media) : null);
+
+        if ($removeField) {
             foreach ($config->fields as $key_field => $field) {
-                if ($key_field === trim($request->remove_image)) {
+                if ($key_field === $removeField) {
+                    $settings->clearMediaCollection($key_field);
                     $config->fields->{$key_field}->value = '';
                 }
             }
-        }
-        // Handle media removal
-        elseif ($request->has('remove_media')) {
+        } else {
             foreach ($config->fields as $key_field => $field) {
-                if ($key_field === trim($request->remove_media)) {
-                    // Delete file if it exists
-                    if (!empty($field->value)) {
-                        $filePath = public_path($field->value);
-                        if (file_exists($filePath)) {
-                            unlink($filePath);
-                        }
-                    }
-                    $config->fields->{$key_field}->value = '';
-                }
-            }
-        }
-        // Save all data from request
-        else {
-            foreach ($config->fields as $key_field => $field) {
-                if ($field->type === 'text' || $field->type === 'number' || $field->type === 'textarea' || $field->type === 'code_editor' || $field->type === 'rich_text_box') {
+                if (in_array($field->type, ['text', 'number', 'textarea', 'code_editor', 'rich_text_box'])) {
                     $config->fields->{$key_field}->value = $request->{$key_field} ?? '';
                 } elseif ($field->type === 'checkbox') {
                     $config->fields->{$key_field}->value = isset($request->{$key_field}) ? '1' : '0';
-                } elseif ($field->type === 'radio' || $field->type === 'dropdown') {
+                } elseif (in_array($field->type, ['radio', 'dropdown'])) {
                     $config->fields->{$key_field}->value = $request->{$key_field} ?? '';
-                } elseif ($field->type === 'media') {
+                } elseif (in_array($field->type, ['media', 'image'])) {
                     if ($request->hasFile($key_field)) {
-                        $file = $request->file($key_field);
-                        $filename = time() . '_' . $file->getClientOriginalName();
-                        $path = $file->storePublicly('settings/' . $key, 'public');
-                        $config->fields->{$key_field}->value = '/storage/' . $path;
+                        $settings->clearMediaCollection($key_field);
+
+                        $media = MediaFacade::add($request->file($key_field))
+                            ->model($settings)
+                            ->collection($key_field)
+                            ->pathPrefix('settings/' . $key)
+                            ->create()
+                            ->first();
+
+                        $config->fields->{$key_field}->value = $media?->id ?? '';
                     }
                 }
             }

@@ -120,7 +120,7 @@ class SettingTest extends TestCase
             'group' => 'general',
             'fields' => json_encode([
                 'fields' => [
-                    'debug_mode' => [
+                    'feature_enabled' => [
                         'type' => 'checkbox',
                         'value' => true,
                     ],
@@ -134,8 +134,8 @@ class SettingTest extends TestCase
 
         $fields = $setting->getFieldsArray();
 
-        $this->assertIsBool($fields['debug_mode']);
-        $this->assertTrue($fields['debug_mode']);
+        $this->assertIsBool($fields['feature_enabled']);
+        $this->assertTrue($fields['feature_enabled']);
         $this->assertFalse($fields['maintenance']);
     }
 

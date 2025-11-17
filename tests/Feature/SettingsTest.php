@@ -54,7 +54,9 @@ class SettingsTest extends TestCase
         $this->assertTrue(isset($config->fields->site_title));
         $this->assertTrue(isset($config->fields->site_description));
         $this->assertTrue(isset($config->fields->site_app_name));
-        $this->assertTrue(isset($config->fields->debug_mode));
+        $this->assertTrue(isset($config->fields->site_403_page));
+        $this->assertTrue(isset($config->fields->site_captcha_site_key));
+        $this->assertTrue(isset($config->fields->site_captcha_secret_key));
 
         // Check that default values are set
         $this->assertNotEmpty($config->fields->site_title->value);
@@ -330,6 +332,9 @@ class SettingsTest extends TestCase
         $this->assertArrayHasKey('site_title', $generalGroup);
         $this->assertArrayHasKey('site_description', $generalGroup);
         $this->assertArrayHasKey('site_app_name', $generalGroup);
+        $this->assertArrayHasKey('site_403_page', $generalGroup);
+        $this->assertArrayHasKey('site_captcha_site_key', $generalGroup);
+        $this->assertArrayHasKey('site_captcha_secret_key', $generalGroup);
     }
 
     /**
@@ -349,4 +354,12 @@ class SettingsTest extends TestCase
         $this->assertIsString($mailGroup['to_address']);
     }
 
+    public function test_site_settings_group_helper_returns_flat_array()
+    {
+        $group = site_settings_group('general');
+
+        $this->assertIsArray($group);
+        $this->assertArrayHasKey('site_title', $group);
+        $this->assertArrayHasKey('site_403_page', $group);
+    }
 }
