@@ -24,12 +24,12 @@
         </div>
     @endif
 
-    <div class="panel panel-bordered">
-        <div class="panel-body">
-            <form action="{{ route('ave-site.settings.update', $key) }}" method="POST" enctype="multipart/form-data">
-                {{ csrf_field() }}
-                {{ method_field('PUT') }}
+    <form action="{{ route('ave-site.settings.update', $key) }}" method="POST" enctype="multipart/form-data">
+        {{ csrf_field() }}
+        {{ method_field('PUT') }}
 
+        <div class="panel panel-bordered">
+            <div class="panel-body">
                 <div class="row">
                     @foreach($config->fields as $key_field => $field)
 
@@ -166,17 +166,17 @@
                         @endif
                     @endforeach
                 </div>
-
-                <div class="row">
-                    <div class="col-md-12">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="voyager-save"></i> Save Settings
-                        </button>
-                    </div>
-                </div>
-            </form>
+            </div>
         </div>
-    </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary">
+                    <i class="voyager-save"></i> Save Settings
+                </button>
+            </div>
+        </div>
+    </form>
 </div>
 
 <script type="module">
