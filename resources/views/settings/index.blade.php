@@ -207,31 +207,36 @@
 </div>
 
 <script>
-// Initialize media removal handlers when Ave is loaded
-if (window.aveEvents) {
-    window.aveEvents.on('ave:loaded', (Ave) => {
-        document.querySelectorAll('.media-preview-delete').forEach(function(btn) {
-            btn.addEventListener('click', async function(e) {
-                e.preventDefault();
-                const field = this.dataset.field;
+// Initialize media removal handlers
+function setupMediaHandlers() {
+    document.querySelectorAll('.media-preview-delete').forEach(function(btn) {
+        btn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const field = this.dataset.field;
 
-                const confirmed = await Ave.confirm('Are you sure you want to remove this media?', {
-                    title: 'Remove Media',
-                    confirmText: 'Remove',
-                    cancelText: 'Cancel'
-                });
-
-                if (confirmed) {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'remove_media';
-                    input.value = field;
-                    document.querySelector('form').appendChild(input);
-                    document.querySelector('form').submit();
-                }
+            const confirmed = await window.Ave.confirm('Are you sure you want to remove this media?', {
+                title: 'Remove Media',
+                confirmText: 'Remove',
+                cancelText: 'Cancel'
             });
+
+            if (confirmed) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'remove_media';
+                input.value = field;
+                document.querySelector('form').appendChild(input);
+                document.querySelector('form').submit();
+            }
         });
     });
+}
+
+// Subscribe to ave:loaded event if available, otherwise use DOMContentLoaded
+if (window.aveEvents) {
+    window.aveEvents.on('ave:loaded', setupMediaHandlers);
+} else {
+    document.addEventListener('DOMContentLoaded', setupMediaHandlers);
 }
 </script>
 
