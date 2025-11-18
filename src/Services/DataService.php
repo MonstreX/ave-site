@@ -79,8 +79,6 @@ class DataService implements DataContract
             ->where([$field => $value, 'status' => 1])
             ->orderBy($order, $direction)
             ->get();
-
-        return $data;
     }
 
     /**
@@ -168,21 +166,39 @@ class DataService implements DataContract
      */
     protected function getModel(?string $modelSlug): ?object
     {
+        $class = $this->resolveModelClass($modelSlug);
+
+        if ($class && class_exists($class)) {
+            return app($class);
+        }
+
+        return null;
+    }
+
+    protected function resolveModelClass(?string $modelSlug): ?string
+    {
+        if ($modelSlug && class_exists($modelSlug)) {
+            return $modelSlug;
+        }
+
+        $models = config('ave-site.models', []);
+        $tableMap = config('ave-site.table_model_map', []);
+
         if (!$modelSlug) {
-            return app(\Monstrex\AveSite\Models\Page::class);
+            $defaultTable = config('ave-site.default_model_table', 'ave_site_pages');
+            $key = $tableMap[$defaultTable] ?? array_key_first($models);
+
+            return $key ? ($models[$key] ?? null) : null;
         }
 
-        if (class_exists($modelSlug)) {
-            return app($modelSlug);
+        if (isset($models[$modelSlug])) {
+            return $models[$modelSlug];
         }
 
-        $namespace = 'Monstrex\\AveSite\\Models\\';
-        $baseSlug = Str::after($modelSlug, 'ave_site_');
-        $modelName = Str::studly(Str::singular($baseSlug));
-        $modelClass = $namespace . $modelName;
+        if (isset($tableMap[$modelSlug])) {
+            $key = $tableMap[$modelSlug];
 
-        if (class_exists($modelClass)) {
-            return app($modelClass);
+            return $models[$key] ?? null;
         }
 
         return null;

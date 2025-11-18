@@ -1,5 +1,8 @@
 <?php
 
+$modelNamespace = env('AVE_SITE_MODEL_NAMESPACE', 'Monstrex\\AveSite\\Models');
+$resourceNamespace = env('AVE_SITE_RESOURCE_NAMESPACE', 'Monstrex\\AveSite\\Resources');
+
 return [
 
     /*
@@ -21,6 +24,52 @@ return [
      * If false will use ave-site 404 error handler
      */
     'use_legacy_error_handler' => false,
+
+    /*
+     * Namespace for models. Override when publishing models into application namespace.
+     */
+    'model_namespace' => $modelNamespace,
+
+    /*
+     * Namespace for Ave resources. Override when resources are published into the host app.
+     */
+    'resource_namespace' => $resourceNamespace,
+
+    /*
+     * Registered model classes keyed by logical name.
+     */
+    'models' => [
+        'page' => $modelNamespace.'\\Page',
+        'block' => $modelNamespace.'\\Block',
+        'block_region' => $modelNamespace.'\\BlockRegion',
+        'form' => $modelNamespace.'\\Form',
+        'localization' => $modelNamespace.'\\Localization',
+        'setting' => $modelNamespace.'\\Setting',
+    ],
+
+    /*
+     * Maps database tables to logical model keys.
+     */
+    'table_model_map' => [
+        'ave_site_pages' => 'page',
+        'ave_site_blocks' => 'block',
+        'ave_site_block_regions' => 'block_region',
+        'ave_site_forms' => 'form',
+        'ave_site_localizations' => 'localization',
+        'ave_site_settings' => 'setting',
+    ],
+
+    /*
+     * Resource classes keyed by logical name.
+     */
+    'resources' => [
+        'page' => $resourceNamespace.'\\Page\\Resource',
+        'block' => $resourceNamespace.'\\Block\\Resource',
+        'block_region' => $resourceNamespace.'\\BlockRegion\\Resource',
+        'form' => $resourceNamespace.'\\Form\\Resource',
+        'localization' => $resourceNamespace.'\\Localization\\Resource',
+        'setting' => $resourceNamespace.'\\Setting\\Resource',
+    ],
 
     /*
      *  Name of the Template

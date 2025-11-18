@@ -82,6 +82,14 @@ class AveSiteServiceProvider extends ServiceProvider
                 __DIR__.'/../../config/ave-site.php' => config_path('ave-site.php'),
             ], 'ave-site-config');
 
+            $this->publishes([
+                __DIR__.'/../../src/Models' => app_path('AveSite/Models'),
+            ], 'ave-site-models');
+
+            $this->publishes([
+                __DIR__.'/../../src/Resources' => app_path('AveSite/Resources'),
+            ], 'ave-site-resources');
+
             // Register commands
             $this->commands([
                 InstallCommand::class,
@@ -94,17 +102,12 @@ class AveSiteServiceProvider extends ServiceProvider
         try {
             $resourceManager = app(\Monstrex\Ave\Core\ResourceManager::class);
 
-            $resources = [
-                \Monstrex\AveSite\Resources\Page\Resource::class,
-                \Monstrex\AveSite\Resources\Block\Resource::class,
-                \Monstrex\AveSite\Resources\BlockRegion\Resource::class,
-                \Monstrex\AveSite\Resources\Form\Resource::class,
-                \Monstrex\AveSite\Resources\Localization\Resource::class,
-                \Monstrex\AveSite\Resources\Setting\Resource::class,
-            ];
+            $resources = array_values(config('ave-site.resources', []));
 
             foreach ($resources as $resourceClass) {
-                $resourceManager->register($resourceClass);
+                if (class_exists($resourceClass)) {
+                    $resourceManager->register($resourceClass);
+                }
             }
         } catch (\Exception $e) {
             // ResourceManager not available (Ave not loaded)
