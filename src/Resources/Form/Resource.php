@@ -7,7 +7,7 @@ use Monstrex\Ave\Core\Columns\Column;
 use Monstrex\Ave\Core\Components\Div;
 use Monstrex\Ave\Core\Fields\Number;
 use Monstrex\Ave\Core\Fields\TextInput;
-use Monstrex\Ave\Core\Fields\Textarea;
+use Monstrex\Ave\Core\Fields\CodeEditor;
 use Monstrex\Ave\Core\Fields\Toggle;
 use Monstrex\Ave\Core\Form;
 use Monstrex\Ave\Core\Resource as BaseResource;
@@ -85,16 +85,22 @@ class Resource extends BaseResource
             ]),
             Div::make('row')->schema([
                 Div::make('col-12')->schema([
-                    Textarea::make('content')
+                    CodeEditor::make('content')
                         ->label(__('ave-site::resources_forms.fields.content'))
-                        ->rows(12),
+                        ->language('html')
+                        ->theme('monokai')
+                        ->height(200)
+                        ->autoHeight(true),
                 ]),
             ]),
             Div::make('row')->schema([
                 Div::make('col-12')->schema([
-                    Textarea::make('details')
+                    CodeEditor::make('details')
                         ->label(__('ave-site::resources_forms.fields.details'))
-                        ->rows(10),
+                        ->language('json')
+                        ->theme('github')
+                        ->height(200)
+                        ->autoHeight(true),
                 ]),
             ]),
         ]);

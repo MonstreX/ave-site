@@ -182,9 +182,15 @@ class PageService implements PageContract
         $page_templates = json_decode($content->details ?? '[]', true) ?: [];
 
         $this->template = $page_templates['template'] ?? $settings['template'];
-        $this->templateMaster = $page_templates['template_master'] ?? $settings['template_master'];
-        $this->templateLayout = $page_templates['template_layout'] ?? $settings['template_layout'];
-        $this->templatePage = $page_templates['template_page'] ?? $settings['template_page'];
+        $this->templateMaster = $this->normalizeTemplateSegment(
+            $page_templates['template_master'] ?? $settings['template_master']
+        );
+        $this->templateLayout = $this->normalizeTemplateSegment(
+            $page_templates['template_layout'] ?? $settings['template_layout']
+        );
+        $this->templatePage = $this->normalizeTemplateSegment(
+            $page_templates['template_page'] ?? $settings['template_page']
+        );
     }
 
     /*
@@ -192,7 +198,7 @@ class PageService implements PageContract
      */
     public function setMasterTemplate(string $template)
     {
-        $this->templateMaster = $template;
+        $this->templateMaster = $this->normalizeTemplateSegment($template);
     }
 
     /*
@@ -200,7 +206,7 @@ class PageService implements PageContract
      */
     public function setLayoutTemplate(string $template)
     {
-        $this->templateLayout = $template;
+        $this->templateLayout = $this->normalizeTemplateSegment($template);
     }
 
     /*
@@ -208,7 +214,34 @@ class PageService implements PageContract
      */
     public function setPageTemplate(string $template)
     {
-        $this->templatePage = $template;
+        $this->templatePage = $this->normalizeTemplateSegment($template);
+    }
+
+    /**
+     * Normalize template segments to avoid duplicated namespace prefixes.
+     */
+    protected function normalizeTemplateSegment(?string $template): ?string
+    {
+        if ($template === null) {
+            return null;
+        }
+
+        $template = trim($template);
+        if ($template === '') {
+            return '';
+        }
+
+        $baseTemplate = $this->template ?? ($this->settings['template'] ?? config('ave-site.template', ''));
+        $baseTemplate = trim($baseTemplate);
+
+        if ($baseTemplate !== '') {
+            $prefix = rtrim($baseTemplate, '.') . '.';
+            if (str_starts_with($template, $prefix)) {
+                return substr($template, strlen($prefix));
+            }
+        }
+
+        return ltrim($template, '.');
     }
 
     /*
