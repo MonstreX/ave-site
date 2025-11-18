@@ -31,6 +31,23 @@ return [
     'not_found_page' => '404',
 
     /*
+     * Mapping for error pages (slug or ID). Falls back to not_found_page.
+     */
+    'error_pages' => [
+        403 => 'error-403',
+        404 => '404',
+    ],
+
+    /*
+     * Status control for published records.
+     */
+    'status' => [
+        'enabled' => true,
+        'field' => 'status',
+        'active_value' => [1],
+    ],
+
+    /*
      * Namespace for models. Override when publishing models into application namespace.
      */
     'model_namespace' => $modelNamespace,

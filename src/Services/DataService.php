@@ -2,13 +2,14 @@
 
 namespace Monstrex\AveSite\Services;
 
-use Monstrex\AveSite\Contracts\DataContract;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Monstrex\Ave\Media\ImageProcessor;
+use Monstrex\AveSite\Contracts\DataContract;
+use Monstrex\AveSite\Exceptions\AveSiteException;
 use Schema;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DataService implements DataContract
 {
@@ -43,15 +44,16 @@ class DataService implements DataContract
         $table = $modelSlug ?? config('ave-site.default_model_table', 'ave_site_pages');
         $model = $this->getModel($table);
 
-        if (!$model) {
-            $data = DB::table($table)->where($field, $value)->first();
-        } else {
-            $data = $model::where($field, $value)->first();
+        $data = $model
+            ? $model::where($field, $value)->first()
+            : DB::table($table)->where($field, $value)->first();
+
+        if ($data && !$this->recordIsActive($data)) {
+            $data = null;
         }
 
-        // Drop 404 Error if not found or not published (status = 0)
-        if ((!$data && $fail) || (isset($data->status) && (int) $data->status !== 1 && $fail)) {
-            throw new NotFoundHttpException('Record not found for '.$field.'='.$value);
+        if (!$data && $fail) {
+            $this->throwNotFound();
         }
 
         return $data;
@@ -71,15 +73,24 @@ class DataService implements DataContract
     {
         $table = $modelSlug ?? config('ave-site.default_model_table', 'ave_site_pages');
         $model = $this->getModel($table);
+        $statusField = $this->statusField();
+        $activeValues = $this->activeValues();
 
         if ($model) {
-            return $model::where([$field => $value, 'status' => 1])->orderBy($order, $direction)->get();
+            $query = $model::where($field, $value);
+            if ($statusField) {
+                $query->whereIn($statusField, $activeValues);
+            }
+
+            return $query->orderBy($order, $direction)->get();
         }
 
-        return DB::table($table)
-            ->where([$field => $value, 'status' => 1])
-            ->orderBy($order, $direction)
-            ->get();
+        $query = DB::table($table)->where($field, $value);
+        if ($statusField) {
+            $query->whereIn($statusField, $activeValues);
+        }
+
+        return $query->orderBy($order, $direction)->get();
     }
 
     /**
@@ -174,6 +185,51 @@ class DataService implements DataContract
         }
 
         return null;
+    }
+
+    protected function statusField(): ?string
+    {
+        if (!$this->isStatusCheckEnabled()) {
+            return null;
+        }
+
+        $field = config('ave-site.status.field', 'status');
+
+        return $field ?: null;
+    }
+
+    /**
+     * @return array<int,mixed>
+     */
+    protected function activeValues(): array
+    {
+        return Arr::wrap(config('ave-site.status.active_value', 1));
+    }
+
+    protected function isStatusCheckEnabled(): bool
+    {
+        return (bool) (config('ave-site.status.enabled', true));
+    }
+
+    protected function recordIsActive(mixed $record): bool
+    {
+        $field = $this->statusField();
+        if (!$field) {
+            return true;
+        }
+
+        $value = data_get($record, $field);
+
+        return in_array($value, $this->activeValues(), true);
+    }
+
+    protected function throwNotFound(): void
+    {
+        if (config('ave-site.use_legacy_error_handler', false)) {
+            abort(404);
+        }
+
+        throw new AveSiteException(__('ave-site::errors.page_not_found'), 404);
     }
 
     protected function resolveModelClass(?string $modelSlug): ?string

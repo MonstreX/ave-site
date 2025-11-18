@@ -29,31 +29,27 @@ class AveSiteException extends Exception
     {
         $statusCode = $this->code;
 
-        // System Pages with IDs 1 and 2 should exist for 403/404 errors
-        switch ($statusCode) {
-            case '403':
-                // Try to find 403 error page (slug: 'error-403' or id: 1)
-                try {
-                    $this->create('error-403', config('ave-site.default_model_table', 'ave_site_pages'), false);
-                } catch (\Exception $e) {
-                    return response('Access Denied', 403);
-                }
-                break;
+        $slugMap = config('ave-site.error_pages', []);
+        $slug = $slugMap[$statusCode] ?? ($statusCode == '404'
+                ? config('ave-site.not_found_page', 'error-404')
+                : null);
 
-            case '404':
-                // Try to find 404 error page (slug: 'error-404' or id: 2)
-                try {
-                    $this->create('error-404', config('ave-site.default_model_table', 'ave_site_pages'), false);
-                } catch (\Exception $e) {
-                    return response('Not Found', 404);
-                }
-                break;
+        if ($slug) {
+            try {
+                $this->create($slug, config('ave-site.default_model_table', 'ave_site_pages'), false);
+
+                return response($this->view(), (int) $statusCode);
+            } catch (\Exception $e) {
+                // Fall through to plain responses
+            }
         }
 
-        if ($statusCode == '403' || $statusCode == '404') {
-            return response($this->view(), (int) $statusCode);
-        }
+        $message = match ($statusCode) {
+            403 => __('ave-site::errors.access_denied'),
+            404 => __('ave-site::errors.page_not_found'),
+            default => __('ave-site::errors.undefined'),
+        };
 
-        return response('Undefined Error', (int) $statusCode);
+        return response($message, (int) $statusCode);
     }
 }
