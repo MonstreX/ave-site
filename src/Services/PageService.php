@@ -305,8 +305,8 @@ class PageService implements PageContract
         $current = $page;
 
         // Collect all parents in current model
-        while (!empty($current->{$parent_field})) {
-            $current = $this->dataService->findFirst((int)$current->{$parent_field}, 'pages');
+        while (!empty($current->{$parent_field}) && (int) $current->{$parent_field} > 0) {
+            $current = $this->dataService->findFirst((int) $current->{$parent_field}, 'pages');
             if ($current) {
                 $parents[] = $current;
             } else {
