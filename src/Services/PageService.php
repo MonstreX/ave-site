@@ -177,7 +177,7 @@ class PageService implements PageContract
      */
     public function setTemplates(Model $content, array $settings)
     {
-        $page_templates = json_decode($content->options, true);
+        $page_templates = json_decode($content->details ?? '[]', true) ?: [];
 
         $this->template = $page_templates['template'] ?? $settings['template'];
         $this->templateMaster = $page_templates['template_master'] ?? $settings['template_master'];
@@ -214,10 +214,14 @@ class PageService implements PageContract
      */
     public function setSeo(Model $content, array $settings)
     {
-        // Get SEO fields
-        $seo_title = $content->seo_title ?? '';
-        $meta_description = $content->seo_description ?? '';
-        $meta_keywords = $content->seo_keywords ?? '';
+        $seoData = $content->seo ?? [];
+        if (!is_array($seoData)) {
+            $seoData = json_decode($content->seo ?? '{}', true) ?: [];
+        }
+
+        $seo_title = $seoData['seo_title'] ?? '';
+        $meta_description = $seoData['meta_description'] ?? '';
+        $meta_keywords = $seoData['meta_keywords'] ?? '';
 
         // TITLE
         $page_title = $content->title ?? '';
@@ -303,15 +307,17 @@ class PageService implements PageContract
 
         $parents = [];
         $current = $page;
+        $table = $this->content?->getTable() ?? config('ave-site.default_model_table', 'ave_site_pages');
 
-        // Collect all parents in current model
-        while (!empty($current->{$parent_field}) && (int) $current->{$parent_field} > 0) {
-            $current = $this->dataService->findFirst((int) $current->{$parent_field}, 'pages');
-            if ($current) {
-                $parents[] = $current;
-            } else {
+        while ($current && !empty($current->{$parent_field})) {
+            $parent = $this->dataService->findFirst((int)$current->{$parent_field}, $table, false);
+
+            if (!$parent) {
                 break;
             }
+
+            $parents[] = $parent;
+            $current = $parent;
         }
 
         $this->parents = array_reverse($parents);
@@ -385,7 +391,7 @@ class PageService implements PageContract
         $this->setBanner($content, $this->parents, $this->siteService->setting('theme.theme_banner_image', ''));
 
         // Attach Data Sets if present
-        $options = json_decode($this->content->options, true);
+        $options = json_decode($this->content->details ?? '[]', true) ?: [];
         if ($options && isset($options['datasources'])) {
             $this->dataSources = $this->dataService->getDataSources($options['datasources']);
         }
@@ -430,7 +436,7 @@ class PageService implements PageContract
         $banner = '';
 
         // Try to get banner from page options
-        $options = json_decode($page->options, true);
+        $options = json_decode($page->details ?? '[]', true) ?: [];
         if (isset($options['banner'])) {
             $banner = $options['banner'];
         }
@@ -438,7 +444,7 @@ class PageService implements PageContract
         // If no banner, try parents
         if (empty($banner)) {
             foreach (array_reverse($parents) as $parent) {
-                $parentOptions = json_decode($parent->options, true);
+                $parentOptions = json_decode($parent->details ?? '[]', true) ?: [];
                 if (isset($parentOptions['banner']) && !empty($parentOptions['banner'])) {
                     $banner = $parentOptions['banner'];
                     break;
@@ -472,3 +478,5 @@ class PageService implements PageContract
         return null;
     }
 }
+
+

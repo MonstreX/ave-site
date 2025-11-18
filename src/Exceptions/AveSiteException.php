@@ -34,7 +34,7 @@ class AveSiteException extends Exception
             case '403':
                 // Try to find 403 error page (slug: 'error-403' or id: 1)
                 try {
-                    $this->create('error-403', 'pages', false);
+                    $this->create('error-403', config('ave-site.default_model_table', 'ave_site_pages'), false);
                 } catch (\Exception $e) {
                     return response('Access Denied', 403);
                 }
@@ -43,7 +43,7 @@ class AveSiteException extends Exception
             case '404':
                 // Try to find 404 error page (slug: 'error-404' or id: 2)
                 try {
-                    $this->create('error-404', 'pages', false);
+                    $this->create('error-404', config('ave-site.default_model_table', 'ave_site_pages'), false);
                 } catch (\Exception $e) {
                     return response('Not Found', 404);
                 }

@@ -161,7 +161,7 @@ class DataService implements DataContract
     {
         if (!$modelSlug) {
             // Default model is Page
-            $modelSlug = config('ave-site.default_model_table', 'pages');
+            $modelSlug = config('ave-site.default_model_table', 'ave_site_pages');
         }
 
         // Try to find model by namespace convention
@@ -188,7 +188,7 @@ class DataService implements DataContract
     {
         if (!$modelSlug) {
             // Default model is Page
-            $modelSlug = config('ave-site.default_model_table', 'pages');
+            $modelSlug = config('ave-site.default_model_table', 'ave_site_pages');
         }
 
         $model = $this->getModel($modelSlug);

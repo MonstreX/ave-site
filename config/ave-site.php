@@ -10,7 +10,7 @@ return [
     /*
      * Default model table name to find records
      */
-    'default_model_table' => 'pages',
+    'default_model_table' => 'ave_site_pages',
 
     /*
      * Default slug field name

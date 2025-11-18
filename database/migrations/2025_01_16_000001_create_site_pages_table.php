@@ -9,23 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('ave_site_pages', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('parent_id')->default(-1)->index(); // -1 для корневых
-            $table->integer('order')->default(0);
+            $table->increments('id');
+            $table->integer('parent_id')->unsigned()->nullable()->index();
+            $table->boolean('status')->default(1)->index();
+            $table->boolean('menu')->default(1);
             $table->string('title');
             $table->string('slug')->unique();
-            $table->longText('content')->nullable();
-            $table->json('media')->nullable(); // Изображения/файлы
-            $table->boolean('status')->default(true)->index(); // 0=draft, 1=published
-
-            // SEO
-            $table->string('seo_title')->nullable();
-            $table->text('seo_description')->nullable();
-            $table->string('seo_keywords')->nullable();
-
-            // Options (JSON): DataSources, template overrides, и т.д.
-            $table->longText('options')->nullable();
-
+            $table->text('content')->nullable();
+            $table->string('image')->nullable();
+            $table->text('images')->nullable();
+            $table->integer('order')->unsigned()->nullable();
+            $table->text('seo')->nullable();
+            $table->longText('details')->nullable();
             $table->timestamps();
 
             $table->index(['status', 'parent_id']);

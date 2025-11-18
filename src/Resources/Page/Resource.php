@@ -4,11 +4,19 @@ namespace Monstrex\AveSite\Resources\Page;
 
 use Monstrex\AveSite\Models\Page as PageModel;
 use Monstrex\Ave\Core\Columns\Column;
-use Monstrex\Ave\Core\Components\Div;
-use Monstrex\Ave\Core\Fields\TextInput;
-use Monstrex\Ave\Core\Fields\Textarea;
-use Monstrex\Ave\Core\Fields\Toggle;
+use Monstrex\Ave\Core\Columns\BooleanColumn;
+use Monstrex\Ave\Core\Components\Col;
+use Monstrex\Ave\Core\Components\Row;
+use Monstrex\Ave\Core\Components\Tab;
+use Monstrex\Ave\Core\Components\Tabs;
+use Monstrex\Ave\Core\Fields\CodeEditor;
+use Monstrex\Ave\Core\Fields\DateTimePicker;
+use Monstrex\Ave\Core\Fields\Media;
+use Monstrex\Ave\Core\Fields\Number;
+use Monstrex\Ave\Core\Fields\RichEditor;
 use Monstrex\Ave\Core\Fields\Select;
+use Monstrex\Ave\Core\Fields\TextInput;
+use Monstrex\Ave\Core\Fields\Toggle;
 use Monstrex\Ave\Core\Form;
 use Monstrex\Ave\Core\Resource as BaseResource;
 use Monstrex\Ave\Core\Table;
@@ -39,95 +47,155 @@ class Resource extends BaseResource
 
     public static function table($context): Table
     {
-        return Table::make()->columns([
-            Column::make('title')
-                ->label(__('ave-site::resources_pages.columns.title'))
-                ->sortable(true),
-            Column::make('slug')
-                ->label(__('ave-site::resources_pages.columns.slug'))
-                ->sortable(true),
-            Column::make('status')
-                ->label(__('ave-site::resources_pages.columns.status'))
-                ->format(fn ($value) => $value ? __('ave::common.yes') : __('ave::common.no'))
-                ->sortable(true),
-            Column::make('created_at')
-                ->label(__('ave-site::resources_pages.columns.created_at'))
-                ->format(fn ($value) => optional($value)?->format('Y-m-d H:i'))
-                ->sortable(true),
-        ]);
+        return Table::make()
+            ->tree('parent_id', 'order', 8)
+            ->columns([
+                Column::make('id')
+                    ->label(__('ave-site::resources_pages.columns.id'))
+                    ->sortable(true)
+                    ->width(60),
+                BooleanColumn::make('status')
+                    ->label(__('ave-site::resources_pages.columns.status'))
+                    ->trueLabel(__('ave::common.active'))
+                    ->falseLabel(__('ave::common.inactive'))
+                    ->trueValue(1)
+                    ->falseValue(0)
+                    ->inlineToggle(),
+                Column::make('title')
+                    ->label(__('ave-site::resources_pages.columns.title'))
+                    ->bold()
+                    ->linkAction('edit'),
+                Column::make('slug')
+                    ->label(__('ave-site::resources_pages.columns.slug'))
+                    ->sortable(true)
+            ]);
     }
 
     public static function form($context): Form
     {
         return Form::make()->schema([
-            Div::make('row')->schema([
-                Div::make('col-12 col-md-8')->schema([
-                    TextInput::make('title')
-                        ->label(__('ave-site::resources_pages.fields.title'))
-                        ->required(),
+            Tabs::make()->tabs([
+                Tab::make(__('ave-site::resources_pages.tabs.main'))->schema([
+                    Row::make()->schema([
+                        Col::make(3)->schema([
+                            Toggle::make('status')
+                                ->label(__('ave-site::resources_pages.fields.status'))
+                                ->default(true),
+                        ]),
+                        Col::make(3)->schema([
+                            Toggle::make('menu')
+                                ->label(__('ave-site::resources_pages.fields.menu'))
+                                ->default(true),
+                        ]),
+                    ]),
+                    Row::make()->schema([
+                        Col::make(8)->schema([
+                            TextInput::make('title')
+                                ->label(__('ave-site::resources_pages.fields.title'))
+                                ->required(),
+                        ]),
+                        Col::make(4)->schema([
+                            TextInput::make('slug')
+                                ->label(__('ave-site::resources_pages.fields.slug'))
+                                ->required(),
+                        ]),
+                    ]),
+                    Row::make()->schema([
+                        Col::make(6)->schema([
+                            Select::make('parent_id')
+                                ->label(__('ave-site::resources_pages.fields.parent'))
+                                ->options(static::getParentOptions($context))
+                                ->placeholder(__('ave-site::resources_pages.no_parent'))
+                                ->nullable(),
+                        ]),
+                    ]),
+                    Row::make()->schema([
+                        Col::make(12)->schema([
+                            RichEditor::make('content')
+                                ->label(__('ave-site::resources_pages.fields.content'))
+                                ->height(400),
+                        ]),
+                    ]),
                 ]),
-                Div::make('col-12 col-md-4')->schema([
-                    Toggle::make('status')
-                        ->label(__('ave-site::resources_pages.fields.status'))
-                        ->default(true),
+                Tab::make(__('ave-site::resources_pages.tabs.media'))->schema([
+                    Row::make()->schema([
+                        Col::make(6)->schema([
+                            Media::make('main_image')
+                                ->label(__('ave-site::resources_pages.fields.image'))
+                                ->collection('page-main')
+                                ->acceptImages()
+                                ->columns(8),
+                        ]),
+                        Col::make(6)->schema([
+                            Media::make('gallery')
+                                ->label(__('ave-site::resources_pages.fields.images'))
+                                ->collection('page-gallery')
+                                ->multiple(true)
+                                ->columns(8)
+                                ->acceptImages(),
+                        ]),
+                    ]),
                 ]),
-            ]),
-            Div::make('row')->schema([
-                Div::make('col-12 col-md-6')->schema([
-                    TextInput::make('slug')
-                        ->label(__('ave-site::resources_pages.fields.slug'))
-                        ->required(),
+                Tab::make(__('ave-site::resources_pages.tabs.seo'))->schema([
+                    Row::make()->schema([
+                        Col::make(6)->schema([
+                            TextInput::make('seo_title')
+                                ->statePath('seo.seo_title')
+                                ->label(__('ave-site::resources_pages.fields.seo_title')),
+                        ]),
+                        Col::make(6)->schema([
+                            TextInput::make('seo_keywords')
+                                ->statePath('seo.meta_keywords')
+                                ->label(__('ave-site::resources_pages.fields.seo_keywords')),
+                        ]),
+                    ]),
+                    Row::make()->schema([
+                        Col::make(12)->schema([
+                            TextInput::make('seo_description')
+                                ->statePath('seo.meta_description')
+                                ->label(__('ave-site::resources_pages.fields.seo_description')),
+                        ]),
+                    ]),
                 ]),
-                Div::make('col-12 col-md-6')->schema([
-                    Select::make('parent_id')
-                        ->label(__('ave-site::resources_pages.fields.parent'))
-                        ->options(static::getParentOptions())
-                        ->default(-1),
+                Tab::make(__('ave-site::resources_pages.tabs.options'))->schema([
+                    Row::make()->schema([
+                        Col::make(12)->schema([
+                            CodeEditor::make('details')
+                                ->label(__('ave-site::resources_pages.fields.details'))
+                                ->language('json')
+                                ->theme('github')
+                                ->height(200)
+                                ->autoHeight(true),
+                        ]),
+                    ]),
                 ]),
-            ]),
-            Div::make('row')->schema([
-                Div::make('col-12')->schema([
-                    Textarea::make('content')
-                        ->label(__('ave-site::resources_pages.fields.content'))
-                        ->rows(15),
-                ]),
-            ]),
-            Div::make('row')->schema([
-                Div::make('col-12')->schema([
-                    Textarea::make('options')
-                        ->label(__('ave-site::resources_pages.fields.options'))
-                        ->rows(8),
-                ]),
-            ]),
-            Div::make('row')->schema([
-                Div::make('col-12 col-md-6')->schema([
-                    TextInput::make('seo_title')
-                        ->label(__('ave-site::resources_pages.fields.seo_title')),
-                ]),
-                Div::make('col-12 col-md-6')->schema([
-                    TextInput::make('seo_keywords')
-                        ->label(__('ave-site::resources_pages.fields.seo_keywords')),
-                ]),
-            ]),
-            Div::make('row')->schema([
-                Div::make('col-12')->schema([
-                    Textarea::make('seo_description')
-                        ->label(__('ave-site::resources_pages.fields.seo_description'))
-                        ->rows(3),
+                Tab::make(__('ave-site::resources_pages.tabs.additional'))->schema([
+                    Row::make()->schema([
+                        Col::make(6)->schema([
+                            Number::make('order')
+                                ->label(__('ave-site::resources_pages.fields.order'))
+                                ->min(0),
+                        ]),
+                        Col::make(6)->schema([
+                            DateTimePicker::make('created_at')
+                                ->label(__('ave-site::resources_pages.fields.published_at'))
+                                ->withoutSeconds(),
+                        ]),
+                    ]),
                 ]),
             ]),
         ]);
     }
 
-    protected static function getParentOptions(): array
+    protected static function getParentOptions($context): array
     {
-        $pages = PageModel::orderBy('title')->get();
-        $options = ['-1' => __('ave-site::resources_pages.no_parent')];
+        $query = PageModel::orderBy('title');
+        $record = $context?->getRecord();
 
-        foreach ($pages as $page) {
-            $options[$page->id] = $page->title;
+        if ($record && $record->exists) {
+            $query->where('id', '<>', $record->id);
         }
 
-        return $options;
+        return $query->pluck('title', 'id')->toArray();
     }
 }
