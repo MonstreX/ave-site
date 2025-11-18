@@ -5,8 +5,11 @@ namespace Monstrex\AveSite\Services;
 use Monstrex\AveSite\Contracts\BlockContract;
 use Monstrex\AveSite\Models\Block;
 use Monstrex\AveSite\Models\BlockRegion;
+use Monstrex\AveSite\Models\Form;
 use Monstrex\AveSite\Templates\Template;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\MessageBag;
 use Webwizo\Shortcodes\Facades\Shortcode;
 
 /**
@@ -153,9 +156,26 @@ class BlockService implements BlockContract
      */
     public function renderForm($key, $subject = null, $suffix = null)
     {
-        // For future implementation with forms
-        // Currently just render as regular block
-        return $this->render($key);
+        $form = $this->getFormByKey($key);
+
+        if (!$form) {
+            return '';
+        }
+
+        $vars = [];
+        $vars['old'] = session()->getOldInput();
+
+        $errors = Session::get('errors', new MessageBag());
+        $vars['errors_messages'] = $errors->all();
+        $vars['errors'] = $errors->toArray();
+
+        $vars['form_alias'] = $key;
+        $vars['form_suffix'] = $suffix;
+        $vars['form_subject'] = $subject;
+        $vars['csrf_token'] = csrf_token();
+
+        $template = new Template(Shortcode::compile($form->content));
+        return $template->render($vars);
     }
 
     /**
@@ -228,8 +248,7 @@ class BlockService implements BlockContract
      */
     public function getFormByKey($key)
     {
-        // For future implementation
-        return null;
+        return Form::where(['key' => $key, 'status' => 1])->first();
     }
 
     /**

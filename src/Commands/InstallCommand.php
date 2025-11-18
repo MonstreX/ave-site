@@ -106,10 +106,16 @@ class InstallCommand extends Command
                 'order' => 3,
             ],
             [
+                'title' => __('ave-site::install.menu_forms'),
+                'icon' => 'voyager-mail',
+                'resource_slug' => 'site-forms',
+                'order' => 4,
+            ],
+            [
                 'title' => __('ave-site::install.menu_localizations'),
                 'icon' => 'voyager-font',
                 'resource_slug' => 'site-localizations',
-                'order' => 4,
+                'order' => 5,
             ],
         ];
 

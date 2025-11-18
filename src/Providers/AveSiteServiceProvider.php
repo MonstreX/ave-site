@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Validator;
 use Monstrex\AveSite\Commands\InstallCommand;
 use Monstrex\AveSite\Models\Setting;
 use Monstrex\AveSite\Services\{
@@ -65,6 +66,10 @@ class AveSiteServiceProvider extends ServiceProvider
             $this->overrideConfig();
         }
 
+        // Register front-end routes and validators
+        $this->registerFrontendRoutes();
+        $this->registerValidators();
+
         // Register shortcodes
         $this->registerShortcodes();
 
@@ -93,6 +98,7 @@ class AveSiteServiceProvider extends ServiceProvider
                 \Monstrex\AveSite\Resources\Page\Resource::class,
                 \Monstrex\AveSite\Resources\Block\Resource::class,
                 \Monstrex\AveSite\Resources\BlockRegion\Resource::class,
+                \Monstrex\AveSite\Resources\Form\Resource::class,
                 \Monstrex\AveSite\Resources\Localization\Resource::class,
                 \Monstrex\AveSite\Resources\Setting\Resource::class,
             ];
@@ -118,6 +124,23 @@ class AveSiteServiceProvider extends ServiceProvider
             \Route::put('/admin/site-settings/{key}', $settingsController.'@update')
                 ->name('ave-site.settings.update');
         });
+    }
+
+    protected function registerFrontendRoutes(): void
+    {
+        try {
+            \Route::middleware(['web'])->group(function () {
+                \Route::post('/api/send-form', [\Monstrex\AveSite\Http\Controllers\FormController::class, 'send'])
+                    ->name('ave-site.forms.send');
+            });
+        } catch (\Throwable $e) {
+            // Router may be unavailable during package discovery
+        }
+    }
+
+    protected function registerValidators(): void
+    {
+        Validator::extend('recaptcha', \Monstrex\AveSite\Validators\ReCaptcha::class.'@validate');
     }
 
     /**

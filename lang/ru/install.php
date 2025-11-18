@@ -5,6 +5,7 @@ return [
     'menu_pages' => 'Страницы',
     'menu_blocks' => 'Блоки',
     'menu_block_regions' => 'Регионы блоков',
+    'menu_forms' => 'Формы',
     'menu_localizations' => 'Локализации',
     'menu_settings' => 'Настройки сайта',
 ];
