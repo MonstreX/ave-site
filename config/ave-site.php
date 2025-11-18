@@ -1,7 +1,7 @@
 <?php
 
-$modelNamespace = env('AVE_SITE_MODEL_NAMESPACE', 'Monstrex\\AveSite\\Models');
-$resourceNamespace = env('AVE_SITE_RESOURCE_NAMESPACE', 'Monstrex\\AveSite\\Resources');
+$modelNamespace = 'Monstrex\\AveSite\\Models';
+$resourceNamespace = 'Monstrex\\AveSite\\Resources';
 
 return [
 
@@ -117,5 +117,4 @@ return [
      *  Template custom filters class
      */
     'template_filters' => null,
-
 ];
