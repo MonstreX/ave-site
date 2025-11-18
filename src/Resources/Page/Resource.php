@@ -11,6 +11,7 @@ use Monstrex\Ave\Core\Components\Tab;
 use Monstrex\Ave\Core\Components\Tabs;
 use Monstrex\Ave\Core\Fields\CodeEditor;
 use Monstrex\Ave\Core\Fields\DateTimePicker;
+use Monstrex\Ave\Core\Fields\Fieldset;
 use Monstrex\Ave\Core\Fields\Media;
 use Monstrex\Ave\Core\Fields\Number;
 use Monstrex\Ave\Core\Fields\RichEditor;
@@ -77,21 +78,15 @@ class Resource extends BaseResource
             Tabs::make()->schema([
                 Tab::make(__('ave-site::resources_pages.tabs.main'))->schema([
                     Row::make()->schema([
-                        Col::make(3)->schema([
+                        Col::make(2)->schema([
                             Toggle::make('status')
                                 ->label(__('ave-site::resources_pages.fields.status'))
                                 ->default(true),
                         ]),
-                        Col::make(3)->schema([
+                        Col::make(2)->schema([
                             Toggle::make('menu')
                                 ->label(__('ave-site::resources_pages.fields.menu'))
                                 ->default(true),
-                        ]),
-                        Col::make(6)->schema([
-                            Select::make('parent_id')
-                                ->label(__('ave-site::resources_pages.fields.parent'))
-                                ->options(static::getParentOptions($context))
-                                ->placeholder(__('ave-site::resources_pages.no_parent')),
                         ]),
                     ]),
                     Row::make()->schema([
@@ -117,14 +112,14 @@ class Resource extends BaseResource
                 Tab::make(__('ave-site::resources_pages.tabs.media'))->schema([
                     Row::make()->schema([
                         Col::make(6)->schema([
-                            Media::make('main_image')
+                            Media::make('image')
                                 ->label(__('ave-site::resources_pages.fields.image'))
                                 ->collection('page-main')
                                 ->acceptImages()
                                 ->columns(8),
                         ]),
                         Col::make(6)->schema([
-                            Media::make('gallery')
+                            Media::make('images')
                                 ->label(__('ave-site::resources_pages.fields.images'))
                                 ->collection('page-gallery')
                                 ->multiple(true)
@@ -134,19 +129,21 @@ class Resource extends BaseResource
                     ]),
                 ]),
                 Tab::make(__('ave-site::resources_pages.tabs.seo'))->schema([
-                    Row::make()->schema([
-                        Col::make(12)->schema([
+                    Fieldset::make('seo')
+                        ->label(__('ave-site::resources_pages.tabs.seo'))
+                        ->minItems(1)
+                        ->maxItems(1)
+                        ->sortable(false)
+                        ->collapsible(false)
+                        ->preserveEmptyItems()
+                        ->schema([
                             TextInput::make('seo_title')
-                                ->statePath('seo.seo_title')
                                 ->label(__('ave-site::resources_pages.fields.seo_title')),
-                            TextInput::make('seo_description')
-                                ->statePath('seo.meta_description')
+                            TextInput::make('meta_description')
                                 ->label(__('ave-site::resources_pages.fields.seo_description')),
-                            TextInput::make('seo_keywords')
-                                ->statePath('seo.meta_keywords')
+                            TextInput::make('meta_keywords')
                                 ->label(__('ave-site::resources_pages.fields.seo_keywords')),
                         ]),
-                    ]),
                 ]),
                 Tab::make(__('ave-site::resources_pages.tabs.options'))->schema([
                     Row::make()->schema([

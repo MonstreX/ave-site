@@ -242,3 +242,26 @@ if (!function_exists('flat_to_tree')) {
         return $tree;
     }
 }
+
+if (!function_exists('seo_meta')) {
+    function seo_meta(mixed $model): array
+    {
+        if (is_object($model) && method_exists($model, 'seoMeta')) {
+            return $model->seoMeta();
+        }
+
+        if (is_array($model)) {
+            return [
+                'seo_title' => $model['seo_title'] ?? '',
+                'meta_description' => $model['meta_description'] ?? '',
+                'meta_keywords' => $model['meta_keywords'] ?? '',
+            ];
+        }
+
+        return [
+            'seo_title' => '',
+            'meta_description' => '',
+            'meta_keywords' => '',
+        ];
+    }
+}

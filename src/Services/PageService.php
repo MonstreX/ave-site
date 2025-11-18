@@ -214,10 +214,9 @@ class PageService implements PageContract
      */
     public function setSeo(Model $content, array $settings)
     {
-        $seoData = $content->seo ?? [];
-        if (!is_array($seoData)) {
-            $seoData = json_decode($content->seo ?? '{}', true) ?: [];
-        }
+        $seoData = method_exists($content, 'seoMeta')
+            ? $content->seoMeta()
+            : $this->extractSeoData($content->seo ?? []);
 
         $seo_title = $seoData['seo_title'] ?? '';
         $meta_description = $seoData['meta_description'] ?? '';
@@ -255,6 +254,26 @@ class PageService implements PageContract
         $this->seoTitle = $this->seoTitle ?? '';
         $this->metaDescription = $this->metaDescription ?? '';
         $this->metaKeywords = $this->metaKeywords ?? '';
+    }
+
+    protected function extractSeoData(mixed $raw): array
+    {
+        if (is_string($raw)) {
+            $decoded = json_decode($raw, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $raw = $decoded;
+            }
+        }
+
+        if (!is_array($raw)) {
+            return [];
+        }
+
+        if (isset($raw[0]) && is_array($raw[0])) {
+            $raw = $raw[0];
+        }
+
+        return $raw;
     }
 
     /*

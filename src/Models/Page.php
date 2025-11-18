@@ -4,15 +4,17 @@ namespace Monstrex\AveSite\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Monstrex\Ave\Media\Traits\HasMedia;
+use Monstrex\AveSite\Models\Concerns\HasSeoMeta;
 
 class Page extends Model
 {
     use HasMedia;
+    use HasSeoMeta;
 
     protected $table = 'ave_site_pages';
 
     protected $guarded = [];
-
+    
     protected $casts = [
         'status' => 'boolean',
         'menu' => 'boolean',

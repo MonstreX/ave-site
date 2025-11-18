@@ -88,10 +88,36 @@ class PageTest extends TestCase
             'seo' => [
                 'seo_title' => 'Custom SEO',
                 'meta_description' => 'Description',
+                'meta_keywords' => 'keywords',
             ],
         ]);
 
         $this->assertIsArray($page->seo);
-        $this->assertEquals('Custom SEO', $page->seo['seo_title']);
+        $this->assertIsArray($page->seo_meta);
+        $this->assertEquals('Custom SEO', $page->seo_meta['seo_title']);
+        $this->assertEquals('Description', $page->seo_meta['meta_description']);
+        $this->assertEquals('keywords', $page->seo_meta['meta_keywords']);
+    }
+
+    public function test_seo_meta_helper_returns_first_item(): void
+    {
+        $page = Page::create([
+            'title' => 'SEO',
+            'slug' => 'seo-helper',
+            'seo' => [
+                [
+                    '_id' => 0,
+                    'seo_title' => 'Helper Title',
+                    'meta_description' => 'Helper Desc',
+                    'meta_keywords' => 'Helper KW',
+                ],
+            ],
+        ]);
+
+        $data = seo_meta($page);
+
+        $this->assertEquals('Helper Title', $data['seo_title']);
+        $this->assertEquals('Helper Desc', $data['meta_description']);
+        $this->assertEquals('Helper KW', $data['meta_keywords']);
     }
 }
