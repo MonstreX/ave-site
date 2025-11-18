@@ -203,7 +203,10 @@ class DataService implements DataContract
      */
     protected function activeValues(): array
     {
-        return Arr::wrap(config('ave-site.status.active_value', 1));
+        return array_map(
+            fn ($value) => $this->normalizeStatusValue($value),
+            Arr::wrap(config('ave-site.status.active_value', 1))
+        );
     }
 
     protected function isStatusCheckEnabled(): bool
@@ -218,7 +221,7 @@ class DataService implements DataContract
             return true;
         }
 
-        $value = data_get($record, $field);
+        $value = $this->normalizeStatusValue(data_get($record, $field));
 
         return in_array($value, $this->activeValues(), true);
     }
@@ -230,6 +233,19 @@ class DataService implements DataContract
         }
 
         throw new AveSiteException(__('ave-site::errors.page_not_found'), 404);
+    }
+
+    protected function normalizeStatusValue(mixed $value): string
+    {
+        if (is_bool($value)) {
+            return $value ? '1' : '0';
+        }
+
+        if (is_null($value)) {
+            return '';
+        }
+
+        return (string) $value;
     }
 
     protected function resolveModelClass(?string $modelSlug): ?string

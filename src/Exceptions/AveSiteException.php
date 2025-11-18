@@ -38,7 +38,12 @@ class AveSiteException extends Exception
             try {
                 $this->create($slug, config('ave-site.default_model_table', 'ave_site_pages'), false);
 
-                return response($this->view(), (int) $statusCode);
+                $view = $this->view();
+                if ($view instanceof \Illuminate\Http\Response) {
+                    return $view->setStatusCode((int) $statusCode);
+                }
+
+                return response($view, (int) $statusCode);
             } catch (\Exception $e) {
                 // Fall through to plain responses
             }
