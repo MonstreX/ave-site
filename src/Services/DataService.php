@@ -39,10 +39,11 @@ class DataService implements DataContract
      */
     public function where(string $field, string $value, string $modelSlug = null, bool $fail = true)
     {
-        $model = $this->getModel($modelSlug);
+        $table = $modelSlug ?? config('ave-site.default_model_table', 'ave_site_pages');
+        $model = $this->getModel($table);
 
         if (!$model) {
-            $data = DB::table($modelSlug)->where($field, $value)->first();
+            $data = DB::table($table)->where($field, $value)->first();
         } else {
             $data = $model::where($field, $value)->first();
         }
@@ -67,9 +68,17 @@ class DataService implements DataContract
      */
     public function findByField(string $modelSlug, string $field, $value, string $order = 'order', string $direction = 'ASC')
     {
-        $model = $this->getModel($modelSlug);
+        $table = $modelSlug ?? config('ave-site.default_model_table', 'ave_site_pages');
+        $model = $this->getModel($table);
 
-        $data = $model::where([$field => $value, 'status' => 1])->orderBy($order, $direction)->get();
+        if ($model) {
+            return $model::where([$field => $value, 'status' => 1])->orderBy($order, $direction)->get();
+        }
+
+        return DB::table($table)
+            ->where([$field => $value, 'status' => 1])
+            ->orderBy($order, $direction)
+            ->get();
 
         return $data;
     }
@@ -160,14 +169,16 @@ class DataService implements DataContract
     protected function getModel(?string $modelSlug): ?object
     {
         if (!$modelSlug) {
-            // Default model is Page
-            $modelSlug = config('ave-site.default_model_table', 'ave_site_pages');
+            return app(\Monstrex\AveSite\Models\Page::class);
         }
 
-        // Try to find model by namespace convention
-        // Hardcoded namespace for ave-site package models
+        if (class_exists($modelSlug)) {
+            return app($modelSlug);
+        }
+
         $namespace = 'Monstrex\\AveSite\\Models\\';
-        $modelName = Str::studly(Str::singular($modelSlug));
+        $baseSlug = Str::after($modelSlug, 'ave_site_');
+        $modelName = Str::studly(Str::singular($baseSlug));
         $modelClass = $namespace . $modelName;
 
         if (class_exists($modelClass)) {
@@ -186,12 +197,8 @@ class DataService implements DataContract
      */
     public function getMenu(string $modelSlug = null, array $parent = null)
     {
-        if (!$modelSlug) {
-            // Default model is Page
-            $modelSlug = config('ave-site.default_model_table', 'ave_site_pages');
-        }
-
-        $model = $this->getModel($modelSlug);
+        $table = $modelSlug ?? config('ave-site.default_model_table', 'ave_site_pages');
+        $model = $this->getModel($table);
 
         if (!$model) {
             return null;
