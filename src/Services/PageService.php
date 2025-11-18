@@ -6,6 +6,7 @@ use Monstrex\AveSite\Contracts\PageContract;
 use Monstrex\AveSite\Models\Page;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\View;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Schema;
 
 /**
@@ -51,6 +52,7 @@ class PageService implements PageContract
     protected ?string $seoTitle = null;
     protected ?string $metaDescription = null;
     protected ?string $metaKeywords = null;
+    protected int $responseCode = 200;
 
     public function __construct(
         DataService $dataService,
@@ -381,9 +383,10 @@ class PageService implements PageContract
      */
     public function create(Model $content, array $settings)
     {
-        // If we don't have related Data
+        $this->responseCode = 200;
+
         if (!$content) {
-            abort(404);
+            throw new NotFoundHttpException('Page not found');
         }
 
         // General settings
@@ -427,7 +430,7 @@ class PageService implements PageContract
 
         $viewPath = $template_layout ?? $this->settings['template'] . '.' . $this->templateLayout;
 
-        return view($viewPath)->with([
+        return response()->view($viewPath, [
             'template' => $this->settings['template'],
             'template_master' => $this->settings['template'] . '.' . $this->settings['template_master'],
             'template_page' => $this->settings['template'] . '.' . $this->templatePage,
@@ -444,7 +447,17 @@ class PageService implements PageContract
                 'keywords' => $this->getSeoKeywords(),
             ],
             'data' => $data,
-        ])->render();
+        ], $this->responseCode);
+    }
+
+    public function setResponseCode(int $code): void
+    {
+        $this->responseCode = $code;
+    }
+
+    public function getResponseCode(): int
+    {
+        return $this->responseCode;
     }
 
     /*

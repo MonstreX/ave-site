@@ -4,6 +4,7 @@ namespace Monstrex\AveSite\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Monstrex\AveSite\Facades\{AvePage, AveData, AveSite};
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 trait PageTrait
 {
@@ -12,7 +13,23 @@ trait PageTrait
      */
     public function create($alias, string $modelSlug = null, bool $fail = true)
     {
-        return AvePage::create(AveData::findFirst($alias, $modelSlug, $fail), AveSite::getSettings());
+        try {
+            $page = AveData::findFirst($alias, $modelSlug, $fail);
+
+            return AvePage::create($page, AveSite::getSettings());
+        } catch (NotFoundHttpException $e) {
+            $fallbackSlug = config('ave-site.not_found_page');
+            if ($fallbackSlug && $alias !== $fallbackSlug) {
+                $fallback = AveData::findFirst($fallbackSlug, $modelSlug, false);
+                if ($fallback) {
+                    AvePage::setResponseCode(404);
+
+                    return AvePage::create($fallback, AveSite::getSettings());
+                }
+            }
+
+            throw $e;
+        }
     }
 
     /**

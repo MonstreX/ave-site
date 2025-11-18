@@ -26,6 +26,11 @@ return [
     'use_legacy_error_handler' => false,
 
     /*
+     * Optional slug of the page that will be rendered for 404 responses.
+     */
+    'not_found_page' => null,
+
+    /*
      * Namespace for models. Override when publishing models into application namespace.
      */
     'model_namespace' => $modelNamespace,

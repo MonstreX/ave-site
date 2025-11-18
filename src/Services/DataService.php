@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Monstrex\Ave\Media\ImageProcessor;
 use Schema;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DataService implements DataContract
 {
@@ -50,7 +51,7 @@ class DataService implements DataContract
 
         // Drop 404 Error if not found or not published (status = 0)
         if ((!$data && $fail) || (isset($data->status) && (int) $data->status !== 1 && $fail)) {
-            abort(404);
+            throw new NotFoundHttpException('Record not found for '.$field.'='.$value);
         }
 
         return $data;
