@@ -135,6 +135,11 @@ class AveSiteServiceProvider extends ServiceProvider
             \Route::middleware(['web'])->group(function () {
                 \Route::post('/api/send-form', [\Monstrex\AveSite\Http\Controllers\FormController::class, 'send'])
                     ->name('ave-site.forms.send');
+
+                if (config('ave-site.not_found_page')) {
+                    \Route::fallback(\Monstrex\AveSite\Http\Controllers\NotFoundController::class)
+                        ->name('ave-site.fallback');
+                }
             });
         } catch (\Throwable $e) {
             // Router may be unavailable during package discovery

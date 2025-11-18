@@ -28,7 +28,7 @@ return [
     /*
      * Optional slug of the page that will be rendered for 404 responses.
      */
-    'not_found_page' => null,
+    'not_found_page' => '404',
 
     /*
      * Namespace for models. Override when publishing models into application namespace.
