@@ -383,8 +383,6 @@ class PageService implements PageContract
      */
     public function create(Model $content, array $settings)
     {
-        $this->responseCode = 200;
-
         if (!$content) {
             throw new NotFoundHttpException('Page not found');
         }

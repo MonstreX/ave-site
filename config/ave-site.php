@@ -79,7 +79,7 @@ return [
     /*
      *  Name of the Template
      */
-    'template' => 'site',
+    'template' => 'template',
 
     /*
      *  Root Extendable Template

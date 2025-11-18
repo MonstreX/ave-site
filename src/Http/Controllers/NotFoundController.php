@@ -30,6 +30,8 @@ class NotFoundController extends Controller
         $this->setPage($page);
         $this->create($slug, null, false);
 
-        return $this->view('template.layouts.main');
+        $layout = config('ave-site.template') . '.' . config('ave-site.template_layout', 'layouts.main');
+
+        return $this->view($layout);
     }
 }
