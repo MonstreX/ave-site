@@ -74,7 +74,7 @@ class Resource extends BaseResource
     public static function form($context): Form
     {
         return Form::make()->schema([
-            Tabs::make()->tabs([
+            Tabs::make()->schema([
                 Tab::make(__('ave-site::resources_pages.tabs.main'))->schema([
                     Row::make()->schema([
                         Col::make(3)->schema([
@@ -105,8 +105,7 @@ class Resource extends BaseResource
                             Select::make('parent_id')
                                 ->label(__('ave-site::resources_pages.fields.parent'))
                                 ->options(static::getParentOptions($context))
-                                ->placeholder(__('ave-site::resources_pages.no_parent'))
-                                ->nullable(),
+                                ->placeholder(__('ave-site::resources_pages.no_parent')),
                         ]),
                     ]),
                     Row::make()->schema([
@@ -179,7 +178,7 @@ class Resource extends BaseResource
                         Col::make(6)->schema([
                             DateTimePicker::make('created_at')
                                 ->label(__('ave-site::resources_pages.fields.published_at'))
-                                ->withoutSeconds(),
+                                ,
                         ]),
                     ]),
                 ]),
@@ -190,7 +189,13 @@ class Resource extends BaseResource
     protected static function getParentOptions($context): array
     {
         $query = PageModel::orderBy('title');
-        $record = $context?->getRecord();
+
+        $record = null;
+        if ($context && method_exists($context, 'record')) {
+            $record = $context->record();
+        } elseif ($context && method_exists($context, 'getRecord')) {
+            $record = $context->getRecord();
+        }
 
         if ($record && $record->exists) {
             $query->where('id', '<>', $record->id);
