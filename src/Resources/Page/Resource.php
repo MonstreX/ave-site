@@ -87,25 +87,23 @@ class Resource extends BaseResource
                                 ->label(__('ave-site::resources_pages.fields.menu'))
                                 ->default(true),
                         ]),
-                    ]),
-                    Row::make()->schema([
-                        Col::make(8)->schema([
-                            TextInput::make('title')
-                                ->label(__('ave-site::resources_pages.fields.title'))
-                                ->required(),
-                        ]),
-                        Col::make(4)->schema([
-                            TextInput::make('slug')
-                                ->label(__('ave-site::resources_pages.fields.slug'))
-                                ->required(),
-                        ]),
-                    ]),
-                    Row::make()->schema([
                         Col::make(6)->schema([
                             Select::make('parent_id')
                                 ->label(__('ave-site::resources_pages.fields.parent'))
                                 ->options(static::getParentOptions($context))
                                 ->placeholder(__('ave-site::resources_pages.no_parent')),
+                        ]),
+                    ]),
+                    Row::make()->schema([
+                        Col::make(6)->schema([
+                            TextInput::make('title')
+                                ->label(__('ave-site::resources_pages.fields.title'))
+                                ->required(),
+                        ]),
+                        Col::make(6)->schema([
+                            TextInput::make('slug')
+                                ->label(__('ave-site::resources_pages.fields.slug'))
+                                ->required(),
                         ]),
                     ]),
                     Row::make()->schema([
@@ -137,22 +135,16 @@ class Resource extends BaseResource
                 ]),
                 Tab::make(__('ave-site::resources_pages.tabs.seo'))->schema([
                     Row::make()->schema([
-                        Col::make(6)->schema([
+                        Col::make(12)->schema([
                             TextInput::make('seo_title')
                                 ->statePath('seo.seo_title')
                                 ->label(__('ave-site::resources_pages.fields.seo_title')),
-                        ]),
-                        Col::make(6)->schema([
-                            TextInput::make('seo_keywords')
-                                ->statePath('seo.meta_keywords')
-                                ->label(__('ave-site::resources_pages.fields.seo_keywords')),
-                        ]),
-                    ]),
-                    Row::make()->schema([
-                        Col::make(12)->schema([
                             TextInput::make('seo_description')
                                 ->statePath('seo.meta_description')
                                 ->label(__('ave-site::resources_pages.fields.seo_description')),
+                            TextInput::make('seo_keywords')
+                                ->statePath('seo.meta_keywords')
+                                ->label(__('ave-site::resources_pages.fields.seo_keywords')),
                         ]),
                     ]),
                 ]),
