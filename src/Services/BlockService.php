@@ -137,7 +137,7 @@ class BlockService implements BlockContract
                 'key' => $block->key,
                 'title' => $block->title,
                 'content' => $block->content,
-                'images' => $block->getMediaCollection('block_images'),
+                'images' => $block->getMedia('block_images'),
                 'elements' => $block->elements ?? [],
                 'details' => $details,
             ],
