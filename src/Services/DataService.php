@@ -162,12 +162,85 @@ class DataService implements DataContract
         // Get Collection
         $collection = $query->get();
 
+        // Process each record to convert Media and FieldSet fields to arrays
+        $collection->each(function ($record) {
+            $this->processModelMediaFields($record);
+        });
+
         // Limit (after fetching, for Voyager Site compatibility)
         if (isset($config['limit'])) {
             $collection = $collection->take($config['limit']);
         }
 
         return $collection->toArray();
+    }
+
+    /**
+     * Process Media and FieldSet fields in model record
+     * Converts Media objects to arrays for Liquid template access
+     *
+     * @param mixed $record Model instance
+     * @return void
+     */
+    protected function processModelMediaFields($record): void
+    {
+        if (!method_exists($record, 'getMedia')) {
+            return; // Model doesn't use HasMedia trait
+        }
+
+        // Get all attributes to check for Media collections
+        $attributes = $record->getAttributes();
+
+        foreach ($attributes as $field => $value) {
+            // Try to get media for this field
+            try {
+                $media = $record->getMedia($field);
+
+                if ($media->isNotEmpty()) {
+                    // Convert Media collection to array
+                    $record->{$field} = $media->map(fn($m) => $this->mediaToArray($m))->toArray();
+                }
+            } catch (\Exception $e) {
+                // Not a media field, continue
+            }
+        }
+
+        // Process FieldSet elements (like block.elements)
+        if (isset($record->elements) && is_array($record->elements)) {
+            $record->elements = collect($record->elements)->map(function ($element) use ($record) {
+                foreach ($element as $key => $value) {
+                    // Check if value is a media collection name (starts with 'elements.')
+                    if (is_string($value) && str_starts_with($value, 'elements.')) {
+                        // Replace collection name with actual media array
+                        $element[$key] = $record->getMedia($value)
+                            ->map(fn($m) => $this->mediaToArray($m))
+                            ->toArray();
+                    }
+                }
+                return $element;
+            })->toArray();
+        }
+    }
+
+    /**
+     * Convert Media object to array for Liquid templates
+     * Returns all media properties + props object with ALL dynamic properties
+     *
+     * @param \Monstrex\Ave\Models\Media $media
+     * @return array
+     */
+    protected function mediaToArray($media): array
+    {
+        return [
+            'url' => $media->url(),
+            'fullUrl' => $media->fullUrl(),
+            'path' => $media->path(),
+            'fileName' => $media->fileName(),
+            'size' => $media->size(),
+            'mime' => $media->mime(),
+            'order' => $media->order(),
+            'props' => $media->props(), // stdClass with ALL props (alt, title, any custom)
+        ];
     }
 
     /**
