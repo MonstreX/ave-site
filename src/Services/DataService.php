@@ -162,17 +162,17 @@ class DataService implements DataContract
         // Get Collection
         $collection = $query->get();
 
-        // Process each record to convert Media and FieldSet fields to arrays
-        $collection->each(function ($record) {
-            $this->processModelMediaFields($record);
-        });
-
         // Limit (after fetching, for Voyager Site compatibility)
         if (isset($config['limit'])) {
             $collection = $collection->take($config['limit']);
         }
 
-        return $collection->toArray();
+        // Convert to array FIRST, then process Media fields
+        $records = $collection->map(function ($record) {
+            return $this->processModelMediaFields($record);
+        })->toArray();
+
+        return $records;
     }
 
     /**
@@ -180,12 +180,15 @@ class DataService implements DataContract
      * Converts Media objects to arrays for Liquid template access
      *
      * @param mixed $record Model instance
-     * @return void
+     * @return array Processed record as array
      */
-    protected function processModelMediaFields($record): void
+    protected function processModelMediaFields($record): array
     {
+        // Convert model to array first
+        $data = $record->toArray();
+
         if (!method_exists($record, 'getMedia')) {
-            return; // Model doesn't use HasMedia trait
+            return $data; // Model doesn't use HasMedia trait
         }
 
         // Get all attributes to check for Media collections
@@ -197,8 +200,8 @@ class DataService implements DataContract
                 $media = $record->getMedia($field);
 
                 if ($media->isNotEmpty()) {
-                    // Convert Media collection to array
-                    $record->{$field} = $media->map(fn($m) => $this->mediaToArray($m))->toArray();
+                    // Convert Media collection to array and replace in data array
+                    $data[$field] = $media->map(fn($m) => $this->mediaToArray($m))->toArray();
                 }
             } catch (\Exception $e) {
                 // Not a media field, continue
@@ -206,8 +209,8 @@ class DataService implements DataContract
         }
 
         // Process FieldSet elements (like block.elements)
-        if (isset($record->elements) && is_array($record->elements)) {
-            $record->elements = collect($record->elements)->map(function ($element) use ($record) {
+        if (isset($data['elements']) && is_array($data['elements'])) {
+            $data['elements'] = collect($data['elements'])->map(function ($element) use ($record) {
                 foreach ($element as $key => $value) {
                     // Check if value is a media collection name (starts with 'elements.')
                     if (is_string($value) && str_starts_with($value, 'elements.')) {
@@ -220,6 +223,8 @@ class DataService implements DataContract
                 return $element;
             })->toArray();
         }
+
+        return $data;
     }
 
     /**
