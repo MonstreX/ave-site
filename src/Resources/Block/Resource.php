@@ -9,6 +9,7 @@ use Monstrex\Ave\Core\Components\Div;
 use Monstrex\Ave\Core\Components\Row;
 use Monstrex\Ave\Core\Components\Col;
 use Monstrex\Ave\Core\Fields\TextInput;
+use Monstrex\Ave\Core\Fields\CodeEditor;
 use Monstrex\Ave\Core\Fields\Textarea;
 use Monstrex\Ave\Core\Fields\Toggle;
 use Monstrex\Ave\Core\Fields\Select;
@@ -100,34 +101,12 @@ class Resource extends BaseResource
             ]),
             Div::make('row')->schema([
                 Div::make('col-12')->schema([
-                    Textarea::make('content')
+                    CodeEditor::make('content')
                         ->label(__('ave-site::resources_blocks.fields.content'))
-                        ->rows(15),
-                ]),
-            ]),
-            Div::make('row')->schema([
-                Div::make('col-12')->schema([
-                    Textarea::make('urls')
-                        ->label(__('ave-site::resources_blocks.fields.urls'))
-                        ->rows(4),
-                ]),
-            ]),
-            Div::make('row')->schema([
-                Div::make('col-12 col-md-6')->schema([
-                    Select::make('rules')
-                        ->label(__('ave-site::resources_blocks.fields.rules'))
-                        ->options([
-                            '0' => __('ave-site::resources_blocks.rules_hide'),
-                            '1' => __('ave-site::resources_blocks.rules_show'),
-                        ])
-                        ->default(0),
-                ]),
-            ]),
-            Div::make('row')->schema([
-                Div::make('col-12')->schema([
-                    Textarea::make('options')
-                        ->label(__('ave-site::resources_blocks.fields.options'))
-                        ->rows(8),
+                        ->language('html')
+                        ->height(150)
+                        ->theme('monokai')
+                        ->autoHeight(true),
                 ]),
             ]),
             Div::make('row')->schema([
@@ -135,6 +114,13 @@ class Resource extends BaseResource
                     FieldSet::make('elements')
                         ->label(__('ave-site::resources_blocks.fields.elements'))
                         ->help(__('ave-site::resources_blocks.fields.elements_help'))
+                        ->displayAs('cards')
+                        ->sortable()
+                        ->minItems(0)
+                        ->maxItems(50)
+                        ->columns(6)
+                        ->headTitle('title')
+                        ->headPreview('image')
                         ->schema([
                             Row::make()->schema([
                                 Col::make(12)->schema([
@@ -169,14 +155,35 @@ class Resource extends BaseResource
                                         ->rows(4),
                                 ]),
                             ]),
+                        ]),
+                ]),
+            ]),
+            Div::make('row')->schema([
+                Div::make('col-12')->schema([
+                    Textarea::make('urls')
+                        ->label(__('ave-site::resources_blocks.fields.urls'))
+                        ->rows(4),
+                ]),
+            ]),
+            Div::make('row')->schema([
+                Div::make('col-12 col-md-6')->schema([
+                    Select::make('rules')
+                        ->label(__('ave-site::resources_blocks.fields.rules'))
+                        ->options([
+                            '0' => __('ave-site::resources_blocks.rules_hide'),
+                            '1' => __('ave-site::resources_blocks.rules_show'),
                         ])
-                        ->sortable()
-                        ->minItems(0)
-                        ->maxItems(50)
-                        ->addButtonLabel(__('ave-site::resources_blocks.add_element'))
-                        ->deleteButtonLabel(__('ave-site::resources_blocks.delete_element'))
-                        ->headTitle('title')
-                        ->headPreview('image'),
+                        ->default(0),
+                ]),
+            ]),
+            Div::make('row')->schema([
+                Div::make('col-12')->schema([
+                    CodeEditor::make('options')
+                        ->label(__('ave-site::resources_blocks.fields.options'))
+                        ->language('json')
+                        ->height(100)
+                        ->theme('github')
+                        ->autoHeight(true),
                 ]),
             ]),
         ]);
