@@ -14,7 +14,7 @@ class Block extends Model
 
     protected $fillable = [
         'title', 'key', 'region_id', 'order', 'status',
-        'urls', 'rules', 'content', 'elements', 'options',
+        'urls', 'rules', 'content', 'images', 'elements', 'options',
     ];
 
     protected $casts = [

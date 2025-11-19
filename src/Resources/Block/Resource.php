@@ -111,6 +111,19 @@ class Resource extends BaseResource
             ]),
             Div::make('row')->schema([
                 Div::make('col-12')->schema([
+                    Media::make('images')
+                        ->label(__('ave-site::resources_blocks.fields.images'))
+                        ->help(__('ave-site::resources_blocks.fields.images_help'))
+                        ->collection('block_images')
+                        ->multiple(true, maxFiles: 50)
+                        ->columns(6)
+                        ->acceptImages()
+                        ->maxFileSize(5120)
+                        ->props('alt', 'title', 'content', 'link'),
+                ]),
+            ]),
+            Div::make('row')->schema([
+                Div::make('col-12')->schema([
                     FieldSet::make('elements')
                         ->label(__('ave-site::resources_blocks.fields.elements'))
                         ->help(__('ave-site::resources_blocks.fields.elements_help'))
@@ -158,13 +171,6 @@ class Resource extends BaseResource
                 ]),
             ]),
             Div::make('row')->schema([
-                Div::make('col-12')->schema([
-                    Textarea::make('urls')
-                        ->label(__('ave-site::resources_blocks.fields.urls'))
-                        ->rows(4),
-                ]),
-            ]),
-            Div::make('row')->schema([
                 Div::make('col-12 col-md-6')->schema([
                     Select::make('rules')
                         ->label(__('ave-site::resources_blocks.fields.rules'))
@@ -173,6 +179,13 @@ class Resource extends BaseResource
                             '1' => __('ave-site::resources_blocks.rules_show'),
                         ])
                         ->default(0),
+                ]),
+            ]),
+            Div::make('row')->schema([
+                Div::make('col-12')->schema([
+                    Textarea::make('urls')
+                        ->label(__('ave-site::resources_blocks.fields.urls'))
+                        ->rows(2),
                 ]),
             ]),
             Div::make('row')->schema([

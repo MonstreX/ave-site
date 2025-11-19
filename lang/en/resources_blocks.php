@@ -22,6 +22,8 @@ return [
         'urls' => 'URL Rules (one per line)',
         'rules' => 'Display Rule',
         'options' => 'Options (JSON)',
+        'images' => 'Images',
+        'images_help' => 'Image gallery with metadata (alt, title, content, link)',
         'elements' => 'Elements',
         'elements_help' => 'Gallery of elements with images, links and metadata',
     ],
