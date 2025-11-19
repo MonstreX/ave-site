@@ -4,9 +4,12 @@ namespace Monstrex\AveSite\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Monstrex\Ave\Media\Traits\HasMedia;
 
 class Block extends Model
 {
+    use HasMedia;
+    
     protected $table = 'ave_site_blocks';
 
     protected $fillable = [

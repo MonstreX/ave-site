@@ -122,39 +122,38 @@ class Resource extends BaseResource
                         ->headTitle('title')
                         ->headPreview('image')
                         ->schema([
-                            Row::make()->schema([
-                                Col::make(12)->schema([
+                            Div::make('row')->schema([
+                                Div::make('col-6')->schema([
                                     TextInput::make('title')
                                         ->label(__('ave-site::resources_blocks.element_fields.title'))
                                         ->required(),
                                 ]),
-                            ]),
-                            Row::make()->schema([
-                                Col::make(6)->schema([
-                                    Media::make('image')
-                                        ->label(__('ave-site::resources_blocks.element_fields.image'))
-                                        ->collection('block_elements')
-                                        ->acceptImages()
-                                        ->maxFileSize(5120)
-                                        ->props('alt'),
-                                ]),
-                                Col::make(6)->schema([
-                                    TextInput::make('alt')
-                                        ->label(__('ave-site::resources_blocks.element_fields.alt')),
+                                Div::make('col-6')->schema([
                                     TextInput::make('subtitle')
                                         ->label(__('ave-site::resources_blocks.element_fields.subtitle')),
+                                ]),
+                                Div::make('col-6')->schema([
+                                    TextInput::make('alt')
+                                        ->label(__('ave-site::resources_blocks.element_fields.alt')),
+                                ]),
+                                Div::make('col-6')->schema([
                                     TextInput::make('link')
-                                        ->label(__('ave-site::resources_blocks.element_fields.link'))
-                                        ->url(),
+                                        ->label(__('ave-site::resources_blocks.element_fields.link')),
                                 ]),
                             ]),
-                            Row::make()->schema([
-                                Col::make(12)->schema([
-                                    Textarea::make('html')
-                                        ->label(__('ave-site::resources_blocks.element_fields.html'))
-                                        ->rows(4),
-                                ]),
-                            ]),
+                            Media::make('image')
+                                ->label(__('ave-site::resources_blocks.element_fields.image'))
+                                ->collection('block_elements')
+                                ->multiple(true, maxFiles: 50)
+                                ->acceptImages()
+                                ->maxFileSize(5120)
+                                ->props('alt'),
+                            CodeEditor::make('content')
+                                ->label(__('ave-site::resources_blocks.fields.content'))
+                                ->language('html')
+                                ->height(150)
+                                ->theme('monokai')
+                                ->autoHeight(true),
                         ]),
                 ]),
             ]),
