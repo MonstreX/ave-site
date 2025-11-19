@@ -5,6 +5,10 @@ return [
     'singular' => 'Block',
     'rules_show' => 'Show on specified pages',
     'rules_hide' => 'Hide on specified pages',
+    'tabs' => [
+        'main' => 'Main',
+        'elements' => 'Elements',
+    ],
     'columns' => [
         'title' => 'Title',
         'key' => 'Key',

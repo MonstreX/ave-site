@@ -8,6 +8,8 @@ use Monstrex\Ave\Core\Columns\Column;
 use Monstrex\Ave\Core\Components\Div;
 use Monstrex\Ave\Core\Components\Row;
 use Monstrex\Ave\Core\Components\Col;
+use Monstrex\Ave\Core\Components\Tabs;
+use Monstrex\Ave\Core\Components\Tab;
 use Monstrex\Ave\Core\Fields\TextInput;
 use Monstrex\Ave\Core\Fields\CodeEditor;
 use Monstrex\Ave\Core\Fields\Textarea;
@@ -69,62 +71,97 @@ class Resource extends BaseResource
     public static function form($context): Form
     {
         return Form::make()->schema([
-            Div::make('row')->schema([
-                Div::make('col-12 col-md-6')->schema([
-                    TextInput::make('title')
-                        ->label(__('ave-site::resources_blocks.fields.title'))
-                        ->required(),
+            Tabs::make()->schema([
+                // Tab 1: Main
+                Tab::make(__('ave-site::resources_blocks.tabs.main'))->schema([
+                    Row::make()->schema([
+                        Col::make(6)->schema([
+                            TextInput::make('title')
+                                ->label(__('ave-site::resources_blocks.fields.title'))
+                                ->required(),
+                        ]),
+                        Col::make(3)->schema([
+                            Toggle::make('status')
+                                ->label(__('ave-site::resources_blocks.fields.status'))
+                                ->default(true),
+                        ]),
+                        Col::make(3)->schema([
+                            Number::make('order')
+                                ->label(__('ave-site::resources_blocks.fields.order'))
+                                ->default(0),
+                        ]),
+                    ]),
+                    Row::make()->schema([
+                        Col::make(6)->schema([
+                            TextInput::make('key')
+                                ->label(__('ave-site::resources_blocks.fields.key'))
+                                ->required(),
+                        ]),
+                        Col::make(6)->schema([
+                            Select::make('region_id')
+                                ->label(__('ave-site::resources_blocks.fields.region'))
+                                ->options(static::getRegionOptions())
+                                ->required(),
+                        ]),
+                    ]),
+                    Row::make()->schema([
+                        Col::make(12)->schema([
+                            CodeEditor::make('content')
+                                ->label(__('ave-site::resources_blocks.fields.content'))
+                                ->language('html')
+                                ->height(150)
+                                ->theme('monokai')
+                                ->autoHeight(true),
+                        ]),
+                    ]),
+                    Row::make()->schema([
+                        Col::make(12)->schema([
+                            Media::make('images')
+                                ->label(__('ave-site::resources_blocks.fields.images'))
+                                ->help(__('ave-site::resources_blocks.fields.images_help'))
+                                ->collection('block_images')
+                                ->multiple(true, maxFiles: 50)
+                                ->columns(6)
+                                ->acceptImages()
+                                ->maxFileSize(5120)
+                                ->props('alt', 'title', 'content', 'link'),
+                        ]),
+                    ]),
+                    Row::make()->schema([
+                        Col::make(12)->schema([
+                            Textarea::make('urls')
+                                ->label(__('ave-site::resources_blocks.fields.urls'))
+                                ->rows(4),
+                        ]),
+                    ]),
+                    Row::make()->schema([
+                        Col::make(6)->schema([
+                            Select::make('rules')
+                                ->label(__('ave-site::resources_blocks.fields.rules'))
+                                ->options([
+                                    '0' => __('ave-site::resources_blocks.rules_hide'),
+                                    '1' => __('ave-site::resources_blocks.rules_show'),
+                                ])
+                                ->default(0),
+                        ]),
+                    ]),
+                    Row::make()->schema([
+                        Col::make(12)->schema([
+                            CodeEditor::make('options')
+                                ->label(__('ave-site::resources_blocks.fields.options'))
+                                ->language('json')
+                                ->height(150)
+                                ->theme('monokai')
+                                ->autoHeight(true),
+                        ]),
+                    ]),
                 ]),
-                Div::make('col-12 col-md-3')->schema([
-                    Toggle::make('status')
-                        ->label(__('ave-site::resources_blocks.fields.status'))
-                        ->default(true),
-                ]),
-                Div::make('col-12 col-md-3')->schema([
-                    Number::make('order')
-                        ->label(__('ave-site::resources_blocks.fields.order'))
-                        ->default(0),
-                ]),
-            ]),
-            Div::make('row')->schema([
-                Div::make('col-12 col-md-6')->schema([
-                    TextInput::make('key')
-                        ->label(__('ave-site::resources_blocks.fields.key'))
-                        ->required(),
-                ]),
-                Div::make('col-12 col-md-6')->schema([
-                    Select::make('region_id')
-                        ->label(__('ave-site::resources_blocks.fields.region'))
-                        ->options(static::getRegionOptions())
-                        ->required(),
-                ]),
-            ]),
-            Div::make('row')->schema([
-                Div::make('col-12')->schema([
-                    CodeEditor::make('content')
-                        ->label(__('ave-site::resources_blocks.fields.content'))
-                        ->language('html')
-                        ->height(150)
-                        ->theme('monokai')
-                        ->autoHeight(true),
-                ]),
-            ]),
-            Div::make('row')->schema([
-                Div::make('col-12')->schema([
-                    Media::make('images')
-                        ->label(__('ave-site::resources_blocks.fields.images'))
-                        ->help(__('ave-site::resources_blocks.fields.images_help'))
-                        ->collection('block_images')
-                        ->multiple(true, maxFiles: 50)
-                        ->columns(6)
-                        ->acceptImages()
-                        ->maxFileSize(5120)
-                        ->props('alt', 'title', 'content', 'link'),
-                ]),
-            ]),
-            Div::make('row')->schema([
-                Div::make('col-12')->schema([
-                    FieldSet::make('elements')
+
+                // Tab 2: Elements
+                Tab::make(__('ave-site::resources_blocks.tabs.elements'))->schema([
+                    Row::make()->schema([
+                        Col::make(12)->schema([
+                            FieldSet::make('elements')
                         ->label(__('ave-site::resources_blocks.fields.elements'))
                         ->help(__('ave-site::resources_blocks.fields.elements_help'))
                         ->displayAs('cards')
@@ -154,6 +191,12 @@ class Resource extends BaseResource
                                         ->label(__('ave-site::resources_blocks.element_fields.link')),
                                 ]),
                             ]),
+                            CodeEditor::make('content')
+                                ->label(__('ave-site::resources_blocks.fields.content'))
+                                ->language('html')
+                                ->height(150)
+                                ->theme('monokai')
+                                ->autoHeight(true),
                             Media::make('image')
                                 ->label(__('ave-site::resources_blocks.element_fields.image'))
                                 ->collection('block_elements')
@@ -161,41 +204,9 @@ class Resource extends BaseResource
                                 ->acceptImages()
                                 ->maxFileSize(5120)
                                 ->props('alt'),
-                            CodeEditor::make('content')
-                                ->label(__('ave-site::resources_blocks.fields.content'))
-                                ->language('html')
-                                ->height(150)
-                                ->theme('monokai')
-                                ->autoHeight(true),
                         ]),
-                ]),
-            ]),
-            Div::make('row')->schema([
-                Div::make('col-12 col-md-6')->schema([
-                    Select::make('rules')
-                        ->label(__('ave-site::resources_blocks.fields.rules'))
-                        ->options([
-                            '0' => __('ave-site::resources_blocks.rules_hide'),
-                            '1' => __('ave-site::resources_blocks.rules_show'),
-                        ])
-                        ->default(0),
-                ]),
-            ]),
-            Div::make('row')->schema([
-                Div::make('col-12')->schema([
-                    Textarea::make('urls')
-                        ->label(__('ave-site::resources_blocks.fields.urls'))
-                        ->rows(2),
-                ]),
-            ]),
-            Div::make('row')->schema([
-                Div::make('col-12')->schema([
-                    CodeEditor::make('options')
-                        ->label(__('ave-site::resources_blocks.fields.options'))
-                        ->language('json')
-                        ->height(100)
-                        ->theme('github')
-                        ->autoHeight(true),
+                        ]),
+                    ]),
                 ]),
             ]),
         ]);
