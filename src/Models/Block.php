@@ -14,11 +14,12 @@ class Block extends Model
 
     protected $fillable = [
         'title', 'key', 'region_id', 'order', 'status',
-        'urls', 'rules', 'content', 'images', 'elements', 'options',
+        'urls', 'rules', 'content', 'images', 'elements', 'details',
     ];
 
     protected $casts = [
         'elements' => 'array',
+        'details' => 'array',
         'status' => 'boolean',
         'rules' => 'integer',
     ];
@@ -48,34 +49,7 @@ class Block extends Model
     // Helpers
     public function isForm(): bool
     {
-        $options = json_decode($this->options, true) ?? [];
-        return isset($options['validator']);
-    }
-
-    // Options Accessor
-    public function getOptionsAttribute($value)
-    {
-        if (empty($value)) {
-            return "{\n    \n}";
-        }
-
-        $decoded = json_decode($value, true);
-        return json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-    }
-
-    public function setOptionsAttribute($value)
-    {
-        if (empty($value)) {
-            $this->attributes['options'] = null;
-            return;
-        }
-
-        $decoded = json_decode($value, true);
-
-        if (json_last_error() === JSON_ERROR_NONE) {
-            $this->attributes['options'] = json_encode($decoded);
-        } else {
-            $this->attributes['options'] = null;
-        }
+        $details = is_array($this->details) ? $this->details : [];
+        return isset($details['validator']);
     }
 }

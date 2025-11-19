@@ -123,11 +123,11 @@ class BlockService implements BlockContract
             return '';
         }
 
-        // Parse options JSON
-        $options = json_decode($block->options, true) ?? [];
+        // Get details (already cast to array)
+        $details = $block->details ?? [];
 
         // Get datasources if defined
-        $datasources = $options['datasources'] ?? [];
+        $datasources = $details['datasources'] ?? [];
         $data = $this->dataService->getDataSources($datasources);
 
         // Merge with block data
@@ -139,7 +139,7 @@ class BlockService implements BlockContract
                 'content' => $block->content,
                 'images' => $block->getMediaCollection('block_images'),
                 'elements' => $block->elements ?? [],
-                'options' => $options,
+                'details' => $details,
             ],
         ]);
 

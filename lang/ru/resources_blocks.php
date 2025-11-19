@@ -25,7 +25,7 @@ return [
         'content' => 'Содержимое',
         'urls' => 'URL правила (один на строку)',
         'rules' => 'Правило отображения',
-        'options' => 'Опции (JSON)',
+        'details' => 'Детали (JSON)',
         'images' => 'Изображения',
         'images_help' => 'Галерея изображений с метаданными (alt, title, content, link)',
         'elements' => 'Элементы',

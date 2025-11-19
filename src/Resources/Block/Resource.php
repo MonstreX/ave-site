@@ -142,8 +142,8 @@ class Resource extends BaseResource
                     ]),
                     Row::make()->schema([
                         Col::make(12)->schema([
-                            CodeEditor::make('options')
-                                ->label(__('ave-site::resources_blocks.fields.options'))
+                            CodeEditor::make('details')
+                                ->label(__('ave-site::resources_blocks.fields.details'))
                                 ->language('json')
                                 ->height(150)
                                 ->theme('github')

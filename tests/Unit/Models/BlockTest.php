@@ -78,7 +78,7 @@ class BlockTest extends TestCase
         $block = Block::create([
             'title' => 'Regular Block',
             'key' => 'regular',
-            'options' => '{"data_sources":{}}',
+            'details' => ['data_sources' => []],
         ]);
 
         $this->assertFalse($block->isForm());
@@ -89,7 +89,7 @@ class BlockTest extends TestCase
         $block = Block::create([
             'title' => 'Contact Form',
             'key' => 'contact-form',
-            'options' => '{"validator":{"name":"required","email":"required|email"}}',
+            'details' => ['validator' => ['name' => 'required', 'email' => 'required|email']],
         ]);
 
         $this->assertTrue($block->isForm());
@@ -122,17 +122,15 @@ class BlockTest extends TestCase
         $this->assertCount(2, $block->elements);
     }
 
-    public function test_options_accessor_formats_json(): void
+    public function test_details_is_cast_to_array(): void
     {
         $block = Block::create([
             'title' => 'Test',
             'key' => 'test',
-            'options' => '{"validator":{"email":"required"}}',
+            'details' => ['validator' => ['email' => 'required']],
         ]);
 
-        $options = $block->options;
-
-        $this->assertStringContainsString('"validator"', $options);
-        $this->assertStringContainsString('"email"', $options);
+        $this->assertIsArray($block->details);
+        $this->assertEquals('required', $block->details['validator']['email']);
     }
 }

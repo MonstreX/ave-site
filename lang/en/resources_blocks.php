@@ -25,7 +25,7 @@ return [
         'content' => 'Content',
         'urls' => 'URL Rules (one per line)',
         'rules' => 'Display Rule',
-        'options' => 'Options (JSON)',
+        'details' => 'Details (JSON)',
         'images' => 'Images',
         'images_help' => 'Image gallery with metadata (alt, title, content, link)',
         'elements' => 'Elements',
