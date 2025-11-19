@@ -4,7 +4,8 @@ namespace Monstrex\AveSite\Resources\Form;
 
 use Monstrex\AveSite\Models\Form as FormModel;
 use Monstrex\Ave\Core\Columns\Column;
-use Monstrex\Ave\Core\Components\Div;
+use Monstrex\Ave\Core\Components\Row;
+use Monstrex\Ave\Core\Components\Col;
 use Monstrex\Ave\Core\Fields\Number;
 use Monstrex\Ave\Core\Fields\TextInput;
 use Monstrex\Ave\Core\Fields\CodeEditor;
@@ -59,32 +60,32 @@ class Resource extends BaseResource
     public static function form($context): Form
     {
         return Form::make()->schema([
-            Div::make('row')->schema([
-                Div::make('col-12 col-md-6')->schema([
+            Row::make()->schema([
+                Col::make(6)->schema([
                     TextInput::make('title')
                         ->label(__('ave-site::resources_forms.fields.title'))
                         ->required(),
                 ]),
-                Div::make('col-12 col-md-3')->schema([
+                Col::make(3)->schema([
                     Toggle::make('status')
                         ->label(__('ave-site::resources_forms.fields.status'))
                         ->default(true),
                 ]),
-                Div::make('col-12 col-md-3')->schema([
+                Col::make(3)->schema([
                     Number::make('order')
                         ->label(__('ave-site::resources_forms.fields.order'))
                         ->default(0),
                 ]),
             ]),
-            Div::make('row')->schema([
-                Div::make('col-12 col-md-6')->schema([
+            Row::make()->schema([
+                Col::make(6)->schema([
                     TextInput::make('key')
                         ->label(__('ave-site::resources_forms.fields.key'))
                         ->required(),
                 ]),
             ]),
-            Div::make('row')->schema([
-                Div::make('col-12')->schema([
+            Row::make()->schema([
+                Col::make(12)->schema([
                     CodeEditor::make('content')
                         ->label(__('ave-site::resources_forms.fields.content'))
                         ->language('html')
@@ -93,8 +94,8 @@ class Resource extends BaseResource
                         ->autoHeight(true),
                 ]),
             ]),
-            Div::make('row')->schema([
-                Div::make('col-12')->schema([
+            Row::make()->schema([
+                Col::make(12)->schema([
                     CodeEditor::make('details')
                         ->label(__('ave-site::resources_forms.fields.details'))
                         ->language('json')

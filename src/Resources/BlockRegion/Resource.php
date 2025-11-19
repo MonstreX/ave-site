@@ -4,7 +4,8 @@ namespace Monstrex\AveSite\Resources\BlockRegion;
 
 use Monstrex\AveSite\Models\BlockRegion as BlockRegionModel;
 use Monstrex\Ave\Core\Columns\Column;
-use Monstrex\Ave\Core\Components\Div;
+use Monstrex\Ave\Core\Components\Row;
+use Monstrex\Ave\Core\Components\Col;
 use Monstrex\Ave\Core\Fields\TextInput;
 use Monstrex\Ave\Core\Form;
 use Monstrex\Ave\Core\Resource as BaseResource;
@@ -53,13 +54,13 @@ class Resource extends BaseResource
     public static function form($context): Form
     {
         return Form::make()->schema([
-            Div::make('row')->schema([
-                Div::make('col-12 col-md-6')->schema([
+            Row::make()->schema([
+                Col::make(6)->schema([
                     TextInput::make('name')
                         ->label(__('ave-site::resources_block_regions.fields.name'))
                         ->required(),
                 ]),
-                Div::make('col-12 col-md-6')->schema([
+                Col::make(6)->schema([
                     TextInput::make('key')
                         ->label(__('ave-site::resources_block_regions.fields.key'))
                         ->required(),
