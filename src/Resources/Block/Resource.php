@@ -6,11 +6,15 @@ use Monstrex\AveSite\Models\Block as BlockModel;
 use Monstrex\AveSite\Models\BlockRegion;
 use Monstrex\Ave\Core\Columns\Column;
 use Monstrex\Ave\Core\Components\Div;
+use Monstrex\Ave\Core\Components\Row;
+use Monstrex\Ave\Core\Components\Col;
 use Monstrex\Ave\Core\Fields\TextInput;
 use Monstrex\Ave\Core\Fields\Textarea;
 use Monstrex\Ave\Core\Fields\Toggle;
 use Monstrex\Ave\Core\Fields\Select;
 use Monstrex\Ave\Core\Fields\Number;
+use Monstrex\Ave\Core\Fields\Media;
+use Monstrex\Ave\Core\Fields\FieldSet;
 use Monstrex\Ave\Core\Form;
 use Monstrex\Ave\Core\Resource as BaseResource;
 use Monstrex\Ave\Core\Table;
@@ -124,6 +128,55 @@ class Resource extends BaseResource
                     Textarea::make('options')
                         ->label(__('ave-site::resources_blocks.fields.options'))
                         ->rows(8),
+                ]),
+            ]),
+            Div::make('row')->schema([
+                Div::make('col-12')->schema([
+                    FieldSet::make('elements')
+                        ->label(__('ave-site::resources_blocks.fields.elements'))
+                        ->help(__('ave-site::resources_blocks.fields.elements_help'))
+                        ->schema([
+                            Row::make()->schema([
+                                Col::make(12)->schema([
+                                    TextInput::make('title')
+                                        ->label(__('ave-site::resources_blocks.element_fields.title'))
+                                        ->required(),
+                                ]),
+                            ]),
+                            Row::make()->schema([
+                                Col::make(6)->schema([
+                                    Media::make('image')
+                                        ->label(__('ave-site::resources_blocks.element_fields.image'))
+                                        ->collection('block_elements')
+                                        ->acceptImages()
+                                        ->maxFileSize(5120)
+                                        ->props('alt'),
+                                ]),
+                                Col::make(6)->schema([
+                                    TextInput::make('alt')
+                                        ->label(__('ave-site::resources_blocks.element_fields.alt')),
+                                    TextInput::make('subtitle')
+                                        ->label(__('ave-site::resources_blocks.element_fields.subtitle')),
+                                    TextInput::make('link')
+                                        ->label(__('ave-site::resources_blocks.element_fields.link'))
+                                        ->url(),
+                                ]),
+                            ]),
+                            Row::make()->schema([
+                                Col::make(12)->schema([
+                                    Textarea::make('html')
+                                        ->label(__('ave-site::resources_blocks.element_fields.html'))
+                                        ->rows(4),
+                                ]),
+                            ]),
+                        ])
+                        ->sortable()
+                        ->minItems(0)
+                        ->maxItems(50)
+                        ->addButtonLabel(__('ave-site::resources_blocks.add_element'))
+                        ->deleteButtonLabel(__('ave-site::resources_blocks.delete_element'))
+                        ->headTitle('title')
+                        ->headPreview('image'),
                 ]),
             ]),
         ]);

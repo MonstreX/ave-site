@@ -137,6 +137,7 @@ class BlockService implements BlockContract
                 'key' => $block->key,
                 'title' => $block->title,
                 'content' => $block->content,
+                'elements' => $block->elements ?? [],
                 'options' => $options,
             ],
         ]);

@@ -11,11 +11,11 @@ class Block extends Model
 
     protected $fillable = [
         'title', 'key', 'region_id', 'order', 'status',
-        'urls', 'rules', 'content', 'media', 'options',
+        'urls', 'rules', 'content', 'elements', 'options',
     ];
 
     protected $casts = [
-        'media' => 'array',
+        'elements' => 'array',
         'status' => 'boolean',
         'rules' => 'integer',
     ];

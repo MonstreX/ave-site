@@ -107,16 +107,19 @@ class BlockTest extends TestCase
         $this->assertEquals(1, $block->rules);
     }
 
-    public function test_media_is_cast_to_array(): void
+    public function test_elements_is_cast_to_array(): void
     {
         $block = Block::create([
             'title' => 'Test',
             'key' => 'test',
-            'media' => ['image1.jpg', 'image2.jpg'],
+            'elements' => [
+                ['image' => 'image1.jpg', 'title' => 'Element 1'],
+                ['image' => 'image2.jpg', 'title' => 'Element 2']
+            ],
         ]);
 
-        $this->assertIsArray($block->media);
-        $this->assertCount(2, $block->media);
+        $this->assertIsArray($block->elements);
+        $this->assertCount(2, $block->elements);
     }
 
     public function test_options_accessor_formats_json(): void
