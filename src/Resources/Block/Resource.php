@@ -75,29 +75,24 @@ class Resource extends BaseResource
                 // Tab 1: Main
                 Tab::make(__('ave-site::resources_blocks.tabs.main'))->schema([
                     Row::make()->schema([
-                        Col::make(6)->schema([
-                            TextInput::make('title')
-                                ->label(__('ave-site::resources_blocks.fields.title'))
-                                ->required(),
-                        ]),
-                        Col::make(3)->schema([
+                        Col::make(2)->schema([
                             Toggle::make('status')
                                 ->label(__('ave-site::resources_blocks.fields.status'))
                                 ->default(true),
                         ]),
-                        Col::make(3)->schema([
-                            Number::make('order')
-                                ->label(__('ave-site::resources_blocks.fields.order'))
-                                ->default(0),
-                        ]),
                     ]),
                     Row::make()->schema([
-                        Col::make(6)->schema([
+                        Col::make(4)->schema([
+                            TextInput::make('title')
+                                ->label(__('ave-site::resources_blocks.fields.title'))
+                                ->required(),
+                        ]),
+                        Col::make(4)->schema([
                             TextInput::make('key')
                                 ->label(__('ave-site::resources_blocks.fields.key'))
                                 ->required(),
                         ]),
-                        Col::make(6)->schema([
+                        Col::make(4)->schema([
                             Select::make('region_id')
                                 ->label(__('ave-site::resources_blocks.fields.region'))
                                 ->options(static::getRegionOptions())
@@ -151,8 +146,13 @@ class Resource extends BaseResource
                                 ->label(__('ave-site::resources_blocks.fields.options'))
                                 ->language('json')
                                 ->height(150)
-                                ->theme('monokai')
+                                ->theme('github')
                                 ->autoHeight(true),
+                        ]),
+                        Col::make(3)->schema([
+                            Number::make('order')
+                                ->label(__('ave-site::resources_blocks.fields.order'))
+                                ->default(0),
                         ]),
                     ]),
                 ]),
