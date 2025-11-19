@@ -123,8 +123,13 @@ class BlockService implements BlockContract
             return '';
         }
 
-        // Get details (already cast to array)
+        // Get details (cast to array if needed)
         $details = $block->details ?? [];
+
+        // If details is still a JSON string, decode it
+        if (is_string($details)) {
+            $details = json_decode($details, true) ?? [];
+        }
 
         // Get datasources if defined
         $datasources = $details['datasources'] ?? [];
@@ -147,8 +152,9 @@ class BlockService implements BlockContract
             return $element;
         })->toArray();
 
-        // Merge with block data
-        $vars = array_merge($data, [
+        // Prepare template variables (datasources wrapped in 'data' key for Liquid compatibility)
+        $vars = [
+            'data' => $data,  // DataSources accessible as data.articles, data.testimonials, etc.
             'block' => [
                 'id' => $block->id,
                 'key' => $block->key,
@@ -158,7 +164,7 @@ class BlockService implements BlockContract
                 'elements' => $elements,
                 'details' => $details,
             ],
-        ]);
+        ];
 
         // Render content with Liquid template engine (via Template wrapper)
         $template = new Template(Shortcode::compile($block->content));
