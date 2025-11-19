@@ -130,6 +130,23 @@ class BlockService implements BlockContract
         $datasources = $details['datasources'] ?? [];
         $data = $this->dataService->getDataSources($datasources);
 
+        // Process media images - convert Media objects to arrays for Liquid
+        $images = $block->getMedia('block_images')->map(fn($m) => $this->mediaToArray($m))->toArray();
+
+        // Process elements - auto-detect and load Media fields
+        $elements = collect($block->elements ?? [])->map(function ($element) use ($block) {
+            foreach ($element as $key => $value) {
+                // Check if value is a media collection name (starts with 'elements.')
+                if (is_string($value) && str_starts_with($value, 'elements.')) {
+                    // Replace collection name with actual media array
+                    $element[$key] = $block->getMedia($value)
+                        ->map(fn($m) => $this->mediaToArray($m))
+                        ->toArray();
+                }
+            }
+            return $element;
+        })->toArray();
+
         // Merge with block data
         $vars = array_merge($data, [
             'block' => [
@@ -137,8 +154,8 @@ class BlockService implements BlockContract
                 'key' => $block->key,
                 'title' => $block->title,
                 'content' => $block->content,
-                'images' => $block->getMedia('block_images'),
-                'elements' => $block->elements ?? [],
+                'images' => $images,
+                'elements' => $elements,
                 'details' => $details,
             ],
         ]);
@@ -269,5 +286,26 @@ class BlockService implements BlockContract
         }
 
         return $blockModel ? $blockModel->{$field} : null;
+    }
+
+    /**
+     * Convert Media object to array for Liquid templates
+     * Returns all media properties + props object with ALL dynamic properties
+     *
+     * @param \Monstrex\Ave\Models\Media $media
+     * @return array
+     */
+    private function mediaToArray($media): array
+    {
+        return [
+            'url' => $media->url(),
+            'fullUrl' => $media->fullUrl(),
+            'path' => $media->path(),
+            'fileName' => $media->fileName(),
+            'size' => $media->size(),
+            'mime' => $media->mime(),
+            'order' => $media->order(),
+            'props' => $media->props(), // stdClass with ALL props (alt, title, any custom)
+        ];
     }
 }
