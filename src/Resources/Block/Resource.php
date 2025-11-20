@@ -51,6 +51,7 @@ class Resource extends BaseResource
         return Table::make()->columns([
             Column::make('title')
                 ->label(__('ave-site::resources_blocks.columns.title'))
+                ->linkAction('edit')
                 ->sortable(true),
             Column::make('key')
                 ->label(__('ave-site::resources_blocks.columns.key'))

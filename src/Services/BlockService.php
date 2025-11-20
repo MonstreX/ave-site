@@ -21,10 +21,12 @@ class BlockService implements BlockContract
     protected const ONLY = 1;
 
     protected DataService $dataService;
+    protected ModelResolver $modelResolver;
 
-    public function __construct(DataService $dataService)
+    public function __construct(DataService $dataService, ModelResolver $modelResolver)
     {
         $this->dataService = $dataService;
+        $this->modelResolver = $modelResolver;
     }
 
     /**
@@ -123,47 +125,19 @@ class BlockService implements BlockContract
             return '';
         }
 
-        // Get details (cast to array if needed)
-        $details = $block->details ?? [];
+        // Use ModelResolver to get all block data with resolved Media/FieldSet/JSON fields
+        $blockData = $this->modelResolver->resolveModel($block, \Monstrex\AveSite\Resources\Block\Resource::class);
 
-        // If details is still a JSON string, decode it
-        if (is_string($details)) {
-            $details = json_decode($details, true) ?? [];
-        }
-
-        // Get datasources if defined
+        // Get datasources if defined in details
+        $details = $blockData['details'] ?? [];
         $datasources = $details['datasources'] ?? [];
         $data = $this->dataService->getDataSources($datasources);
 
-        // Process media images - convert Media objects to arrays for Liquid
-        $images = $block->getMedia('block_images')->map(fn($m) => $this->mediaToArray($m))->toArray();
-
-        // Process elements - auto-detect and load Media fields
-        $elements = collect($block->elements ?? [])->map(function ($element) use ($block) {
-            foreach ($element as $key => $value) {
-                // Check if value is a media collection name (starts with 'elements.')
-                if (is_string($value) && str_starts_with($value, 'elements.')) {
-                    // Replace collection name with actual media array
-                    $element[$key] = $block->getMedia($value)
-                        ->map(fn($m) => $this->mediaToArray($m))
-                        ->toArray();
-                }
-            }
-            return $element;
-        })->toArray();
-
-        // Prepare template variables (datasources wrapped in 'data' key for Liquid compatibility)
+        // Prepare template variables
         $vars = [
-            'data' => $data,  // DataSources accessible as data.articles, data.testimonials, etc.
-            'block' => [
-                'id' => $block->id,
-                'key' => $block->key,
-                'title' => $block->title,
-                'content' => $block->content,
-                'images' => $images,
-                'elements' => $elements,
-                'details' => $details,
-            ],
+            'data' => $data,      // DataSources accessible as data.articles, data.testimonials, etc.
+            'this' => $blockData, // Current block data accessible as this.images, this.elements, etc.
+            'block' => $blockData, // Alias for backward compatibility
         ];
 
         // Render content with Liquid template engine (via Template wrapper)
@@ -294,24 +268,4 @@ class BlockService implements BlockContract
         return $blockModel ? $blockModel->{$field} : null;
     }
 
-    /**
-     * Convert Media object to array for Liquid templates
-     * Returns all media properties + props object with ALL dynamic properties
-     *
-     * @param \Monstrex\Ave\Models\Media $media
-     * @return array
-     */
-    private function mediaToArray($media): array
-    {
-        return [
-            'url' => $media->url(),
-            'fullUrl' => $media->fullUrl(),
-            'path' => $media->path(),
-            'fileName' => $media->fileName(),
-            'size' => $media->size(),
-            'mime' => $media->mime(),
-            'order' => $media->order(),
-            'props' => $media->props(), // stdClass with ALL props (alt, title, any custom)
-        ];
-    }
 }

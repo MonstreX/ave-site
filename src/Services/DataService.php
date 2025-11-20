@@ -13,6 +13,12 @@ use Schema;
 
 class DataService implements DataContract
 {
+    protected ModelResolver $modelResolver;
+
+    public function __construct(ModelResolver $modelResolver)
+    {
+        $this->modelResolver = $modelResolver;
+    }
     /**
      * Find model record by SLUG or ID
      *
@@ -167,85 +173,12 @@ class DataService implements DataContract
             $collection = $collection->take($config['limit']);
         }
 
-        // Convert to array FIRST, then process Media fields
+        // Use ModelResolver to process each record with all Media/FieldSet/JSON fields
         $records = $collection->map(function ($record) {
-            return $this->processModelMediaFields($record);
+            return $this->modelResolver->resolveModel($record);
         })->toArray();
 
         return $records;
-    }
-
-    /**
-     * Process Media and FieldSet fields in model record
-     * Converts Media objects to arrays for Liquid template access
-     *
-     * @param mixed $record Model instance
-     * @return array Processed record as array
-     */
-    protected function processModelMediaFields($record): array
-    {
-        // Convert model to array first
-        $data = $record->toArray();
-
-        if (!method_exists($record, 'getMedia')) {
-            return $data; // Model doesn't use HasMedia trait
-        }
-
-        // Get all attributes to check for Media collections
-        $attributes = $record->getAttributes();
-
-        foreach ($attributes as $field => $value) {
-            // Try to get media for this field
-            try {
-                $media = $record->getMedia($field);
-
-                if ($media->isNotEmpty()) {
-                    // Convert Media collection to array and replace in data array
-                    $data[$field] = $media->map(fn($m) => $this->mediaToArray($m))->toArray();
-                }
-            } catch (\Exception $e) {
-                // Not a media field, continue
-            }
-        }
-
-        // Process FieldSet elements (like block.elements)
-        if (isset($data['elements']) && is_array($data['elements'])) {
-            $data['elements'] = collect($data['elements'])->map(function ($element) use ($record) {
-                foreach ($element as $key => $value) {
-                    // Check if value is a media collection name (starts with 'elements.')
-                    if (is_string($value) && str_starts_with($value, 'elements.')) {
-                        // Replace collection name with actual media array
-                        $element[$key] = $record->getMedia($value)
-                            ->map(fn($m) => $this->mediaToArray($m))
-                            ->toArray();
-                    }
-                }
-                return $element;
-            })->toArray();
-        }
-
-        return $data;
-    }
-
-    /**
-     * Convert Media object to array for Liquid templates
-     * Returns all media properties + props object with ALL dynamic properties
-     *
-     * @param \Monstrex\Ave\Models\Media $media
-     * @return array
-     */
-    protected function mediaToArray($media): array
-    {
-        return [
-            'url' => $media->url(),
-            'fullUrl' => $media->fullUrl(),
-            'path' => $media->path(),
-            'fileName' => $media->fileName(),
-            'size' => $media->size(),
-            'mime' => $media->mime(),
-            'order' => $media->order(),
-            'props' => $media->props(), // stdClass with ALL props (alt, title, any custom)
-        ];
     }
 
     /**

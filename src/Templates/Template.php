@@ -68,6 +68,16 @@ class Template
             return __($arg);
         });
 
+        // DEBUG: Dump variable using Laravel dump() - for development only
+        $this->template->registerFilter('dump', function ($arg) {
+            if (config('app.debug')) {
+                ob_start();
+                dump($arg);
+                return ob_get_clean();
+            }
+            return '';
+        });
+
         $this->template->parse($content);
     }
 

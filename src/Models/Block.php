@@ -5,10 +5,12 @@ namespace Monstrex\AveSite\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Monstrex\Ave\Media\Traits\HasMedia;
+use Monstrex\Ave\Core\Fields\Fieldset\HasFieldSet;
 
 class Block extends Model
 {
     use HasMedia;
+    use HasFieldSet;
     
     protected $table = 'ave_site_blocks';
 
