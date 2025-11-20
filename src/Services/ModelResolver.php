@@ -19,6 +19,12 @@ class ModelResolver
     protected static array $metadataCache = [];
 
     /**
+     * Cache for Resource forms
+     * @var array<string, \Monstrex\Ave\Core\Form>
+     */
+    protected static array $formCache = [];
+
+    /**
      * Resolve model to array for Liquid template
      * Automatically processes Media, FieldSet, and JSON fields based on Resource metadata
      *
@@ -85,9 +91,12 @@ class ModelResolver
             return [];
         }
 
-        // Get Form from Resource
+        // Get Form from Resource (cached)
         try {
-            $form = $resourceClass::form(null);
+            if (!isset(static::$formCache[$resourceClass])) {
+                static::$formCache[$resourceClass] = $resourceClass::form(null);
+            }
+            $form = static::$formCache[$resourceClass];
         } catch (\Exception $e) {
             static::$metadataCache[$modelClass] = [];
             return [];
