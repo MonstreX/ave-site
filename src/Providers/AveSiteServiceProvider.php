@@ -90,6 +90,10 @@ class AveSiteServiceProvider extends ServiceProvider
                 __DIR__.'/../../src/Resources' => app_path('AveSite/Resources'),
             ], 'ave-site-resources');
 
+            $this->publishes([
+                __DIR__.'/../../resources/views' => resource_path('views/vendor/ave-site'),
+            ], 'ave-site-views');
+
             // Register commands
             $this->commands([
                 InstallCommand::class,

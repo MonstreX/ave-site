@@ -265,3 +265,70 @@ if (!function_exists('seo_meta')) {
         ];
     }
 }
+
+/*
+ * Get menu tree structure
+ */
+if (!function_exists('get_menu')) {
+    function get_menu(?string $modelSlug = null, ?array $parent = null): ?array
+    {
+        return app(\Monstrex\AveSite\Services\DataService::class)->getMenu($modelSlug, $parent);
+    }
+}
+
+/*
+ * Render menu as HTML
+ */
+if (!function_exists('render_menu')) {
+    function render_menu(?string $modelSlug = null, ?string $view = null): string
+    {
+        $menu = get_menu($modelSlug);
+
+        if (!$menu) {
+            return '';
+        }
+
+        // Default view for menu rendering
+        $view = $view ?? 'ave-site::menu.default';
+
+        // Check if view exists, otherwise return simple HTML
+        if (!view()->exists($view)) {
+            return render_menu_simple($menu);
+        }
+
+        return view($view, ['menu' => $menu])->render();
+    }
+}
+
+/*
+ * Render menu as simple HTML list (fallback)
+ */
+if (!function_exists('render_menu_simple')) {
+    function render_menu_simple(array $items, int $level = 0): string
+    {
+        if (empty($items)) {
+            return '';
+        }
+
+        $html = '<ul class="menu-level-' . $level . '">';
+
+        foreach ($items as $item) {
+            $url = $item['slug'] ?? '#';
+            $title = $item['title'] ?? 'Untitled';
+            $hasChildren = !empty($item['children']);
+
+            $html .= '<li>';
+            $html .= '<a href="/' . $url . '">' . e($title) . '</a>';
+
+            if ($hasChildren) {
+                $html .= render_menu_simple($item['children'], $level + 1);
+            }
+
+            $html .= '</li>';
+        }
+
+        $html .= '</ul>';
+
+        return $html;
+    }
+}

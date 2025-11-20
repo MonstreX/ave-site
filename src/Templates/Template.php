@@ -23,10 +23,9 @@ class Template
             return site_setting($arg, $arg2);
         });
 
-        // MENU (for future implementation)
-        $this->template->registerFilter('menu', function ($name, $template = null) {
-            // TODO: Implement menu rendering
-            return '';
+        // MENU
+        $this->template->registerFilter('menu', function ($modelSlug = null, $view = null) {
+            return render_menu($modelSlug, $view);
         });
 
         // BLOCK
