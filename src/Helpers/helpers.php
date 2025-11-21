@@ -155,6 +155,63 @@ if (!function_exists('get_image_or_create')) {
 }
 
 /*
+ * Generate responsive <img> tag with automatic srcset
+ *
+ * Usage:
+ *   responsive_image($src, 800, 600)
+ *   responsive_image($src, 800, 600, ['alt' => 'My image', 'class' => 'hero'])
+ *   responsive_image($src, 800, 600, ['sizes' => '(max-width: 768px) 100vw, 50vw'])
+ *
+ * Options:
+ *   - format: Image format (default: 'webp')
+ *   - quality: Image quality 1-100 (default: 80)
+ *   - alt: Alt text
+ *   - class: CSS class
+ *   - lazy: Enable lazy loading (default: true)
+ *   - sizes: Custom sizes attribute
+ *   - srcset: Custom srcset widths array [400, 800, 1200]
+ */
+if (!function_exists('responsive_image')) {
+    function responsive_image(string $src, int $width, ?int $height = null, array $options = [])
+    {
+        return app(\Monstrex\AveSite\Services\ResponsiveImageService::class)
+            ->image($src, $width, $height, $options);
+    }
+}
+
+/*
+ * Generate responsive <picture> tag with WebP and fallback formats
+ *
+ * Usage:
+ *   responsive_picture($src, 800, 600)
+ *   responsive_picture($src, 800, 600, ['alt' => 'My image'])
+ *   responsive_picture($src, 800, 600, [
+ *       'breakpoints' => [
+ *           ['media' => '(max-width: 768px)', 'width' => 400, 'height' => 400],
+ *       ]
+ *   ])
+ *
+ * Options:
+ *   - quality: Image quality 1-100 (default: 80)
+ *   - alt: Alt text
+ *   - class: CSS class
+ *   - lazy: Enable lazy loading (default: true)
+ *   - sizes: Custom sizes attribute
+ *   - srcset: Custom srcset widths array
+ *   - formats: Array of formats for sources (default: ['webp'])
+ *   - fallback: Fallback format for img tag (default: auto-detect)
+ *   - breakpoints: Array of art direction breakpoints
+ *       Each: ['media' => '(max-width: 768px)', 'width' => 400, 'height' => 400]
+ */
+if (!function_exists('responsive_picture')) {
+    function responsive_picture(string $src, int $width, ?int $height = null, array $options = [])
+    {
+        return app(\Monstrex\AveSite\Services\ResponsiveImageService::class)
+            ->picture($src, $width, $height, $options);
+    }
+}
+
+/*
  * Returns first NOT empty element in given array
  */
 if (!function_exists('get_first_not_empty')) {

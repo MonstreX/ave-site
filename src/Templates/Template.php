@@ -62,6 +62,18 @@ class Template
             return get_image_or_create($image, $xsize, $ysize, $format, $quality);
         });
 
+        // RESPONSIVE IMAGE - generates <img> with srcset
+        // Usage: {{ image.url | responsive_image: 800, 600 }}
+        $this->template->registerFilter('responsive_image', function ($image, $width = 800, $height = null) {
+            return responsive_image($image, (int) $width, $height ? (int) $height : null);
+        });
+
+        // RESPONSIVE PICTURE - generates <picture> with WebP + fallback
+        // Usage: {{ image.url | responsive_picture: 800, 600 }}
+        $this->template->registerFilter('responsive_picture', function ($image, $width = 800, $height = null) {
+            return responsive_picture($image, (int) $width, $height ? (int) $height : null);
+        });
+
         // TRANSLATE using lang files
         $this->template->registerFilter('lang', function ($arg) {
             return __($arg);

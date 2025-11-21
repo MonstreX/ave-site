@@ -72,6 +72,53 @@ get_image_or_create_webp(
 ): string
 ```
 
+### responsive_image()
+
+Generate responsive `<img>` tag with automatic srcset. Inspired by Next.js Image component.
+
+```php
+responsive_image(
+    string $src,
+    int $width,
+    ?int $height = null,
+    array $options = []
+): HtmlString
+```
+
+**Options:**
+- `format` - Image format (default: `'webp'`)
+- `quality` - Image quality 1-100 (default: 80)
+- `alt` - Alt text
+- `class` - CSS class
+- `lazy` - Enable lazy loading (default: `true`)
+- `sizes` - Custom sizes attribute
+- `srcset` - Custom srcset widths array `[400, 800, 1200]`
+
+### responsive_picture()
+
+Generate responsive `<picture>` tag with WebP and fallback formats.
+
+```php
+responsive_picture(
+    string $src,
+    int $width,
+    ?int $height = null,
+    array $options = []
+): HtmlString
+```
+
+**Options:**
+- All options from `responsive_image()` plus:
+- `formats` - Array of formats for sources (default: `['webp']`)
+- `fallback` - Fallback format for img tag (default: auto-detect from source)
+- `breakpoints` - Array of art direction breakpoints:
+  ```php
+  [
+      ['media' => '(max-width: 768px)', 'width' => 400, 'height' => 400],
+      ['media' => '(max-width: 1200px)', 'width' => 800, 'height' => 600],
+  ]
+  ```
+
 ---
 
 ## Blade Templates
@@ -168,8 +215,58 @@ When working with Block images (from Media library):
 
 ### Responsive Images
 
+Use `responsive_image()` and `responsive_picture()` helpers for automatic srcset generation:
+
 ```blade
-{{-- srcset for responsive images --}}
+{{-- Automatic srcset generation (recommended) --}}
+{!! responsive_image($image, 800, 600) !!}
+
+{{-- With options --}}
+{!! responsive_image($image, 800, 600, [
+    'alt' => 'My image',
+    'class' => 'hero-image',
+    'sizes' => '(max-width: 768px) 100vw, 50vw',
+]) !!}
+
+{{-- Picture element with WebP + fallback (recommended) --}}
+{!! responsive_picture($image, 800, 600) !!}
+
+{{-- Picture with art direction (different crops for screens) --}}
+{!! responsive_picture($image, 1200, 600, [
+    'alt' => 'Hero banner',
+    'breakpoints' => [
+        ['media' => '(max-width: 768px)', 'width' => 400, 'height' => 400],
+    ],
+]) !!}
+```
+
+**Generated output for `responsive_image($image, 800, 600)`:**
+```html
+<img src="/storage/.../image-800x600.webp"
+     srcset="/storage/.../image-400x300.webp 400w,
+             /storage/.../image-800x600.webp 800w,
+             /storage/.../image-1200x900.webp 1200w,
+             /storage/.../image-1600x1200.webp 1600w"
+     sizes="(max-width: 400px) 400px, (max-width: 800px) 800px, ..."
+     width="800" height="600" loading="lazy" alt="">
+```
+
+**Generated output for `responsive_picture($image, 800, 600)`:**
+```html
+<picture>
+    <source type="image/webp"
+            srcset="/storage/.../image-400x300.webp 400w,
+                    /storage/.../image-800x600.webp 800w, ..."
+            sizes="...">
+    <img src="/storage/.../image-800x600.jpg"
+         width="800" height="600" loading="lazy" alt="">
+</picture>
+```
+
+#### Manual Approach (if needed)
+
+```blade
+{{-- Manual srcset --}}
 <img src="{{ get_image_or_create($image, 800, 600, 'webp') }}"
      srcset="{{ get_image_or_create($image, 400, 300, 'webp') }} 400w,
              {{ get_image_or_create($image, 800, 600, 'webp') }} 800w,
@@ -177,22 +274,10 @@ When working with Block images (from Media library):
      sizes="(max-width: 400px) 400px, (max-width: 800px) 800px, 1200px"
      alt="">
 
-{{-- Picture element with WebP fallback --}}
+{{-- Manual picture element --}}
 <picture>
     <source srcset="{{ get_image_or_create($image, 800, 600, 'webp') }}" type="image/webp">
-    <source srcset="{{ get_image_or_create($image, 800, 600, 'jpg') }}" type="image/jpeg">
     <img src="{{ get_image_or_create($image, 800, 600, 'jpg') }}" alt="">
-</picture>
-
-{{-- Art direction with different crops --}}
-<picture>
-    {{-- Mobile: square crop --}}
-    <source media="(max-width: 768px)"
-            srcset="{{ get_image_or_create($image, 400, 400, 'webp') }}">
-    {{-- Desktop: wide crop --}}
-    <source media="(min-width: 769px)"
-            srcset="{{ get_image_or_create($image, 1200, 600, 'webp') }}">
-    <img src="{{ get_image_or_create($image, 1200, 600, 'jpg') }}" alt="">
 </picture>
 ```
 
@@ -256,20 +341,44 @@ When working with Block images (from Media library):
 ### Basic Filters
 
 ```liquid
-{{-- Crop to exact dimensions --}}
+{# Crop to exact dimensions #}
 {{ image.url | crop: 200, 200 }}
 
-{{-- Resize by width only --}}
+{# Resize by width only #}
 {{ image.url | crop: 400 }}
 
-{{-- Convert to WebP --}}
+{# Convert to WebP #}
 {{ image.url | webp }}
 
-{{-- Crop and convert to WebP --}}
+{# Crop and convert to WebP #}
 {{ image.url | crop: 800, 600, 'webp' }}
 
-{{-- With quality --}}
+{# With quality #}
 {{ image.url | crop: 800, 600, 'webp', 85 }}
+```
+
+### Responsive Filters
+
+```liquid
+{# Generate <img> with automatic srcset #}
+{{ image.url | responsive_image: 800, 600 }}
+
+{# Generate <picture> with WebP + fallback #}
+{{ image.url | responsive_picture: 800, 600 }}
+```
+
+**Output:**
+```html
+<!-- responsive_image -->
+<img src="/storage/.../image-800x600.webp"
+     srcset="/storage/.../image-400x300.webp 400w, ..."
+     sizes="..." width="800" height="600" loading="lazy" alt="">
+
+<!-- responsive_picture -->
+<picture>
+    <source type="image/webp" srcset="..." sizes="...">
+    <img src="/storage/.../image-800x600.jpg" ...>
+</picture>
 ```
 
 ### In Block Templates
