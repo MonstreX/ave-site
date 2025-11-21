@@ -23,9 +23,9 @@ class Template
             return site_setting($arg, $arg2);
         });
 
-        // MENU
-        $this->template->registerFilter('menu', function ($modelSlug = null, $view = null) {
-            return render_menu($modelSlug, $view);
+        // MENU (uses global menu() helper from ave.package)
+        $this->template->registerFilter('menu', function ($name, $template = null) {
+            return menu($name, $template);
         });
 
         // BLOCK
