@@ -557,6 +557,7 @@ $filename = generate_filename($uploadedFile, 'uploads/');
 
 ## See Also
 
+- [Images](images.md) - Detailed image processing guide with examples
 - [Facades](facades.md) - Service facade documentation
 - [Templating](templating.md) - Liquid template filters
 - [Services](services.md) - Service class documentation

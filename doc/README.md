@@ -110,6 +110,7 @@ $email = site_setting('mail.from_address');
 | [Settings](settings.md) | Site settings management |
 | [Localization](localization.md) | Multi-language support |
 | [Templating](templating.md) | Liquid templates and shortcodes |
+| [Images](images.md) | Image processing, resizing, and optimization |
 | [Models](models.md) | Database models reference |
 | [Services](services.md) | Service classes documentation |
 | [Helpers](helpers.md) | Global helper functions |

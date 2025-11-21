@@ -144,6 +144,8 @@ get_block_field($block, string $field): mixed
 
 ### Image Processing
 
+See [Images](images.md) for detailed usage examples.
+
 ```php
 get_image_or_create(string $image_path, ?int $width = null, ?int $height = null, ?string $format = null, ?int $quality = null): string
 get_image_webp(string $image_path): string

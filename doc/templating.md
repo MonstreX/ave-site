@@ -562,6 +562,7 @@ Only works when `app.debug = true` in Laravel.
 
 ## See Also
 
+- [Images](images.md) - Image processing and optimization
 - [Blocks](blocks.md) - Block system documentation
 - [Forms](forms.md) - Form handling guide
 - [Helpers](helpers.md) - Helper functions reference
