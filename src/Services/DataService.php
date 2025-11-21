@@ -422,10 +422,10 @@ class DataService implements DataContract
         $quality = $quality ?? 80;
 
         $sizes = $width || $height ? '-' . $width . 'x' . $height : '';
-        $thumb = $width || $height ? 'thumbnails/' : '';
+        $cacheDir = $width || $height ? 'cache/' : '';
 
         $target_path_full = $path_info['dirname'] . '/'
-            . $thumb
+            . $cacheDir
             . $path_info['filename']
             . $sizes
             . '.' . $format;
