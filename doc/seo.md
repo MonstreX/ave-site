@@ -444,7 +444,7 @@ Inject custom JavaScript/CSS code snippets into different parts of your HTML doc
 - **Order control**: Multiple scripts in same position, sorted by order
 - **Enable/disable**: Toggle scripts without deleting
 - **Auto-wrapping**: Automatically wraps code in `<script>` tags if needed
-- **Options field**: Store additional metadata as JSON
+- **Details field**: Store additional metadata as JSON (with CodeEditor)
 
 ### Admin Interface
 

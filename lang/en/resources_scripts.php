@@ -17,7 +17,7 @@ return [
         'key' => 'Unique Key',
         'position' => 'Output Position',
         'content' => 'Script Code',
-        'options' => 'Options (JSON)',
+        'details' => 'Details (JSON)',
         'order' => 'Sort Order',
     ],
     'positions' => [

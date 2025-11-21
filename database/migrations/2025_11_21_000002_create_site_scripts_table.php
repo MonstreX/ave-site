@@ -15,7 +15,7 @@ return new class extends Migration
             $table->boolean('status')->default(true);
             $table->enum('position', ['head', 'body_start', 'body_end'])->default('body_end');
             $table->text('content');
-            $table->json('options')->nullable();
+            $table->json('details')->nullable();
             $table->integer('order')->default(0);
             $table->timestamps();
 

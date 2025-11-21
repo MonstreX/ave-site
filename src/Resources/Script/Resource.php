@@ -11,7 +11,6 @@ use Monstrex\Ave\Core\Fields\CodeEditor;
 use Monstrex\Ave\Core\Fields\Number;
 use Monstrex\Ave\Core\Fields\Select;
 use Monstrex\Ave\Core\Fields\TextInput;
-use Monstrex\Ave\Core\Fields\Textarea;
 use Monstrex\Ave\Core\Fields\Toggle;
 use Monstrex\Ave\Core\Form;
 use Monstrex\Ave\Core\Resource as BaseResource;
@@ -122,9 +121,11 @@ class Resource extends BaseResource
             ]),
             Row::make()->schema([
                 Col::make(12)->schema([
-                    Textarea::make('options')
-                        ->label(__('ave-site::resources_scripts.fields.options'))
-                        ->rows(3)
+                    CodeEditor::make('details')
+                        ->label(__('ave-site::resources_scripts.fields.details'))
+                        ->language('json')
+                        ->theme('github')
+                        ->height(150)
                         ->placeholder('{"async": true, "defer": true}'),
                 ]),
             ]),

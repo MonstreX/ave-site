@@ -17,7 +17,7 @@ return [
         'key' => 'Уникальный ключ',
         'position' => 'Позиция вывода',
         'content' => 'Код скрипта',
-        'options' => 'Опции (JSON)',
+        'details' => 'Детали (JSON)',
         'order' => 'Порядок сортировки',
     ],
     'positions' => [

@@ -14,13 +14,13 @@ class Script extends Model
         'status',
         'position',
         'content',
-        'options',
+        'details',
         'order',
     ];
 
     protected $casts = [
         'status' => 'boolean',
-        'options' => 'array',
+        'details' => 'array',
         'order' => 'integer',
     ];
 
