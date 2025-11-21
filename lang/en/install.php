@@ -9,4 +9,5 @@ return [
     'menu_localizations' => 'Localizations',
     'menu_settings' => 'Site Settings',
     'menu_redirects' => 'Redirects',
+    'menu_scripts' => 'Scripts',
 ];

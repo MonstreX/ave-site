@@ -68,6 +68,7 @@ return [
         'localization' => $modelNamespace.'\\Localization',
         'setting' => $modelNamespace.'\\Setting',
         'redirect' => $modelNamespace.'\\Redirect',
+        'script' => $modelNamespace.'\\Script',
     ],
 
     /*
@@ -81,6 +82,7 @@ return [
         'ave_site_localizations' => 'localization',
         'ave_site_settings' => 'setting',
         'ave_site_redirects' => 'redirect',
+        'ave_site_scripts' => 'script',
     ],
 
     /*
@@ -94,6 +96,7 @@ return [
         'localization' => $resourceNamespace.'\\Localization\\Resource',
         'setting' => $resourceNamespace.'\\Setting\\Resource',
         'redirect' => $resourceNamespace.'\\Redirect\\Resource',
+        'script' => $resourceNamespace.'\\Script\\Resource',
     ],
 
     /*

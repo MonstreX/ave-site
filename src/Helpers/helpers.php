@@ -570,3 +570,43 @@ if (!function_exists('seo_tags')) {
     }
 }
 
+
+if (!function_exists('scripts')) {
+    /**
+     * Output scripts for specified position.
+     *
+     * @param string $position Position: 'head', 'body_start', 'body_end'
+     * @return string HTML output with script tags
+     */
+    function scripts(string $position): string
+    {
+        try {
+            $scripts = \Monstrex\AveSite\Models\Script::active()
+                ->byPosition($position)
+                ->ordered()
+                ->get();
+
+            if ($scripts->isEmpty()) {
+                return '';
+            }
+
+            $output = [];
+
+            foreach ($scripts as $script) {
+                $content = trim($script->content);
+
+                // Wrap in script tag if not already wrapped
+                if (!str_starts_with($content, '<script') && !str_starts_with($content, '<style')) {
+                    $content = "<script>\n{$content}\n</script>";
+                }
+
+                $output[] = $content;
+            }
+
+            return implode("\n", $output);
+        } catch (\Exception $e) {
+            // Silently fail if table doesn't exist
+            return '';
+        }
+    }
+}

@@ -185,6 +185,25 @@ class InstallCommand extends Command
             'updated_at' => now(),
         ]);
 
+        // Scripts item (separate)
+        \DB::table('ave_menu_items')->insert([
+            'menu_id' => $menuId,
+            'parent_id' => null,
+            'title' => __('ave-site::install.menu_scripts'),
+            'status' => 1,
+            'icon' => 'voyager-code',
+            'route' => null,
+            'url' => null,
+            'target' => '_self',
+            'order' => $maxOrder + 4,
+            'permission_key' => null,
+            'resource_slug' => 'site-scripts',
+            'ability' => 'viewAny',
+            'is_divider' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         $this->info('   Menu items created successfully');
     }
 }

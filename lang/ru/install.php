@@ -9,4 +9,5 @@ return [
     'menu_localizations' => 'Локализации',
     'menu_settings' => 'Настройки сайта',
     'menu_redirects' => 'Редиректы',
+    'menu_scripts' => 'Скрипты',
 ];
