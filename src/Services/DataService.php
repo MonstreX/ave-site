@@ -386,29 +386,27 @@ class DataService implements DataContract
 
         $origin_url = $image_url;
 
-        // Add HOST if not present (need for relative URLs)
-        if (!isset(parse_url($image_url)['host'])) {
-            $image_url = request()->getSchemeAndHttpHost() . $image_url;
+        // Convert URL to storage path
+        // Input can be:
+        // - /storage/files/media/... (relative URL with /storage prefix)
+        // - https://host.com/storage/files/media/... (full URL)
+        // - files/media/... (already a storage path)
+
+        // Remove host if present
+        $parsed = parse_url($image_url);
+        if (isset($parsed['host'])) {
+            $image_url = $parsed['path'] ?? '';
         }
 
-        // Remove HOST and Disk Part of URL if present, like: "https://host.com/storage"
-        $disk = Storage::disk(config('filesystems.default'));
-        $diskUrl = '';
-
-        // Get disk URL - handle different Laravel versions and config structures
-        if (method_exists($disk, 'url')) {
-            // Try to get base URL from disk
-            try {
-                $diskUrl = $disk->url('');
-                // Remove trailing slash if present
-                $diskUrl = rtrim($diskUrl, '/');
-            } catch (\Exception $e) {
-                // Fallback to config
-                $diskUrl = config('app.url') . '/storage';
-            }
+        // Remove /storage prefix (public disk URL prefix)
+        if (Str::startsWith($image_url, '/storage/')) {
+            $image_url = Str::replaceFirst('/storage/', '', $image_url);
+        } elseif (Str::startsWith($image_url, '/storage')) {
+            $image_url = Str::replaceFirst('/storage', '', $image_url);
         }
 
-        $image_url = Str::replaceFirst($diskUrl, '', $image_url);
+        // Remove leading slash
+        $image_url = ltrim($image_url, '/');
 
         $path_info = pathinfo($image_url);
 
@@ -432,14 +430,17 @@ class DataService implements DataContract
             . $sizes
             . '.' . $format;
 
-        if (!Storage::disk(config('filesystems.default'))->exists($image_url)) {
+        // Use public disk for storage operations (files are in storage/app/public)
+        $disk = Storage::disk('public');
+
+        if (!$disk->exists($image_url)) {
             return $origin_url;
         }
 
-        if (!Storage::disk(config('filesystems.default'))->exists($target_path_full)) {
+        if (!$disk->exists($target_path_full)) {
             try {
-                // Use Ave ImageProcessor instead of Intervention Image
-                $fullPath = Storage::disk(config('filesystems.default'))->path($image_url);
+                // Use Ave ImageProcessor
+                $fullPath = $disk->path($image_url);
                 $processor = new ImageProcessor();
                 $processor->read($fullPath);
 
@@ -453,13 +454,19 @@ class DataService implements DataContract
                 // Encode with format and quality
                 $encoded = $processor->encode($format, $quality);
 
+                // Ensure thumbnails directory exists
+                $targetDir = dirname($target_path_full);
+                if (!$disk->exists($targetDir)) {
+                    $disk->makeDirectory($targetDir);
+                }
+
                 // Save to storage
-                Storage::disk(config('filesystems.default'))->put($target_path_full, $encoded, 'public');
+                $disk->put($target_path_full, $encoded);
             } catch (\Exception $e) {
-                return $e->getMessage();
+                return $origin_url;
             }
         }
 
-        return Str::replaceFirst('//', '/', Storage::url($target_path_full));
+        return '/storage/' . $target_path_full;
     }
 }
