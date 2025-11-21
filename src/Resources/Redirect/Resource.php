@@ -51,6 +51,7 @@ class Resource extends BaseResource
                     ->label(__('ave-site::resources_redirects.columns.is_active'))
                     ->trueLabel(__('ave::common.active'))
                     ->falseLabel(__('ave::common.inactive'))
+                    ->width(60)
                     ->inlineToggle(),
                 Column::make('from_url')
                     ->label(__('ave-site::resources_redirects.columns.from_url'))
