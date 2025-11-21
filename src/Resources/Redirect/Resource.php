@@ -93,7 +93,7 @@ class Resource extends BaseResource
                 ]),
             ]),
             Row::make()->schema([
-                Col::make(4)->schema([
+                Col::make(12)->schema([
                     Select::make('status_code')
                         ->label(__('ave-site::resources_redirects.fields.status_code'))
                         ->options([
@@ -102,20 +102,8 @@ class Resource extends BaseResource
                             307 => '307 - ' . __('ave-site::resources_redirects.status_codes.307'),
                             308 => '308 - ' . __('ave-site::resources_redirects.status_codes.308'),
                         ])
-                        ->default(301),
-                ]),
-                Col::make(4)->schema([
-                    Number::make('hits')
-                        ->label(__('ave-site::resources_redirects.fields.hits'))
-                        ->default(0)
-                        ->hideOnCreate()
-                        ->disabled(),
-                ]),
-                Col::make(4)->schema([
-                    TextInput::make('last_hit_at')
-                        ->label(__('ave-site::resources_redirects.fields.last_hit_at'))
-                        ->hideOnCreate()
-                        ->disabled(),
+                        ->default(301)
+                        ->required(),
                 ]),
             ]),
         ]);
