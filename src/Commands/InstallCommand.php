@@ -58,7 +58,15 @@ class InstallCommand extends Command
 
     protected function createMenuItems(): void
     {
-        $menuId = 1; // Main admin menu
+        // Get admin menu
+        $menu = \DB::table('ave_menus')->where('key', 'admin')->first();
+
+        if (!$menu) {
+            $this->warn('Admin menu not found. Skipping menu items.');
+            return;
+        }
+
+        $menuId = $menu->id;
 
         // Get max order
         $maxOrder = \DB::table('ave_menu_items')

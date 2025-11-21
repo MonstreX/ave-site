@@ -10,10 +10,10 @@ class AveSiteMenuSeeder extends Seeder
     public function run(): void
     {
         // Найдем главное меню (main)
-        $mainMenu = DB::table('ave_menus')->where('slug', 'main')->first();
+        $mainMenu = DB::table('ave_menus')->where('key', 'admin')->first();
 
         if (!$mainMenu) {
-            $this->command->warn('Main menu not found. Skipping ave-site menu items.');
+            $this->command->warn('Admin menu not found. Skipping ave-site menu items.');
             return;
         }
 
