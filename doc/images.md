@@ -305,16 +305,28 @@ Use `responsive_image()` and `responsive_picture()` helpers for automatic srcset
 ### Gallery Component
 
 ```blade
-{{-- Image gallery with lightbox --}}
+{{-- Simple gallery with responsive images --}}
 <div class="gallery">
     @foreach($images as $image)
-        <a href="{{ $image['url'] }}"
-           data-lightbox="gallery"
-           data-title="{{ $image['props']['title'] ?? '' }}">
-            <img src="{{ get_image_or_create($image['url'], 300, 300, 'webp', 80) }}"
-                 alt="{{ $image['props']['alt'] ?? '' }}"
-                 loading="lazy">
+        <a href="{{ $image['url'] }}" data-lightbox="gallery">
+            {!! responsive_image($image['url'], 300, 300, [
+                'alt' => $image['props']['alt'] ?? '',
+                'class' => 'gallery-thumb',
+            ]) !!}
         </a>
+    @endforeach
+</div>
+
+{{-- Product grid with responsive pictures --}}
+<div class="products-grid">
+    @foreach($products as $product)
+        <article class="product-card">
+            {!! responsive_picture($product->image, 400, 400, [
+                'alt' => $product->title,
+                'class' => 'product-image',
+            ]) !!}
+            <h3>{{ $product->title }}</h3>
+        </article>
     @endforeach
 </div>
 ```
@@ -384,6 +396,16 @@ Use `responsive_image()` and `responsive_picture()` helpers for automatic srcset
 ### In Block Templates
 
 ```liquid
+{# Simple block with responsive images #}
+<div class="block-content">
+    {% if this.images.size > 0 %}
+        {% for image in this.images %}
+            {{ image.url | responsive_image: 400, 300 }}
+        {% endfor %}
+    {% endif %}
+</div>
+
+{# Or with basic crop filter #}
 <div class="block-content">
     {% if this.images.size > 0 %}
         {% for image in this.images %}
@@ -399,6 +421,7 @@ Use `responsive_image()` and `responsive_picture()` helpers for automatic srcset
 ```liquid
 <section class="hero">
     {% if this.images[0] %}
+        {# Responsive hero with art direction would need Blade, for Liquid use crop #}
         <div class="hero-bg" style="background-image: url('{{ this.images[0].url | crop: 1920, 800, 'webp' }}')"></div>
     {% endif %}
 
@@ -407,18 +430,27 @@ Use `responsive_image()` and `responsive_picture()` helpers for automatic srcset
         <p>{{ this.elements[0].subtitle }}</p>
     </div>
 </section>
+
+{# Or use responsive_picture for the hero image #}
+<section class="hero">
+    {% if this.images[0] %}
+        <div class="hero-image">
+            {{ this.images[0].url | responsive_picture: 1200, 600 }}
+        </div>
+    {% endif %}
+</section>
 ```
 
 ### Gallery Block
 
 ```liquid
+{# Gallery with responsive thumbnails #}
 <div class="gallery-grid">
     {% for image in this.images %}
         <a href="{{ image.fullUrl }}"
            data-lightbox="gallery-{{ this.id }}"
            data-title="{{ image.props.title }}">
-            <img src="{{ image.url | crop: 300, 300, 'webp' }}"
-                 alt="{{ image.props.alt | default: 'Gallery image' }}">
+            {{ image.url | responsive_image: 300, 300 }}
         </a>
     {% endfor %}
 </div>
