@@ -227,11 +227,11 @@ if (!function_exists('get_first_not_empty')) {
 }
 
 /*
- * Render breadcrumbs with Schema.org microdata
+ * Breadcrumbs with Schema.org microdata
  *
  * Usage:
- *   render_breadcrumbs($breadcrumbs)
- *   render_breadcrumbs($breadcrumbs, ['separator' => '→', 'class' => 'my-breadcrumbs'])
+ *   breadcrumbs($breadcrumbs)
+ *   breadcrumbs($breadcrumbs, ['separator' => '→', 'class' => 'my-breadcrumbs'])
  *
  * Options:
  *   - home_title: Title for home link (default: 'Home')
@@ -245,8 +245,8 @@ if (!function_exists('get_first_not_empty')) {
  * @param array $options Rendering options
  * @return \Illuminate\Support\HtmlString
  */
-if (!function_exists('render_breadcrumbs')) {
-    function render_breadcrumbs(array $breadcrumbs, array $options = [])
+if (!function_exists('breadcrumbs')) {
+    function breadcrumbs(array $breadcrumbs, array $options = [])
     {
         if (empty($breadcrumbs)) {
             return new \Illuminate\Support\HtmlString('');
@@ -505,13 +505,13 @@ if (!function_exists('seo_meta')) {
 }
 
 /**
- * Render SEO meta tags as HTML
+ * SEO meta tags as HTML
  *
  * @param mixed $model Model or array with SEO data
  * @return \Illuminate\Support\HtmlString
  */
-if (!function_exists('render_seo_meta')) {
-    function render_seo_meta(mixed $model = null): \Illuminate\Support\HtmlString
+if (!function_exists('seo_tags')) {
+    function seo_tags(mixed $model = null): \Illuminate\Support\HtmlString
     {
         $seo = seo_meta($model);
         $html = '';
