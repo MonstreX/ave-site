@@ -67,6 +67,7 @@ return [
         'form' => $modelNamespace.'\\Form',
         'localization' => $modelNamespace.'\\Localization',
         'setting' => $modelNamespace.'\\Setting',
+        'redirect' => $modelNamespace.'\\Redirect',
     ],
 
     /*
@@ -79,6 +80,7 @@ return [
         'ave_site_forms' => 'form',
         'ave_site_localizations' => 'localization',
         'ave_site_settings' => 'setting',
+        'ave_site_redirects' => 'redirect',
     ],
 
     /*
@@ -91,6 +93,7 @@ return [
         'form' => $resourceNamespace.'\\Form\\Resource',
         'localization' => $resourceNamespace.'\\Localization\\Resource',
         'setting' => $resourceNamespace.'\\Setting\\Resource',
+        'redirect' => $resourceNamespace.'\\Redirect\\Resource',
     ],
 
     /*

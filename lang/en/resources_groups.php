@@ -3,4 +3,5 @@
 return [
     'content' => 'Content',
     'settings' => 'Settings',
+    'seo' => 'SEO',
 ];

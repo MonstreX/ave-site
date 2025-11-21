@@ -138,6 +138,10 @@ class AveSiteServiceProvider extends ServiceProvider
     protected function registerFrontendRoutes(): void
     {
         try {
+            // Register redirect middleware globally for web routes
+            $router = $this->app['router'];
+            $router->pushMiddlewareToGroup('web', \Monstrex\AveSite\Http\Middleware\HandleRedirects::class);
+
             \Route::middleware(['web'])->group(function () {
                 \Route::post('/api/send-form', [\Monstrex\AveSite\Http\Controllers\FormController::class, 'send'])
                     ->name('ave-site.forms.send');

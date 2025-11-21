@@ -143,6 +143,31 @@ class Resource extends BaseResource
                                 ->label(__('ave-site::resources_pages.fields.seo_description')),
                             TextInput::make('meta_keywords')
                                 ->label(__('ave-site::resources_pages.fields.seo_keywords')),
+                            TextInput::make('canonical_url')
+                                ->label(__('ave-site::resources_pages.fields.canonical_url'))
+                                ->placeholder('https://...'),
+                            TextInput::make('og_title')
+                                ->label(__('ave-site::resources_pages.fields.og_title')),
+                            TextInput::make('og_description')
+                                ->label(__('ave-site::resources_pages.fields.og_description')),
+                            TextInput::make('og_image')
+                                ->label(__('ave-site::resources_pages.fields.og_image'))
+                                ->placeholder('/images/og-image.jpg'),
+                            Select::make('og_type')
+                                ->label(__('ave-site::resources_pages.fields.og_type'))
+                                ->options([
+                                    '' => '— ' . __('ave-site::resources_pages.fields.og_type_default') . ' —',
+                                    'website' => 'website',
+                                    'article' => 'article',
+                                    'product' => 'product',
+                                ]),
+                            Select::make('twitter_card')
+                                ->label(__('ave-site::resources_pages.fields.twitter_card'))
+                                ->options([
+                                    '' => '— ' . __('ave-site::resources_pages.fields.twitter_card_default') . ' —',
+                                    'summary' => 'summary',
+                                    'summary_large_image' => 'summary_large_image',
+                                ]),
                         ]),
                 ]),
                 Tab::make(__('ave-site::resources_pages.tabs.options'))->schema([

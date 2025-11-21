@@ -218,6 +218,54 @@ class AveSiteSettingsSeeder extends Seeder
                     'value' => '',
                     'class' => 'col-md-12',
                 ],
+                'section_og' => [
+                    'label' => trans("$t.seo.section_og"),
+                    'type' => 'section',
+                    'class' => 'col-md-12',
+                ],
+                'og_site_name' => [
+                    'label' => trans("$t.seo.og_site_name"),
+                    'type' => 'text',
+                    'value' => '',
+                    'class' => 'col-md-6',
+                ],
+                'og_type' => [
+                    'label' => trans("$t.seo.og_type"),
+                    'type' => 'dropdown',
+                    'value' => 'website',
+                    'class' => 'col-md-6',
+                    'options' => [
+                        'website' => trans("$t.seo.og_type_website"),
+                        'article' => trans("$t.seo.og_type_article"),
+                    ],
+                ],
+                'og_image' => [
+                    'label' => trans("$t.seo.og_image"),
+                    'type' => 'media',
+                    'value' => '',
+                    'class' => 'col-md-12',
+                ],
+                'section_twitter' => [
+                    'label' => trans("$t.seo.section_twitter"),
+                    'type' => 'section',
+                    'class' => 'col-md-12',
+                ],
+                'twitter_card' => [
+                    'label' => trans("$t.seo.twitter_card"),
+                    'type' => 'dropdown',
+                    'value' => 'summary_large_image',
+                    'class' => 'col-md-6',
+                    'options' => [
+                        'summary' => trans("$t.seo.twitter_card_summary"),
+                        'summary_large_image' => trans("$t.seo.twitter_card_summary_large"),
+                    ],
+                ],
+                'twitter_site' => [
+                    'label' => trans("$t.seo.twitter_site"),
+                    'type' => 'text',
+                    'value' => '',
+                    'class' => 'col-md-6',
+                ],
             ],
         ];
 

@@ -40,6 +40,12 @@ trait HasSeoMeta
             'seo_title' => $value['seo_title'] ?? '',
             'meta_description' => $value['meta_description'] ?? '',
             'meta_keywords' => $value['meta_keywords'] ?? '',
+            'canonical_url' => $value['canonical_url'] ?? '',
+            'og_title' => $value['og_title'] ?? '',
+            'og_description' => $value['og_description'] ?? '',
+            'og_image' => $value['og_image'] ?? '',
+            'og_type' => $value['og_type'] ?? '',
+            'twitter_card' => $value['twitter_card'] ?? '',
         ];
     }
 
@@ -49,6 +55,12 @@ trait HasSeoMeta
             'seo_title' => '',
             'meta_description' => '',
             'meta_keywords' => '',
+            'canonical_url' => '',
+            'og_title' => '',
+            'og_description' => '',
+            'og_image' => '',
+            'og_type' => '',
+            'twitter_card' => '',
         ];
     }
 }
