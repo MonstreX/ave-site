@@ -392,8 +392,22 @@ class DataService implements DataContract
         }
 
         // Remove HOST and Disk Part of URL if present, like: "https://host.com/storage"
-        $diskConfig = Storage::disk(config('filesystems.default'))->getConfig();
-        $diskUrl = is_array($diskConfig) ? $diskConfig['url'] : $diskConfig->get('url');
+        $disk = Storage::disk(config('filesystems.default'));
+        $diskUrl = '';
+
+        // Get disk URL - handle different Laravel versions and config structures
+        if (method_exists($disk, 'url')) {
+            // Try to get base URL from disk
+            try {
+                $diskUrl = $disk->url('');
+                // Remove trailing slash if present
+                $diskUrl = rtrim($diskUrl, '/');
+            } catch (\Exception $e) {
+                // Fallback to config
+                $diskUrl = config('app.url') . '/storage';
+            }
+        }
+
         $image_url = Str::replaceFirst($diskUrl, '', $image_url);
 
         $path_info = pathinfo($image_url);
