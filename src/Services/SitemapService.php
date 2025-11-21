@@ -104,6 +104,17 @@ class SitemapService
                 $query->$scope();
             }
 
+            // Apply status filter if specified
+            if (!empty($config['status'])) {
+                $statusField = $config['status']['field'] ?? 'status';
+                $statusValue = $config['status']['value'] ?? 1;
+                if (is_array($statusValue)) {
+                    $query->whereIn($statusField, $statusValue);
+                } else {
+                    $query->where($statusField, $statusValue);
+                }
+            }
+
             // Eager load relations
             if (!empty($config['with'])) {
                 $query->with($config['with']);
@@ -131,6 +142,12 @@ class SitemapService
                 try {
                     $url = route($routeName, $params);
                 } catch (\Exception $e) {
+                    continue;
+                }
+
+                // Check exclude patterns
+                $path = parse_url($url, PHP_URL_PATH) ?? '/';
+                if ($this->isExcluded($path, config('ave-site.sitemap.exclude', []))) {
                     continue;
                 }
 
