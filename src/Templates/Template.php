@@ -74,6 +74,16 @@ class Template
             return responsive_picture($image, (int) $width, $height ? (int) $height : null);
         });
 
+        // BREADCRUMBS - renders breadcrumbs with Schema.org markup
+        // Usage: {{ breadcrumbs | breadcrumbs }}
+        // Usage: {{ breadcrumbs | breadcrumbs: '→' }}
+        $this->template->registerFilter('breadcrumbs', function ($breadcrumbs, $separator = '/') {
+            if (!is_array($breadcrumbs)) {
+                return '';
+            }
+            return render_breadcrumbs($breadcrumbs, ['separator' => $separator]);
+        });
+
         // TRANSLATE using lang files
         $this->template->registerFilter('lang', function ($arg) {
             return __($arg);

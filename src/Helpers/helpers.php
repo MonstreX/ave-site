@@ -227,6 +227,83 @@ if (!function_exists('get_first_not_empty')) {
 }
 
 /*
+ * Render breadcrumbs with Schema.org microdata
+ *
+ * Usage:
+ *   render_breadcrumbs($breadcrumbs)
+ *   render_breadcrumbs($breadcrumbs, ['separator' => '→', 'class' => 'my-breadcrumbs'])
+ *
+ * Options:
+ *   - home_title: Title for home link (default: 'Home')
+ *   - separator: Separator between items (default: '/')
+ *   - class: CSS class for nav element (default: 'breadcrumbs')
+ *   - item_class: CSS class for each item (default: 'breadcrumb-item')
+ *   - active_class: CSS class for active/last item (default: 'active')
+ *   - schema: Include Schema.org microdata (default: true)
+ *
+ * @param array $breadcrumbs Array of ['label' => '', 'url' => '']
+ * @param array $options Rendering options
+ * @return \Illuminate\Support\HtmlString
+ */
+if (!function_exists('render_breadcrumbs')) {
+    function render_breadcrumbs(array $breadcrumbs, array $options = [])
+    {
+        if (empty($breadcrumbs)) {
+            return new \Illuminate\Support\HtmlString('');
+        }
+
+        $separator = $options['separator'] ?? '/';
+        $class = $options['class'] ?? 'breadcrumbs';
+        $itemClass = $options['item_class'] ?? 'breadcrumb-item';
+        $activeClass = $options['active_class'] ?? 'active';
+        $schema = $options['schema'] ?? true;
+
+        $schemaAttr = $schema ? ' itemscope itemtype="https://schema.org/BreadcrumbList"' : '';
+        $html = "<nav class=\"{$class}\" aria-label=\"Breadcrumb\">\n";
+        $html .= "    <ol{$schemaAttr}>\n";
+
+        $total = count($breadcrumbs);
+        foreach ($breadcrumbs as $index => $item) {
+            $position = $index + 1;
+            $isLast = ($position === $total);
+            $label = htmlspecialchars($item['label'] ?? '', ENT_QUOTES, 'UTF-8');
+            $url = $item['url'] ?? '#';
+
+            $itemClasses = $itemClass . ($isLast ? ' ' . $activeClass : '');
+
+            if ($schema) {
+                $html .= "        <li class=\"{$itemClasses}\" itemprop=\"itemListElement\" itemscope itemtype=\"https://schema.org/ListItem\">\n";
+                if ($isLast) {
+                    $html .= "            <span itemprop=\"name\">{$label}</span>\n";
+                } else {
+                    $html .= "            <a itemprop=\"item\" href=\"{$url}\"><span itemprop=\"name\">{$label}</span></a>\n";
+                }
+                $html .= "            <meta itemprop=\"position\" content=\"{$position}\">\n";
+                $html .= "        </li>\n";
+            } else {
+                $html .= "        <li class=\"{$itemClasses}\">\n";
+                if ($isLast) {
+                    $html .= "            <span>{$label}</span>\n";
+                } else {
+                    $html .= "            <a href=\"{$url}\">{$label}</a>\n";
+                }
+                $html .= "        </li>\n";
+            }
+
+            // Add separator (except after last item)
+            if (!$isLast && $separator) {
+                $html .= "        <li class=\"breadcrumb-separator\" aria-hidden=\"true\">{$separator}</li>\n";
+            }
+        }
+
+        $html .= "    </ol>\n";
+        $html .= "</nav>";
+
+        return new \Illuminate\Support\HtmlString($html);
+    }
+}
+
+/*
  * Render block by key
  */
 if (!function_exists('render_block')) {

@@ -117,4 +117,82 @@ return [
      *  Template custom filters class
      */
     'template_filters' => null,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sitemap Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure automatic sitemap.xml generation.
+    |
+    */
+    'sitemap' => [
+        // Enable/disable sitemap route
+        'enabled' => true,
+
+        // Cache TTL in seconds (0 to disable caching)
+        'cache_ttl' => 3600,
+
+        // Include simple routes without parameters
+        'include_simple_routes' => false,
+
+        // Exclude URL patterns (supports wildcards *)
+        'exclude' => [
+            'admin/*',
+            'api/*',
+            'login',
+            'register',
+            'password/*',
+            'sanctum/*',
+            'livewire/*',
+            '_debugbar/*',
+            '_ignition/*',
+        ],
+
+        // Exclude route names (supports wildcards *)
+        'exclude_names' => [
+            'debugbar.*',
+            'ignition.*',
+            'livewire.*',
+            'sanctum.*',
+        ],
+
+        // Routes with model bindings
+        // Each route maps to a model that provides URLs
+        'routes' => [
+            // Example:
+            // 'page.show' => [
+            //     'model' => \Monstrex\AveSite\Models\Page::class,
+            //     'param' => 'slug',        // Route parameter name
+            //     'field' => 'slug',        // Model field for the parameter
+            //     'scope' => 'published',   // Optional: scope to filter records
+            //     'with' => [],             // Optional: eager load relations
+            //     'lastmod' => 'updated_at', // Optional: field for lastmod
+            //     'changefreq' => 'weekly',
+            //     'priority' => 0.8,
+            // ],
+            //
+            // For multiple parameters:
+            // 'product.show' => [
+            //     'model' => \App\Models\Product::class,
+            //     'params' => [
+            //         'category' => 'category.slug',
+            //         'product' => 'slug',
+            //     ],
+            //     'with' => ['category'],
+            //     'scope' => 'active',
+            // ],
+        ],
+
+        // Static URLs to always include
+        'static' => [
+            '/' => ['priority' => 1.0, 'changefreq' => 'daily'],
+        ],
+
+        // Default values for URLs
+        'defaults' => [
+            'changefreq' => 'monthly',
+            'priority' => 0.5,
+        ],
+    ],
 ];

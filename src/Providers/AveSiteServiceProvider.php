@@ -15,7 +15,8 @@ use Monstrex\AveSite\Services\{
     PageService,
     BlockService,
     SettingsService,
-    LocalizationService
+    LocalizationService,
+    SitemapService
 };
 use Monstrex\AveSite\Facades;
 
@@ -33,6 +34,7 @@ class AveSiteServiceProvider extends ServiceProvider
         $this->app->singleton(BlockService::class);
         $this->app->singleton(SettingsService::class);
         $this->app->singleton(LocalizationService::class);
+        $this->app->singleton(SitemapService::class);
 
         // Register facades
         $this->registerAliases();
@@ -139,6 +141,12 @@ class AveSiteServiceProvider extends ServiceProvider
             \Route::middleware(['web'])->group(function () {
                 \Route::post('/api/send-form', [\Monstrex\AveSite\Http\Controllers\FormController::class, 'send'])
                     ->name('ave-site.forms.send');
+
+                // Sitemap route
+                if (config('ave-site.sitemap.enabled', true)) {
+                    \Route::get('/sitemap.xml', [\Monstrex\AveSite\Http\Controllers\SitemapController::class, 'index'])
+                        ->name('ave-site.sitemap');
+                }
             });
         } catch (\Throwable $e) {
             // Router may be unavailable during package discovery
