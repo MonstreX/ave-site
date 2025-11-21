@@ -15,6 +15,29 @@ class InstallCommand extends Command
         $this->info('🚀 Installing Ave Site CMS Package...');
         $this->newLine();
 
+        // Check if Ave Admin is installed
+        if (!class_exists(\Monstrex\Ave\Providers\AveServiceProvider::class)) {
+            $this->error('❌ Ave Admin Panel is not installed!');
+            $this->newLine();
+            $this->comment('Please install Ave Admin Panel first:');
+            $this->line('  composer require monstrex/ave');
+            $this->newLine();
+            return self::FAILURE;
+        }
+
+        // Check if ave_menus table exists
+        if (!\Schema::hasTable('ave_menus')) {
+            $this->error('❌ Ave Admin Panel is not properly set up!');
+            $this->newLine();
+            $this->comment('Please run Ave Admin migrations first:');
+            $this->line('  php artisan migrate');
+            $this->newLine();
+            return self::FAILURE;
+        }
+
+        $this->info('✓ Ave Admin Panel detected');
+        $this->newLine();
+
         // Run migrations
         $this->info('📦 Running migrations...');
         $this->call('migrate', [

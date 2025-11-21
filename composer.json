@@ -35,15 +35,6 @@
             "Monstrex\\AveSite\\Tests\\": "tests/"
         }
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../ave.package",
-            "options": {
-                "symlink": false
-            }
-        }
-    ],
     "extra": {
         "laravel": {
             "providers": [
@@ -51,6 +42,9 @@
             ]
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    }
 }
