@@ -107,12 +107,15 @@ class Resource extends BaseResource
                 Col::make(4)->schema([
                     Number::make('hits')
                         ->label(__('ave-site::resources_redirects.fields.hits'))
-                        ->disabled(),
+                        ->default(0)
+                        ->disabled()
+                        ->dehydrated(false),
                 ]),
                 Col::make(4)->schema([
                     TextInput::make('last_hit_at')
                         ->label(__('ave-site::resources_redirects.fields.last_hit_at'))
-                        ->disabled(),
+                        ->disabled()
+                        ->dehydrated(false),
                 ]),
             ]),
         ]);

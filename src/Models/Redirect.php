@@ -24,6 +24,12 @@ class Redirect extends Model
         'last_hit_at' => 'datetime',
     ];
 
+    protected $attributes = [
+        'hits' => 0,
+        'status_code' => 301,
+        'is_active' => true,
+    ];
+
     /**
      * Scope to get only active redirects.
      */
