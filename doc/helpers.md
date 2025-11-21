@@ -4,11 +4,12 @@ Complete documentation for all global helper functions provided by the Ave Site 
 
 ## Overview
 
-The package provides 18 global helper functions organized into categories:
+The package provides 19 global helper functions organized into categories:
 
 - [Settings & Configuration](#settings--configuration)
 - [Content Rendering](#content-rendering)
 - [Image Processing](#image-processing)
+- [SEO & Scripts](#seo--scripts)
 - [Data Utilities](#data-utilities)
 - [File Handling](#file-handling)
 
@@ -324,6 +325,96 @@ function get_image_or_create_webp(
 ```php
 $thumb = get_image_or_create_webp('/storage/photos/hero.jpg', 400, 300, 80);
 ```
+
+---
+
+## SEO & Scripts
+
+### scripts()
+
+Output JavaScript/CSS scripts for a specific position in the HTML document.
+
+```php
+function scripts(string $position): string
+```
+
+**Parameters:**
+- `$position` - Position identifier: `'head'`, `'body_start'`, or `'body_end'`
+
+**Returns:** HTML string with all active scripts for the specified position
+
+**Features:**
+- Retrieves only active scripts from database
+- Orders scripts by `order` field (lower numbers first)
+- Automatically wraps plain JS code in `<script>` tags
+- Gracefully handles errors (returns empty string)
+- Supports both `<script>` and `<style>` tags
+
+**Examples:**
+
+```blade
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ $title }}</title>
+
+    {{-- Head scripts (analytics, fonts) --}}
+    {!! scripts('head') !!}
+</head>
+<body>
+    {{-- Body start scripts (GTM) --}}
+    {!! scripts('body_start') !!}
+
+    <main>
+        @yield('content')
+    </main>
+
+    {{-- Body end scripts (deferred JS, chat widgets) --}}
+    {!! scripts('body_end') !!}
+</body>
+</html>
+```
+
+**Auto-Wrapping:**
+
+```php
+// Plain JS code in database:
+console.log('Hello');
+
+// Output:
+<script>
+console.log('Hello');
+</script>
+
+// Already wrapped code in database:
+<script src="https://example.com/script.js"></script>
+
+// Output (unchanged):
+<script src="https://example.com/script.js"></script>
+```
+
+**Use Cases:**
+
+| Position | Typical Use |
+|----------|-------------|
+| `head` | Critical CSS, Google Fonts, preload tags |
+| `body_start` | Google Tag Manager, immediate tracking |
+| `body_end` | Analytics (async), chat widgets, social buttons |
+
+**Admin Management:**
+
+Scripts are managed through **Ave Admin Panel → SEO → Scripts**. Each script has:
+- **Title**: Descriptive name
+- **Key**: Unique identifier
+- **Position**: head/body_start/body_end
+- **Content**: JavaScript or CSS code
+- **Order**: Sort order (lower = earlier)
+- **Status**: Active/Inactive toggle
+
+**See Also:**
+- [SEO Features](seo.md#scripts-management) - Detailed scripts documentation
+- [Models](models.md) - Script model reference
 
 ---
 

@@ -47,22 +47,28 @@ php artisan vendor:publish --tag=ave-site-config
 
 - **Pages**: Hierarchical page management with SEO
 - **Blocks**: Content blocks with Liquid templates
-- **Chunks**: Simple text/code snippets
+- **Forms**: Form handling with email notifications and reCAPTCHA
 - **Settings**: JSON-schema based settings management
+- **Localizations**: Database-driven translations with caching
+- **Redirects**: URL redirect management (301, 302, 307, 308) with hit tracking
+- **Scripts**: JavaScript/CSS injection management (head, body_start, body_end)
 - **DataSources**: Dynamic data loading from models
-- **Liquid Engine**: Template engine with custom filters
-- **Image Processing**: On-the-fly image manipulation
-- **Forms**: Form handling with email notifications
+- **Liquid Engine**: Template engine with custom filters and shortcodes
+- **Image Processing**: On-the-fly image manipulation, WebP conversion
+- **Sitemap**: Automatic sitemap.xml generation
 
 ## Database Tables
 
 The package creates the following tables:
 
-- `site_pages` - Hierarchical pages
-- `site_block_regions` - Block regions/positions
-- `site_blocks` - Content blocks
-- `site_chunks` - Simple text/code snippets
-- `site_settings` - Site settings
+- `ave_site_pages` - Hierarchical pages with SEO
+- `ave_site_blocks` - Content blocks with Liquid templates
+- `ave_site_block_regions` - Block regions/positions
+- `ave_site_forms` - Form definitions with validation
+- `ave_site_settings` - JSON-schema based site settings
+- `ave_site_localizations` - Database translations
+- `ave_site_redirects` - URL redirects with hit tracking
+- `ave_site_scripts` - JavaScript/CSS code snippets
 
 ## Architecture
 

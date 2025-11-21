@@ -109,6 +109,7 @@ $email = site_setting('mail.from_address');
 | [Forms](forms.md) | Form handling and validation |
 | [Settings](settings.md) | Site settings management |
 | [Localization](localization.md) | Multi-language support |
+| [SEO](seo.md) | SEO features: breadcrumbs, sitemap, redirects, scripts |
 | [Templating](templating.md) | Liquid templates and shortcodes |
 | [Images](images.md) | Image processing, resizing, and optimization |
 | [Models](models.md) | Database models reference |
@@ -155,6 +156,8 @@ ave-site.package/
 | `ave_site_forms` | Form definitions |
 | `ave_site_settings` | Site configuration |
 | `ave_site_localizations` | Database translations |
+| `ave_site_redirects` | URL redirects (301, 302, 307, 308) |
+| `ave_site_scripts` | JavaScript/CSS code snippets |
 
 ### Service Layer
 

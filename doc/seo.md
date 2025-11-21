@@ -1,6 +1,6 @@
 # SEO Features
 
-Documentation for SEO-related features: breadcrumbs and sitemap generation.
+Documentation for SEO-related features: breadcrumbs, sitemap generation, redirects, and scripts management.
 
 ---
 
@@ -329,8 +329,287 @@ class PageController extends Controller
 
 ---
 
+## URL Redirects
+
+Manage HTTP redirects for moved or renamed pages to maintain SEO rankings and prevent broken links.
+
+### Features
+
+- **Multiple redirect types**: 301 (Permanent), 302 (Temporary), 307 (Temporary, preserve method), 308 (Permanent, preserve method)
+- **Hit tracking**: Automatic counting of redirect usage
+- **Enable/disable**: Toggle redirects without deleting them
+- **Last hit timestamp**: Track when redirect was last used
+
+### Admin Interface
+
+Access redirects through **Ave Admin Panel → SEO → Redirects**
+
+### Creating Redirects
+
+**Via Admin Panel:**
+1. Navigate to **SEO → Redirects**
+2. Click "Create"
+3. Fill in the form:
+   - **From URL**: Old/source URL (e.g., `/old-page`)
+   - **To URL**: New/target URL (e.g., `/new-page` or full URL)
+   - **Status Code**: Select redirect type (301, 302, 307, 308)
+   - **Active**: Toggle to enable/disable
+4. Save
+
+**Programmatically:**
+
+```php
+use Monstrex\AveSite\Models\Redirect;
+
+Redirect::create([
+    'from_url' => '/old-contact-page',
+    'to_url' => '/contact',
+    'status_code' => 301,
+    'is_active' => true,
+]);
+```
+
+### Model API
+
+```php
+use Monstrex\AveSite\Models\Redirect;
+
+// Find active redirect by path
+$redirect = Redirect::findByPath('/old-page');
+
+// Get all active redirects
+$redirects = Redirect::active()->get();
+
+// Record a hit
+$redirect->recordHit();
+
+// Check if redirect exists
+if ($redirect = Redirect::findByPath($path)) {
+    return redirect($redirect->to_url, $redirect->status_code);
+}
+```
+
+### Redirect Types
+
+| Code | Type | Description | Use Case |
+|------|------|-------------|----------|
+| **301** | Permanent | Page permanently moved | Renamed pages, restructured URLs |
+| **302** | Temporary | Page temporarily moved | A/B testing, temporary maintenance |
+| **307** | Temporary (preserve) | Like 302, but preserves HTTP method | API endpoints, POST requests |
+| **308** | Permanent (preserve) | Like 301, but preserves HTTP method | Permanent API changes |
+
+**Recommendation**: Use **301** for most SEO purposes (permanent URL changes).
+
+### URL Formats
+
+**Relative URLs** (within site):
+```
+From: /old-page
+To: /new-page
+```
+
+**Absolute URLs** (external redirects):
+```
+From: /old-blog
+To: https://blog.example.com
+```
+
+**With query strings**:
+```
+From: /product?id=123
+To: /products/awesome-product
+```
+
+### Best Practices
+
+1. **Use 301 for SEO**: Permanent redirects pass link equity (PageRank)
+2. **Avoid redirect chains**: Don't redirect A→B→C, use A→C directly
+3. **Test redirects**: Verify both source and destination URLs work
+4. **Monitor hits**: Inactive redirects (0 hits) may indicate typos
+5. **Regular cleanup**: Remove very old redirects that are no longer needed
+
+### Integration with Middleware
+
+The package automatically handles redirects through middleware. No additional setup required.
+
+---
+
+## Scripts Management
+
+Inject custom JavaScript/CSS code snippets into different parts of your HTML document for analytics, tracking, ads, and other third-party integrations.
+
+### Features
+
+- **Position-based injection**: head, body_start, body_end
+- **Order control**: Multiple scripts in same position, sorted by order
+- **Enable/disable**: Toggle scripts without deleting
+- **Auto-wrapping**: Automatically wraps code in `<script>` tags if needed
+- **Options field**: Store additional metadata as JSON
+
+### Admin Interface
+
+Access scripts through **Ave Admin Panel → SEO → Scripts**
+
+### Creating Scripts
+
+**Via Admin Panel:**
+1. Navigate to **SEO → Scripts**
+2. Click "Create"
+3. Fill in the form:
+   - **Title**: Descriptive name (e.g., "Google Analytics")
+   - **Key**: Unique identifier (e.g., `google-analytics`)
+   - **Position**: Where to inject (head/body_start/body_end)
+   - **Content**: JavaScript or CSS code
+   - **Order**: Execution order (lower numbers first)
+   - **Active**: Toggle to enable/disable
+4. Save
+
+### Helper Function
+
+```php
+scripts(string $position): string
+```
+
+**Parameters:**
+- `$position` - One of: `'head'`, `'body_start'`, `'body_end'`
+
+**Returns:** HTML string with all active scripts for the position
+
+### Usage in Templates
+
+**Blade template:**
+
+```blade
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ $title }}</title>
+
+    {{-- Inject head scripts (analytics, fonts, etc.) --}}
+    {!! scripts('head') !!}
+</head>
+<body>
+    {{-- Inject body start scripts (GTM, etc.) --}}
+    {!! scripts('body_start') !!}
+
+    <main>
+        @yield('content')
+    </main>
+
+    {{-- Inject body end scripts (deferred JS, chat widgets) --}}
+    {!! scripts('body_end') !!}
+</body>
+</html>
+```
+
+### Position Guidelines
+
+| Position | Use For | Examples |
+|----------|---------|----------|
+| **head** | Critical CSS, fonts, meta tags | Google Fonts, Favicon scripts, Critical CSS |
+| **body_start** | Analytics, tracking (immediate) | Google Tag Manager, Facebook Pixel |
+| **body_end** | Deferred JS, widgets, chat | Analytics (async), Chat widgets, Social buttons |
+
+**Performance Tip**: Use `body_end` for most scripts to avoid blocking page rendering.
+
+### Examples
+
+**Google Analytics (head):**
+```javascript
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+```
+
+**Google Tag Manager (body_start):**
+```html
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+```
+
+**Facebook Pixel (body_end):**
+```javascript
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', 'YOUR_PIXEL_ID');
+fbq('track', 'PageView');
+```
+
+### Auto-Wrapping Behavior
+
+The helper automatically wraps code in `<script>` tags if needed:
+
+**Input (plain JS):**
+```javascript
+console.log('Hello');
+```
+
+**Output:**
+```html
+<script>
+console.log('Hello');
+</script>
+```
+
+**Input (already wrapped):**
+```html
+<script src="https://example.com/script.js"></script>
+```
+
+**Output:** (unchanged)
+```html
+<script src="https://example.com/script.js"></script>
+```
+
+### Model API
+
+```php
+use Monstrex\AveSite\Models\Script;
+
+// Get all active scripts for a position
+$headScripts = Script::active()
+    ->byPosition('head')
+    ->ordered()
+    ->get();
+
+// Create a script programmatically
+Script::create([
+    'title' => 'Google Analytics',
+    'key' => 'google-analytics',
+    'position' => 'head',
+    'content' => $analyticsCode,
+    'order' => 10,
+    'status' => true,
+]);
+```
+
+### Best Practices
+
+1. **Use descriptive keys**: `google-analytics`, not `ga1`
+2. **Set proper order**: Critical scripts first (lower order number)
+3. **Test in incognito**: Verify scripts load correctly
+4. **Monitor console**: Check for JavaScript errors
+5. **Use body_end**: For non-critical scripts (performance)
+6. **Disable, don't delete**: Keep scripts for future use
+
+---
+
 ## See Also
 
 - [Pages](pages.md) - Page management
 - [Configuration](configuration.md) - Full config reference
 - [Helpers](helpers.md) - Helper functions
+- [Models](models.md) - Redirect and Script models
