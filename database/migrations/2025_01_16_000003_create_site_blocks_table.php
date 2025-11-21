@@ -22,10 +22,11 @@ return new class extends Migration
 
             // Content
             $table->longText('content')->nullable(); // Liquid template
-            $table->json('media')->nullable(); // Изображения
+            $table->string('images')->nullable(); // Изображения (основное)
+            $table->json('elements')->nullable(); // FieldSet elements
 
-            // Options (JSON): DataSources, validator (для форм), и т.д.
-            $table->longText('options')->nullable();
+            // Details (JSON): DataSources, validator (для форм), и т.д.
+            $table->longText('details')->nullable();
 
             $table->timestamps();
 
