@@ -115,8 +115,12 @@ class AveSiteServiceProvider extends ServiceProvider
                     $resourceManager->register($resourceClass);
                 }
             }
+
+            // Debug: log registration
+            \Log::info('AveSite: Registered ' . count($resources) . ' resources');
         } catch (\Exception $e) {
             // ResourceManager not available (Ave not loaded)
+            \Log::warning('AveSite: Failed to register resources - ' . $e->getMessage());
         }
     }
 

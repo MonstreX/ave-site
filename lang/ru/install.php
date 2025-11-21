@@ -8,4 +8,5 @@ return [
     'menu_forms' => 'Формы',
     'menu_localizations' => 'Локализации',
     'menu_settings' => 'Настройки сайта',
+    'menu_redirects' => 'Редиректы',
 ];
