@@ -13,7 +13,7 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^11.0|^12.0",
-        "monstrex/ave": "^2.0|dev-master",
+        "monstrex/ave": "^0.7|dev-master",
         "liquid/liquid": "^1.4.44",
         "webwizo/laravel-shortcodes": "^1.0.27"
     },
