@@ -259,7 +259,7 @@ class PageService implements PageContract
 
         // TITLE
         $page_title = $content->title ?? '';
-        $this->seoTitle = $this->getFirstNotEmpty([
+        $this->seoTitle = get_first_not_empty([
             $seo_title,
             !empty($page_title) ? $page_title : '',
             $settings['seo_title'],
@@ -274,14 +274,14 @@ class PageService implements PageContract
         }
 
         // DESCRIPTION
-        $this->metaDescription = $this->getFirstNotEmpty([
+        $this->metaDescription = get_first_not_empty([
             $meta_description,
             $settings['meta_description'],
             $settings['site_description']
         ]);
 
         // KEYWORDS
-        $this->metaKeywords = $this->getFirstNotEmpty([
+        $this->metaKeywords = get_first_not_empty([
             $meta_keywords,
             $settings['meta_keywords'],
         ]);
@@ -416,10 +416,6 @@ class PageService implements PageContract
      */
     public function create(Model $content, array $settings)
     {
-        if (!$content) {
-            throw new NotFoundHttpException('Page not found');
-        }
-
         // General settings
         $this->settings = $settings;
 
@@ -523,22 +519,6 @@ class PageService implements PageContract
         $this->banner = $banner;
 
         return $banner;
-    }
-
-    /**
-     * Get first not empty value from array
-     *
-     * @param array $values
-     * @return mixed
-     */
-    protected function getFirstNotEmpty(array $values)
-    {
-        foreach ($values as $value) {
-            if (!empty($value)) {
-                return $value;
-            }
-        }
-        return null;
     }
 }
 
