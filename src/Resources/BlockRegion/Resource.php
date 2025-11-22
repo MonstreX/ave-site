@@ -7,6 +7,8 @@ use Monstrex\Ave\Core\Columns\Column;
 use Monstrex\Ave\Core\Components\Row;
 use Monstrex\Ave\Core\Components\Col;
 use Monstrex\Ave\Core\Fields\TextInput;
+use Monstrex\Ave\Core\Fields\Number;
+use Monstrex\Ave\Core\Fields\ColorPicker;
 use Monstrex\Ave\Core\Form;
 use Monstrex\Ave\Core\Resource as BaseResource;
 use Monstrex\Ave\Core\Table;
@@ -16,7 +18,7 @@ class Resource extends BaseResource
     public static ?string $model = BlockRegionModel::class;
     public static ?string $label = null;
     public static ?string $singularLabel = null;
-    public static ?string $icon = 'voyager-crop';
+    public static ?string $icon = 'voyager-resize-full';
     public static ?string $slug = 'site-block-regions';
     public static ?string $group = null;
 
@@ -32,22 +34,26 @@ class Resource extends BaseResource
 
     public static function getGroup(): ?string
     {
-        return static::$group ?? __('ave-site::resources_groups.content');
+        return static::$group ?? __('ave-site::resources_groups.settings');
     }
 
     public static function table($context): Table
     {
         return Table::make()->columns([
-            Column::make('name')
-                ->label(__('ave-site::resources_block_regions.columns.name'))
+            Column::make('title')
+                ->label(__('ave-site::resources_block_regions.columns.title'))
+                ->linkAction('edit')
                 ->sortable(true),
             Column::make('key')
                 ->label(__('ave-site::resources_block_regions.columns.key'))
                 ->sortable(true),
-            Column::make('created_at')
-                ->label(__('ave-site::resources_block_regions.columns.created_at'))
-                ->format(fn ($value) => optional($value)?->format('Y-m-d H:i'))
+            Column::make('order')
+                ->label(__('ave-site::resources_block_regions.columns.order'))
                 ->sortable(true),
+            Column::make('color')
+                ->label(__('ave-site::resources_block_regions.columns.color'))
+                ->format(fn ($value) => $value ? '<span style="display:inline-block;width:20px;height:20px;background:'.$value.';border-radius:3px;"></span>' : '')
+                ->html(true),
         ]);
     }
 
@@ -56,14 +62,28 @@ class Resource extends BaseResource
         return Form::make()->schema([
             Row::make()->schema([
                 Col::make(6)->schema([
-                    TextInput::make('name')
-                        ->label(__('ave-site::resources_block_regions.fields.name'))
+                    TextInput::make('title')
+                        ->label(__('ave-site::resources_block_regions.fields.title'))
                         ->required(),
                 ]),
                 Col::make(6)->schema([
                     TextInput::make('key')
                         ->label(__('ave-site::resources_block_regions.fields.key'))
                         ->required(),
+                ]),
+            ]),
+            Row::make()->schema([
+                Col::make(4)->schema([
+                    ColorPicker::make('color')
+                        ->label(__('ave-site::resources_block_regions.fields.color')),
+                    
+                ]),
+            ]),
+            Row::make()->schema([
+                Col::make(2)->schema([
+                    Number::make('order')
+                        ->label(__('ave-site::resources_block_regions.fields.order'))
+                        ->default(0),
                 ]),
             ]),
         ]);

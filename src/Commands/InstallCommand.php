@@ -53,6 +53,16 @@ class InstallCommand extends Command
         ]);
         $this->newLine();
 
+        // Create default block regions
+        $this->info('📋 Creating default block regions...');
+        $this->createBlockRegions();
+        $this->newLine();
+
+        // Create default settings
+        $this->info('⚙️  Creating default settings...');
+        $this->createDefaultSettings();
+        $this->newLine();
+
         // Create menu items
         $this->info('📋 Creating menu items...');
         $this->createMenuItems();
@@ -81,7 +91,6 @@ class InstallCommand extends Command
 
     protected function createMenuItems(): void
     {
-        // Get admin menu
         $menu = \DB::table('ave_menus')->where('key', 'admin')->first();
 
         if (!$menu) {
@@ -91,142 +100,502 @@ class InstallCommand extends Command
 
         $menuId = $menu->id;
 
-        // Get max order
-        $maxOrder = \DB::table('ave_menu_items')
+        // Find Dashboard order to insert after it
+        $dashboardItem = \DB::table('ave_menu_items')
             ->where('menu_id', $menuId)
             ->whereNull('parent_id')
-            ->max('order') ?? 0;
+            ->where('route', 'ave.dashboard')
+            ->first();
 
-        // Create "Content" group
-        $contentGroupId = \DB::table('ave_menu_items')->insertGetId([
-            'menu_id' => $menuId,
-            'parent_id' => null,
-            'title' => __('ave-site::install.menu_content_group'),
-            'status' => 1,
-            'icon' => 'voyager-images',
-            'route' => null,
-            'url' => null,
-            'target' => '_self',
-            'order' => $maxOrder + 1,
-            'permission_key' => null,
-            'resource_slug' => null,
-            'ability' => null,
-            'is_divider' => 0,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $startOrder = $dashboardItem ? $dashboardItem->order + 1 : 1;
 
-        // Content group items
-        $contentItems = [
+        // Shift existing items to make room
+        \DB::table('ave_menu_items')
+            ->where('menu_id', $menuId)
+            ->whereNull('parent_id')
+            ->where('order', '>=', $startOrder)
+            ->increment('order', 5);
+
+        // Root level items (after Dashboard)
+        $rootItems = [
             [
                 'title' => __('ave-site::install.menu_pages'),
                 'icon' => 'voyager-file-text',
                 'resource_slug' => 'site-pages',
-                'order' => 1,
+                'order' => $startOrder,
             ],
             [
                 'title' => __('ave-site::install.menu_blocks'),
                 'icon' => 'voyager-puzzle',
                 'resource_slug' => 'site-blocks',
-                'order' => 2,
-            ],
-            [
-                'title' => __('ave-site::install.menu_block_regions'),
-                'icon' => 'voyager-resize-full',
-                'resource_slug' => 'site-block-regions',
-                'order' => 3,
+                'order' => $startOrder + 1,
             ],
             [
                 'title' => __('ave-site::install.menu_forms'),
                 'icon' => 'voyager-mail',
                 'resource_slug' => 'site-forms',
-                'order' => 4,
+                'order' => $startOrder + 2,
             ],
             [
                 'title' => __('ave-site::install.menu_localizations'),
                 'icon' => 'voyager-font',
                 'resource_slug' => 'site-localizations',
-                'order' => 5,
+                'order' => $startOrder + 3,
+            ],
+            [
+                'title' => __('ave-site::install.menu_site_settings'),
+                'icon' => 'voyager-tools',
+                'resource_slug' => 'site-settings',
+                'order' => $startOrder + 4,
             ],
         ];
 
-        foreach ($contentItems as $item) {
-            \DB::table('ave_menu_items')->insert([
-                'menu_id' => $menuId,
-                'parent_id' => $contentGroupId,
-                'title' => $item['title'],
-                'status' => 1,
-                'icon' => $item['icon'],
-                'route' => null,
-                'url' => null,
-                'target' => '_self',
-                'order' => $item['order'],
-                'permission_key' => null,
-                'resource_slug' => $item['resource_slug'],
-                'ability' => 'viewAny',
-                'is_divider' => 0,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        foreach ($rootItems as $item) {
+            // Check if already exists
+            $exists = \DB::table('ave_menu_items')
+                ->where('menu_id', $menuId)
+                ->where('resource_slug', $item['resource_slug'])
+                ->exists();
+
+            if (!$exists) {
+                \DB::table('ave_menu_items')->insert([
+                    'menu_id' => $menuId,
+                    'parent_id' => null,
+                    'title' => $item['title'],
+                    'status' => 1,
+                    'icon' => $item['icon'],
+                    'route' => null,
+                    'url' => null,
+                    'target' => '_self',
+                    'order' => $item['order'],
+                    'permission_key' => null,
+                    'resource_slug' => $item['resource_slug'],
+                    'ability' => 'viewAny',
+                    'is_divider' => 0,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
         }
 
-        // Settings item (separate)
-        \DB::table('ave_menu_items')->insert([
-            'menu_id' => $menuId,
-            'parent_id' => null,
-            'title' => __('ave-site::install.menu_settings'),
-            'status' => 1,
-            'icon' => 'voyager-settings',
-            'route' => null,
-            'url' => null,
-            'target' => '_self',
-            'order' => $maxOrder + 2,
-            'permission_key' => null,
-            'resource_slug' => 'site-settings',
-            'ability' => 'viewAny',
-            'is_divider' => 0,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Find Settings submenu
+        $settingsMenu = \DB::table('ave_menu_items')
+            ->where('menu_id', $menuId)
+            ->whereNull('parent_id')
+            ->where('title', 'Settings')
+            ->first();
 
-        // Redirects item (separate)
-        \DB::table('ave_menu_items')->insert([
-            'menu_id' => $menuId,
-            'parent_id' => null,
-            'title' => __('ave-site::install.menu_redirects'),
-            'status' => 1,
-            'icon' => 'voyager-forward',
-            'route' => null,
-            'url' => null,
-            'target' => '_self',
-            'order' => $maxOrder + 3,
-            'permission_key' => null,
-            'resource_slug' => 'site-redirects',
-            'ability' => 'viewAny',
-            'is_divider' => 0,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        if (!$settingsMenu) {
+            // Try to find by Russian title
+            $settingsMenu = \DB::table('ave_menu_items')
+                ->where('menu_id', $menuId)
+                ->whereNull('parent_id')
+                ->where('title', 'Настройки')
+                ->first();
+        }
 
-        // Scripts item (separate)
-        \DB::table('ave_menu_items')->insert([
-            'menu_id' => $menuId,
-            'parent_id' => null,
-            'title' => __('ave-site::install.menu_scripts'),
-            'status' => 1,
-            'icon' => 'voyager-code',
-            'route' => null,
-            'url' => null,
-            'target' => '_self',
-            'order' => $maxOrder + 4,
-            'permission_key' => null,
-            'resource_slug' => 'site-scripts',
-            'ability' => 'viewAny',
-            'is_divider' => 0,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        if ($settingsMenu) {
+            $maxSettingsOrder = \DB::table('ave_menu_items')
+                ->where('menu_id', $menuId)
+                ->where('parent_id', $settingsMenu->id)
+                ->max('order') ?? 0;
+
+            $settingsItems = [
+                [
+                    'title' => __('ave-site::install.menu_redirects'),
+                    'icon' => 'voyager-forward',
+                    'resource_slug' => 'site-redirects',
+                    'order' => $maxSettingsOrder + 1,
+                ],
+                [
+                    'title' => __('ave-site::install.menu_scripts'),
+                    'icon' => 'voyager-code',
+                    'resource_slug' => 'site-scripts',
+                    'order' => $maxSettingsOrder + 2,
+                ],
+                [
+                    'title' => __('ave-site::install.menu_block_regions'),
+                    'icon' => 'voyager-resize-full',
+                    'resource_slug' => 'site-block-regions',
+                    'order' => $maxSettingsOrder + 3,
+                ],
+            ];
+
+            foreach ($settingsItems as $item) {
+                $exists = \DB::table('ave_menu_items')
+                    ->where('menu_id', $menuId)
+                    ->where('resource_slug', $item['resource_slug'])
+                    ->exists();
+
+                if (!$exists) {
+                    \DB::table('ave_menu_items')->insert([
+                        'menu_id' => $menuId,
+                        'parent_id' => $settingsMenu->id,
+                        'title' => $item['title'],
+                        'status' => 1,
+                        'icon' => $item['icon'],
+                        'route' => null,
+                        'url' => null,
+                        'target' => '_self',
+                        'order' => $item['order'],
+                        'permission_key' => null,
+                        'resource_slug' => $item['resource_slug'],
+                        'ability' => 'viewAny',
+                        'is_divider' => 0,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+        } else {
+            $this->warn('Settings menu not found. Redirects, Scripts and Block Regions were not added.');
+        }
 
         $this->info('   Menu items created successfully');
+    }
+
+    protected function createBlockRegions(): void
+    {
+        $regions = [
+            [
+                'title' => __('ave-site::seeders.regions.content_before'),
+                'key' => 'content-before',
+                'order' => 1,
+                'color' => '#2f8516',
+            ],
+            [
+                'title' => __('ave-site::seeders.regions.content'),
+                'key' => 'content',
+                'order' => 2,
+                'color' => '#2f8516',
+            ],
+            [
+                'title' => __('ave-site::seeders.regions.content_after'),
+                'key' => 'content-after',
+                'order' => 3,
+                'color' => '#4bc2a2',
+            ],
+            [
+                'title' => __('ave-site::seeders.regions.no_position'),
+                'key' => 'no-position',
+                'order' => 4,
+                'color' => '#c7c7c7',
+            ],
+            [
+                'title' => __('ave-site::seeders.regions.sidebar'),
+                'key' => 'sidebar',
+                'order' => 5,
+                'color' => '#e20a0f',
+            ],
+        ];
+
+        foreach ($regions as $region) {
+            \DB::table('ave_site_block_regions')->updateOrInsert(
+                ['key' => $region['key']],
+                [
+                    'title' => $region['title'],
+                    'order' => $region['order'],
+                    'color' => $region['color'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
+        }
+
+        $this->info('   Block regions created successfully');
+    }
+
+    protected function createDefaultSettings(): void
+    {
+        $settingModel = config('ave-site.models.setting');
+        $t = 'ave-site::seeders.settings';
+
+        // GENERAL SETTINGS
+        $generalFields = [
+            'fields' => [
+                'section_main' => [
+                    'type' => 'section',
+                    'icon' => 'voyager-tools',
+                    'label' => __("$t.general.section_main"),
+                ],
+                'site_title' => [
+                    'label' => __("$t.general.site_title"),
+                    'type' => 'text',
+                    'value' => __("$t.general.site_title_value"),
+                    'class' => 'col-md-12',
+                ],
+                'site_description' => [
+                    'label' => __("$t.general.site_description"),
+                    'type' => 'text',
+                    'value' => __("$t.general.site_description_value"),
+                    'class' => 'col-md-12',
+                ],
+                'section_pages' => [
+                    'type' => 'section',
+                    'icon' => 'voyager-documentation',
+                    'label' => __("$t.general.section_pages"),
+                ],
+                'site_home_page' => [
+                    'label' => __("$t.general.site_home_page"),
+                    'type' => 'number',
+                    'value' => '1',
+                    'class' => 'col-md-12',
+                ],
+                'site_403_page' => [
+                    'label' => __("$t.general.site_403_page"),
+                    'type' => 'number',
+                    'value' => '1',
+                    'class' => 'col-md-12',
+                ],
+                'site_404_page' => [
+                    'label' => __("$t.general.site_404_page"),
+                    'type' => 'number',
+                    'value' => '2',
+                    'class' => 'col-md-12',
+                ],
+                'section_system' => [
+                    'type' => 'section',
+                    'icon' => 'voyager-exclamation',
+                    'label' => __("$t.general.section_system"),
+                ],
+                'site_app_name' => [
+                    'label' => __("$t.general.site_app_name"),
+                    'type' => 'text',
+                    'value' => __("$t.general.site_app_name_value"),
+                    'class' => 'col-md-12',
+                ],
+                'section_captcha' => [
+                    'type' => 'section',
+                    'icon' => 'voyager-puzzle',
+                    'label' => __("$t.general.section_captcha"),
+                ],
+                'site_captcha_site_key' => [
+                    'label' => __("$t.general.site_captcha_site_key"),
+                    'type' => 'text',
+                    'value' => '',
+                    'class' => 'col-md-12',
+                ],
+                'site_captcha_secret_key' => [
+                    'label' => __("$t.general.site_captcha_secret_key"),
+                    'type' => 'text',
+                    'value' => '',
+                    'class' => 'col-md-12',
+                ],
+            ],
+        ];
+
+        $settingModel::updateOrCreate(['key' => 'general'], [
+            'title' => __("$t.general.title"),
+            'group' => 'general',
+            'order' => 1,
+            'fields' => json_encode($generalFields, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
+        ]);
+
+        // MAIL SETTINGS
+        $mailFields = [
+            'fields' => [
+                'to_address' => [
+                    'label' => __("$t.mail.to_address"),
+                    'type' => 'text',
+                    'value' => __("$t.mail.to_address_value"),
+                    'class' => 'col-md-12',
+                ],
+                'from_name' => [
+                    'label' => __("$t.mail.from_name"),
+                    'type' => 'text',
+                    'value' => __("$t.mail.from_name_value"),
+                    'class' => 'col-md-12',
+                ],
+                'from_address' => [
+                    'label' => __("$t.mail.from_address"),
+                    'type' => 'text',
+                    'value' => __("$t.mail.from_address_value"),
+                    'class' => 'col-md-12',
+                ],
+                'section_smtp' => [
+                    'type' => 'section',
+                    'icon' => 'voyager-mail',
+                    'label' => __("$t.mail.section_smtp"),
+                ],
+                'smtp_driver' => [
+                    'label' => __("$t.mail.smtp_driver"),
+                    'type' => 'dropdown',
+                    'value' => 'smtp',
+                    'options' => [
+                        'smtp' => __("$t.mail.smtp_driver_option_smtp"),
+                        'mailgun' => __("$t.mail.smtp_driver_option_mailgun"),
+                        'log' => __("$t.mail.smtp_driver_option_log"),
+                    ],
+                    'class' => 'col-md-12',
+                ],
+                'smtp_host' => [
+                    'label' => __("$t.mail.smtp_host"),
+                    'type' => 'text',
+                    'value' => __("$t.mail.smtp_host_value"),
+                    'class' => 'col-md-12',
+                ],
+                'smtp_port' => [
+                    'label' => __("$t.mail.smtp_port"),
+                    'type' => 'number',
+                    'value' => __("$t.mail.smtp_port_value"),
+                    'class' => 'col-md-12',
+                ],
+                'smtp_username' => [
+                    'label' => __("$t.mail.smtp_username"),
+                    'type' => 'text',
+                    'value' => '',
+                    'class' => 'col-md-12',
+                ],
+                'smtp_password' => [
+                    'label' => __("$t.mail.smtp_password"),
+                    'type' => 'text',
+                    'value' => '',
+                    'class' => 'col-md-12',
+                ],
+                'smtp_encryption' => [
+                    'label' => __("$t.mail.smtp_encryption"),
+                    'type' => 'radio',
+                    'value' => 'tls',
+                    'options' => [
+                        'none' => __("$t.mail.smtp_encryption_option_none"),
+                        'ssl' => __("$t.mail.smtp_encryption_option_ssl"),
+                        'tls' => __("$t.mail.smtp_encryption_option_tls"),
+                    ],
+                    'class' => 'col-md-12',
+                ],
+                'test_mail' => [
+                    'label' => __("$t.mail.test_mail"),
+                    'type' => 'route',
+                    'value' => 'ave-site.settings.test-mail',
+                    'icon' => 'voyager-mail',
+                    'class' => 'col-md-12',
+                ],
+            ],
+        ];
+
+        $settingModel::updateOrCreate(['key' => 'mail'], [
+            'title' => __("$t.mail.title"),
+            'group' => 'mail',
+            'order' => 2,
+            'fields' => json_encode($mailFields, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
+        ]);
+
+        // SEO SETTINGS
+        $seoFields = [
+            'fields' => [
+                'seo_title_template' => [
+                    'label' => __("$t.seo.seo_title_template"),
+                    'type' => 'text',
+                    'value' => __("$t.seo.seo_title_template_value"),
+                    'class' => 'col-md-12',
+                ],
+                'seo_title' => [
+                    'label' => __("$t.seo.seo_title"),
+                    'type' => 'text',
+                    'value' => '',
+                    'class' => 'col-md-12',
+                ],
+                'meta_description' => [
+                    'label' => __("$t.seo.meta_description"),
+                    'type' => 'textarea',
+                    'value' => '',
+                    'class' => 'col-md-12',
+                ],
+                'meta_keywords' => [
+                    'label' => __("$t.seo.meta_keywords"),
+                    'type' => 'textarea',
+                    'value' => '',
+                    'class' => 'col-md-12',
+                ],
+                'section_og' => [
+                    'label' => __("$t.seo.section_og"),
+                    'type' => 'section',
+                    'class' => 'col-md-12',
+                ],
+                'og_site_name' => [
+                    'label' => __("$t.seo.og_site_name"),
+                    'type' => 'text',
+                    'value' => '',
+                    'class' => 'col-md-6',
+                ],
+                'og_type' => [
+                    'label' => __("$t.seo.og_type"),
+                    'type' => 'dropdown',
+                    'value' => 'website',
+                    'class' => 'col-md-6',
+                    'options' => [
+                        'website' => __("$t.seo.og_type_website"),
+                        'article' => __("$t.seo.og_type_article"),
+                    ],
+                ],
+                'og_image' => [
+                    'label' => __("$t.seo.og_image"),
+                    'type' => 'media',
+                    'value' => '',
+                    'class' => 'col-md-12',
+                ],
+                'section_twitter' => [
+                    'label' => __("$t.seo.section_twitter"),
+                    'type' => 'section',
+                    'class' => 'col-md-12',
+                ],
+                'twitter_card' => [
+                    'label' => __("$t.seo.twitter_card"),
+                    'type' => 'dropdown',
+                    'value' => 'summary_large_image',
+                    'class' => 'col-md-6',
+                    'options' => [
+                        'summary' => __("$t.seo.twitter_card_summary"),
+                        'summary_large_image' => __("$t.seo.twitter_card_summary_large"),
+                    ],
+                ],
+                'twitter_site' => [
+                    'label' => __("$t.seo.twitter_site"),
+                    'type' => 'text',
+                    'value' => '',
+                    'class' => 'col-md-6',
+                ],
+            ],
+        ];
+
+        $settingModel::updateOrCreate(['key' => 'seo'], [
+            'title' => __("$t.seo.title"),
+            'group' => 'seo',
+            'order' => 3,
+            'fields' => json_encode($seoFields, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
+        ]);
+
+        // THEME SETTINGS
+        $themeFields = [
+            'fields' => [
+                'theme_logo' => [
+                    'label' => __("$t.theme.theme_logo"),
+                    'type' => 'media',
+                    'value' => '',
+                    'class' => 'col-md-12',
+                ],
+                'theme_favicon' => [
+                    'label' => __("$t.theme.theme_favicon"),
+                    'type' => 'media',
+                    'value' => '',
+                    'class' => 'col-md-12',
+                ],
+                'theme_banner_image' => [
+                    'label' => __("$t.theme.theme_banner_image"),
+                    'type' => 'media',
+                    'value' => '',
+                    'class' => 'col-md-12',
+                ],
+            ],
+        ];
+
+        $settingModel::updateOrCreate(['key' => 'theme'], [
+            'title' => __("$t.theme.title"),
+            'group' => 'theme',
+            'order' => 4,
+            'fields' => json_encode($themeFields, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
+        ]);
+
+        $this->info('   Default settings created successfully');
     }
 }

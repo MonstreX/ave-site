@@ -12,17 +12,17 @@ class BlockRegionTest extends TestCase
     {
         $region = BlockRegion::create([
             'key' => 'header',
-            'name' => 'Header Region',
+            'title' => 'Header Region',
         ]);
 
         $this->assertInstanceOf(BlockRegion::class, $region);
         $this->assertEquals('header', $region->key);
-        $this->assertEquals('Header Region', $region->name);
+        $this->assertEquals('Header Region', $region->title);
     }
 
     public function test_block_region_can_have_blocks(): void
     {
-        $region = BlockRegion::create(['key' => 'sidebar', 'name' => 'Sidebar']);
+        $region = BlockRegion::create(['key' => 'sidebar', 'title' => 'Sidebar']);
 
         Block::create(['title' => 'Block 1', 'key' => 'block-1', 'region_id' => $region->id]);
         Block::create(['title' => 'Block 2', 'key' => 'block-2', 'region_id' => $region->id]);
@@ -32,10 +32,10 @@ class BlockRegionTest extends TestCase
 
     public function test_block_region_key_is_unique(): void
     {
-        BlockRegion::create(['key' => 'footer', 'name' => 'Footer']);
+        BlockRegion::create(['key' => 'footer', 'title' => 'Footer']);
 
         $this->expectException(\Exception::class);
 
-        BlockRegion::create(['key' => 'footer', 'name' => 'Another Footer']);
+        BlockRegion::create(['key' => 'footer', 'title' => 'Another Footer']);
     }
 }

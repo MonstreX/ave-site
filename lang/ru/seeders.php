@@ -1,6 +1,13 @@
 <?php
 
 return [
+    'regions' => [
+        'content_before' => 'До контента',
+        'content' => 'Основной контент',
+        'content_after' => 'После контента',
+        'no_position' => 'Без позиции',
+        'sidebar' => 'Сайдбар',
+    ],
     'settings' => [
         'general' => [
             'title' => 'Общие настройки',

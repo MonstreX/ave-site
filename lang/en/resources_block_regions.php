@@ -4,12 +4,15 @@ return [
     'label' => 'Block Regions',
     'singular' => 'Region',
     'columns' => [
-        'name' => 'Name',
+        'title' => 'Title',
         'key' => 'Key',
-        'created_at' => 'Created',
+        'order' => 'Order',
+        'color' => 'Color',
     ],
     'fields' => [
-        'name' => 'Name',
+        'title' => 'Title',
         'key' => 'Key',
+        'order' => 'Order',
+        'color' => 'Color',
     ],
 ];

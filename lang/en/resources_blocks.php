@@ -20,6 +20,7 @@ return [
         'title' => 'Title',
         'key' => 'Key',
         'region' => 'Region',
+        'region_placeholder' => '-- No region --',
         'status' => 'Active',
         'order' => 'Sort Order',
         'content' => 'Content',

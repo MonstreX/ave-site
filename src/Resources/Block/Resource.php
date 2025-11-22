@@ -3,8 +3,9 @@
 namespace Monstrex\AveSite\Resources\Block;
 
 use Monstrex\AveSite\Models\Block as BlockModel;
-use Monstrex\AveSite\Models\BlockRegion;
 use Monstrex\Ave\Core\Columns\Column;
+use Monstrex\Ave\Core\Columns\BooleanColumn;
+use Monstrex\Ave\Core\Columns\ComputedColumn;
 use Monstrex\Ave\Core\Components\Div;
 use Monstrex\Ave\Core\Components\Row;
 use Monstrex\Ave\Core\Components\Col;
@@ -18,6 +19,7 @@ use Monstrex\Ave\Core\Fields\Select;
 use Monstrex\Ave\Core\Fields\Number;
 use Monstrex\Ave\Core\Fields\Media;
 use Monstrex\Ave\Core\Fields\FieldSet;
+use Monstrex\Ave\Core\Fields\BelongsToSelect;
 use Monstrex\Ave\Core\Form;
 use Monstrex\Ave\Core\Resource as BaseResource;
 use Monstrex\Ave\Core\Table;
@@ -48,25 +50,48 @@ class Resource extends BaseResource
 
     public static function table($context): Table
     {
-        return Table::make()->columns([
-            Column::make('title')
-                ->label(__('ave-site::resources_blocks.columns.title'))
-                ->linkAction('edit')
-                ->sortable(true),
-            Column::make('key')
-                ->label(__('ave-site::resources_blocks.columns.key'))
-                ->sortable(true),
-            Column::make('region.name')
-                ->label(__('ave-site::resources_blocks.columns.region'))
-                ->sortable(false),
-            Column::make('status')
-                ->label(__('ave-site::resources_blocks.columns.status'))
-                ->format(fn ($value) => $value ? __('ave::common.yes') : __('ave::common.no'))
-                ->sortable(true),
-            Column::make('order')
-                ->label(__('ave-site::resources_blocks.columns.order'))
-                ->sortable(true),
-        ]);
+        return Table::make()
+            ->sortable('order')
+            ->columns([
+                BooleanColumn::make('status')
+                    ->label(__('ave-site::resources_blocks.columns.status'))
+                    ->trueValue(1)
+                    ->falseValue(0)
+                    ->width('60')
+                    ->inlineToggle(),
+                Column::make('title')
+                    ->label(__('ave-site::resources_blocks.columns.title'))
+                    ->linkAction('edit')
+                    ->sortable(true),
+                Column::make('key')
+                    ->label(__('ave-site::resources_blocks.columns.key'))
+                    ->sortable(true),
+                ComputedColumn::make('region_badge')
+                    ->label(__('ave-site::resources_blocks.columns.region'))
+                    ->compute(function ($record) {
+                        if (!$record->region) {
+                            return '';
+                        }
+
+                        $color = $record->region->color ?? '#6c757d';
+                        $title = $record->region->title;
+
+                        // Calculate inverted color for text
+                        $hex = ltrim($color, '#');
+                        $r = hexdec(substr($hex, 0, 2));
+                        $g = hexdec(substr($hex, 2, 2));
+                        $b = hexdec(substr($hex, 4, 2));
+                        $brightness = (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
+                        $textColor = $brightness > 155 ? '#000000' : '#ffffff';
+
+                        return "<span class=\"badge\" style=\"background-color: {$color}; color: {$textColor};\">{$title}</span>";
+                    })
+                    ->html()
+                    ->sortable(false),
+                Column::make('order')
+                    ->label(__('ave-site::resources_blocks.columns.order'))
+                    ->sortable(true),
+            ]);
     }
 
     public static function form($context): Form
@@ -94,10 +119,10 @@ class Resource extends BaseResource
                                 ->required(),
                         ]),
                         Col::make(4)->schema([
-                            Select::make('region_id')
+                            BelongsToSelect::make('region_id')
                                 ->label(__('ave-site::resources_blocks.fields.region'))
-                                ->options(static::getRegionOptions())
-                                ->required(),
+                                ->relationship('region', 'title')
+                                ->nullable(),
                         ]),
                     ]),
                     Row::make()->schema([
@@ -213,15 +238,4 @@ class Resource extends BaseResource
         ]);
     }
 
-    protected static function getRegionOptions(): array
-    {
-        $regions = BlockRegion::orderBy('name')->get();
-        $options = [];
-
-        foreach ($regions as $region) {
-            $options[$region->id] = $region->name;
-        }
-
-        return $options;
-    }
 }

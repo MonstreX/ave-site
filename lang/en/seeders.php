@@ -1,6 +1,13 @@
 <?php
 
 return [
+    'regions' => [
+        'content_before' => 'Before Content',
+        'content' => 'Main Content',
+        'content_after' => 'After Content',
+        'no_position' => 'No Position',
+        'sidebar' => 'Sidebar',
+    ],
     'settings' => [
         'general' => [
             'title' => 'General Settings',

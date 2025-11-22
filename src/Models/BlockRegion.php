@@ -9,7 +9,7 @@ class BlockRegion extends Model
 {
     protected $table = 'ave_site_block_regions';
 
-    protected $fillable = ['key', 'name'];
+    protected $fillable = ['key', 'title', 'order', 'color'];
 
     public function blocks(): HasMany
     {

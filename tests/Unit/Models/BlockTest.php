@@ -24,7 +24,7 @@ class BlockTest extends TestCase
 
     public function test_block_can_belong_to_region(): void
     {
-        $region = BlockRegion::create(['key' => 'header', 'name' => 'Header']);
+        $region = BlockRegion::create(['key' => 'header', 'title' => 'Header']);
 
         $block = Block::create([
             'title' => 'Header Block',
@@ -33,7 +33,7 @@ class BlockTest extends TestCase
         ]);
 
         $this->assertEquals($region->id, $block->region_id);
-        $this->assertEquals('Header', $block->region->name);
+        $this->assertEquals('Header', $block->region->title);
     }
 
     public function test_active_scope_filters_inactive_blocks(): void
@@ -49,8 +49,8 @@ class BlockTest extends TestCase
 
     public function test_in_region_scope_filters_by_region(): void
     {
-        $header = BlockRegion::create(['key' => 'header', 'name' => 'Header']);
-        $footer = BlockRegion::create(['key' => 'footer', 'name' => 'Footer']);
+        $header = BlockRegion::create(['key' => 'header', 'title' => 'Header']);
+        $footer = BlockRegion::create(['key' => 'footer', 'title' => 'Footer']);
 
         Block::create(['title' => 'Header Block', 'key' => 'header-1', 'region_id' => $header->id]);
         Block::create(['title' => 'Footer Block', 'key' => 'footer-1', 'region_id' => $footer->id]);
