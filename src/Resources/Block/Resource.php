@@ -2,6 +2,8 @@
 
 namespace Monstrex\AveSite\Resources\Block;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Monstrex\AveSite\Models\Block as BlockModel;
 use Monstrex\Ave\Core\Columns\Column;
 use Monstrex\Ave\Core\Columns\BooleanColumn;
@@ -239,4 +241,58 @@ class Resource extends BaseResource
         ]);
     }
 
+    public static function cloneableFields(): array
+    {
+        return [
+            'title',
+            'slug',
+            'region_id',
+            'order',
+            'status',
+            'content',
+            'urls',
+            'rules',
+            'details',
+            'elements',
+        ];
+    }
+
+    public static function mutateCloneAttributes(Model $original, array $attributes): array
+    {
+        $attributes['title'] = trim(($attributes['title'] ?? $original->title) . ' (copy)');
+
+        $baseSlug = $attributes['slug'] ?? $original->slug ?? $attributes['title'] ?? 'block';
+        $attributes['slug'] = static::generateUniqueSlug($baseSlug);
+
+        $attributes['order'] = (int) ($original->order ?? 0) + 1;
+
+        if (isset($attributes['elements'])) {
+            $attributes['elements'] = json_decode(json_encode($attributes['elements']), true);
+        }
+
+        if (isset($attributes['details'])) {
+            $attributes['details'] = json_decode(json_encode($attributes['details']), true);
+        }
+
+        return $attributes;
+    }
+
+    protected static function generateUniqueSlug(string $base): string
+    {
+        $slug = Str::slug($base);
+
+        if ($slug === '') {
+            $slug = 'block';
+        }
+
+        $originalSlug = $slug;
+        $counter = 1;
+
+        while (BlockModel::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $counter;
+            $counter++;
+        }
+
+        return $slug;
+    }
 }
