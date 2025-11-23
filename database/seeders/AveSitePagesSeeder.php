@@ -3,7 +3,6 @@
 namespace Monstrex\AveSite\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 use Monstrex\AveSite\Models\Page;
 
 class AveSitePagesSeeder extends Seeder
@@ -11,7 +10,7 @@ class AveSitePagesSeeder extends Seeder
     public function run(): void
     {
         Page::firstOrCreate(
-            ['slug' => Str::slug(__('ave-site::seeders.pages.home_slug'))],
+            ['slug' => 'home'],
             [
                 'title' => __('ave-site::seeders.pages.home_title'),
                 'menu' => true,
@@ -21,7 +20,7 @@ class AveSitePagesSeeder extends Seeder
         );
 
         Page::firstOrCreate(
-            ['slug' => Str::slug(__('ave-site::seeders.pages.error_slug'))],
+            ['slug' => '404'],
             [
                 'title' => __('ave-site::seeders.pages.error_title'),
                 'menu' => false,
