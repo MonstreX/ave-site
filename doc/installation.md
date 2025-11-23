@@ -67,7 +67,9 @@ This command performs the following actions:
      - Localizations
    - **Site Settings**
 
-4. **Optional: Publish views** - You can choose to publish views for customization
+4. **Seeds default content** - Adds a basic `Home` page (slug `home`) and an `Error 404` page (slug `404`) so routing works immediately.
+
+5. **Optional: Publish views** - You can choose to publish views for customization
 
 ### Step 3: Verify Installation
 
@@ -75,7 +77,8 @@ After installation, verify that:
 
 1. New menu items appear in the Ave Admin Panel sidebar
 2. Database tables are created (check your database)
-3. Configuration file exists at `config/ave-site.php`
+3. Default pages (`Home`, `Error 404`) exist in **Content > Pages**
+4. Configuration file exists at `config/ave-site.php`
 
 ## Manual Installation
 

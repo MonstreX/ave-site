@@ -3,6 +3,7 @@
 namespace Monstrex\AveSite\Commands;
 
 use Illuminate\Console\Command;
+use Monstrex\AveSite\Database\Seeders\AveSitePagesSeeder;
 
 class InstallCommand extends Command
 {
@@ -66,6 +67,11 @@ class InstallCommand extends Command
         // Create menu items
         $this->info('📋 Creating menu items...');
         $this->createMenuItems();
+        $this->newLine();
+
+        // Seed default pages
+        $this->info('📄 Creating default pages...');
+        $this->call(AveSitePagesSeeder::class);
         $this->newLine();
 
         // Publish views (optional)

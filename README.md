@@ -32,6 +32,7 @@ The installation command will:
 - Run database migrations
 - Publish configuration file
 - Create admin menu items
+- Seed default pages (`Home`, `Error 404`)
 - Optionally publish views
 
 ### Manual Installation
