@@ -2,6 +2,7 @@
 
 namespace Monstrex\AveSite\Resources\Form;
 
+use Monstrex\Ave\Core\Columns\BooleanColumn;
 use Monstrex\AveSite\Models\Form as FormModel;
 use Monstrex\Ave\Core\Columns\Column;
 use Monstrex\Ave\Core\Components\Row;
@@ -41,15 +42,18 @@ class Resource extends BaseResource
     public static function table($context): Table
     {
         return Table::make()->columns([
+            BooleanColumn::make('status')
+                ->label(__('ave-site::resources_forms.columns.status'))
+                ->trueValue(1)
+                ->falseValue(0)
+                ->width('60')
+                ->inlineToggle(),
             Column::make('title')
                 ->label(__('ave-site::resources_forms.columns.title'))
+                ->linkAction('edit')
                 ->sortable(true),
             Column::make('key')
                 ->label(__('ave-site::resources_forms.columns.key'))
-                ->sortable(true),
-            Column::make('status')
-                ->label(__('ave-site::resources_forms.columns.status'))
-                ->format(fn ($value) => $value ? __('ave::common.yes') : __('ave::common.no'))
                 ->sortable(true),
             Column::make('order')
                 ->label(__('ave-site::resources_forms.columns.order'))
@@ -62,22 +66,19 @@ class Resource extends BaseResource
         return Form::make()->schema([
             Row::make()->schema([
                 Col::make(6)->schema([
+                    Col::make(2)->schema([
+                        Toggle::make('status')
+                            ->label(__('ave-site::resources_forms.fields.status'))
+                            ->default(true),
+                    ]),
+                ]),
+            ]),
+            Row::make()->schema([
+                Col::make(6)->schema([
                     TextInput::make('title')
                         ->label(__('ave-site::resources_forms.fields.title'))
                         ->required(),
                 ]),
-                Col::make(3)->schema([
-                    Toggle::make('status')
-                        ->label(__('ave-site::resources_forms.fields.status'))
-                        ->default(true),
-                ]),
-                Col::make(3)->schema([
-                    Number::make('order')
-                        ->label(__('ave-site::resources_forms.fields.order'))
-                        ->default(0),
-                ]),
-            ]),
-            Row::make()->schema([
                 Col::make(6)->schema([
                     TextInput::make('key')
                         ->label(__('ave-site::resources_forms.fields.key'))
@@ -102,6 +103,13 @@ class Resource extends BaseResource
                         ->theme('github')
                         ->height(200)
                         ->autoHeight(true),
+                ]),
+            ]),
+            Row::make()->schema([
+                Col::make(2)->schema([
+                    Number::make('order')
+                        ->label(__('ave-site::resources_forms.fields.order'))
+                        ->default(0),
                 ]),
             ]),
         ]);
