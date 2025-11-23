@@ -239,7 +239,7 @@ class Resource extends BaseResource
         ]);
     }
 
-    protected static array $cloneable = [
+    public static array $cloneable = [
         'title' => ' (copy)',
         'key' => '-copy',
         'region_id',
@@ -249,6 +249,5 @@ class Resource extends BaseResource
         'urls',
         'rules',
         'details',
-        'elements',
     ];
 }
