@@ -149,14 +149,7 @@ class Resource extends BaseResource
                         ]),
                     ]),
                     Row::make()->schema([
-                        Col::make(12)->schema([
-                            Textarea::make('urls')
-                                ->label(__('ave-site::resources_blocks.fields.urls'))
-                                ->rows(4),
-                        ]),
-                    ]),
-                    Row::make()->schema([
-                        Col::make(6)->schema([
+                        Col::make(4)->schema([
                             Select::make('rules')
                                 ->label(__('ave-site::resources_blocks.fields.rules'))
                                 ->options([
@@ -164,6 +157,13 @@ class Resource extends BaseResource
                                     '1' => __('ave-site::resources_blocks.rules_show'),
                                 ])
                                 ->default(0),
+                        ]),
+                    ]),
+                    Row::make()->schema([
+                        Col::make(12)->schema([
+                            Textarea::make('urls')
+                                ->label(__('ave-site::resources_blocks.fields.urls'))
+                                ->rows(4),
                         ]),
                     ]),
                     Row::make()->schema([
