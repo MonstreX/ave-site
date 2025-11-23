@@ -30,6 +30,16 @@ class Resource extends BaseResource
     public static ?string $icon = 'voyager-file-text';
     public static ?string $slug = 'site-pages';
     public static ?string $group = null;
+    public static array $cloneable = [
+        'title' => ' (copy)',
+        'slug' => '-copy',
+        'status',
+        'menu',
+        'parent_id',
+        'order',
+        'content',
+        'details',
+    ];
 
     public static function getLabel(): string
     {

@@ -23,6 +23,14 @@ class Resource extends BaseResource
     public static ?string $icon = 'voyager-mail';
     public static ?string $slug = 'site-forms';
     public static ?string $group = null;
+    public static array $cloneable = [
+        'title' => ' (copy)',
+        'key' => '-copy',
+        'status',
+        'content',
+        'details',
+        'order',
+    ];
 
     public static function getLabel(): string
     {
