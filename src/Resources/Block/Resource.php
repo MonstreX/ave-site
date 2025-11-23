@@ -15,7 +15,7 @@ use Monstrex\Ave\Core\Fields\TextInput;
 use Monstrex\Ave\Core\Fields\CodeEditor;
 use Monstrex\Ave\Core\Fields\Textarea;
 use Monstrex\Ave\Core\Fields\Toggle;
-use Monstrex\Ave\Core\Fields\Select;
+use Monstrex\Ave\Core\Fields\RadioGroup;
 use Monstrex\Ave\Core\Fields\Number;
 use Monstrex\Ave\Core\Fields\Media;
 use Monstrex\Ave\Core\Fields\FieldSet;
@@ -150,12 +150,13 @@ class Resource extends BaseResource
                     ]),
                     Row::make()->schema([
                         Col::make(4)->schema([
-                            Select::make('rules')
+                            RadioGroup::make('rules')
                                 ->label(__('ave-site::resources_blocks.fields.rules'))
                                 ->options([
                                     '0' => __('ave-site::resources_blocks.rules_hide'),
                                     '1' => __('ave-site::resources_blocks.rules_show'),
                                 ])
+                                ->inline()
                                 ->default(0),
                         ]),
                     ]),
