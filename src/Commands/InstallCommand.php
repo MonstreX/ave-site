@@ -4,6 +4,7 @@ namespace Monstrex\AveSite\Commands;
 
 use Illuminate\Console\Command;
 use Monstrex\AveSite\Database\Seeders\AveSitePagesSeeder;
+use Monstrex\AveSite\Support\MenuInstaller;
 
 class InstallCommand extends Command
 {
@@ -66,7 +67,18 @@ class InstallCommand extends Command
 
         // Create menu items
         $this->info('📋 Creating menu items...');
-        $this->createMenuItems();
+        $menu = \DB::table('ave_menus')->where('key', 'admin')->first();
+
+        if (! $menu) {
+            $this->warn('Admin menu not found. Skipping menu items.');
+        } else {
+            $settingsSeeded = MenuInstaller::install($menu->id);
+
+            if (! $settingsSeeded) {
+                $this->warn('Settings menu not found. Redirects, Scripts and Block Groups were not added.');
+            }
+        }
+
         $this->newLine();
 
         // Seed default pages
@@ -93,171 +105,6 @@ class InstallCommand extends Command
         $this->newLine();
 
         return self::SUCCESS;
-    }
-
-    protected function createMenuItems(): void
-    {
-        $menu = \DB::table('ave_menus')->where('key', 'admin')->first();
-
-        if (!$menu) {
-            $this->warn('Admin menu not found. Skipping menu items.');
-            return;
-        }
-
-        $menuId = $menu->id;
-
-        // Find Dashboard order to insert after it
-        $dashboardItem = \DB::table('ave_menu_items')
-            ->where('menu_id', $menuId)
-            ->whereNull('parent_id')
-            ->where('route', 'ave.dashboard')
-            ->first();
-
-        $startOrder = $dashboardItem ? $dashboardItem->order + 1 : 1;
-
-        // Shift existing items to make room
-        \DB::table('ave_menu_items')
-            ->where('menu_id', $menuId)
-            ->whereNull('parent_id')
-            ->where('order', '>=', $startOrder)
-            ->increment('order', 5);
-
-        // Root level items (after Dashboard)
-        $rootItems = [
-            [
-                'title' => __('ave-site::install.menu_pages'),
-                'icon' => 'voyager-file-text',
-                'resource_slug' => 'site-pages',
-                'order' => $startOrder,
-            ],
-            [
-                'title' => __('ave-site::install.menu_blocks'),
-                'icon' => 'voyager-puzzle',
-                'resource_slug' => 'site-blocks',
-                'order' => $startOrder + 1,
-            ],
-            [
-                'title' => __('ave-site::install.menu_forms'),
-                'icon' => 'voyager-mail',
-                'resource_slug' => 'site-forms',
-                'order' => $startOrder + 2,
-            ],
-            [
-                'title' => __('ave-site::install.menu_localizations'),
-                'icon' => 'voyager-font',
-                'resource_slug' => 'site-localizations',
-                'order' => $startOrder + 3,
-            ],
-            [
-                'title' => __('ave-site::install.menu_site_settings'),
-                'icon' => 'voyager-tools',
-                'resource_slug' => 'site-settings',
-                'order' => $startOrder + 4,
-            ],
-        ];
-
-        foreach ($rootItems as $item) {
-            // Check if already exists
-            $exists = \DB::table('ave_menu_items')
-                ->where('menu_id', $menuId)
-                ->where('resource_slug', $item['resource_slug'])
-                ->exists();
-
-            if (!$exists) {
-                \DB::table('ave_menu_items')->insert([
-                    'menu_id' => $menuId,
-                    'parent_id' => null,
-                    'title' => $item['title'],
-                    'status' => 1,
-                    'icon' => $item['icon'],
-                    'route' => null,
-                    'url' => null,
-                    'target' => '_self',
-                    'order' => $item['order'],
-                    'permission_key' => null,
-                    'resource_slug' => $item['resource_slug'],
-                    'ability' => 'viewAny',
-                    'is_divider' => 0,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
-        }
-
-        // Find Settings submenu
-        $settingsMenu = \DB::table('ave_menu_items')
-            ->where('menu_id', $menuId)
-            ->whereNull('parent_id')
-            ->where('title', 'Settings')
-            ->first();
-
-        if (!$settingsMenu) {
-            // Try to find by Russian title
-            $settingsMenu = \DB::table('ave_menu_items')
-                ->where('menu_id', $menuId)
-                ->whereNull('parent_id')
-                ->where('title', 'Настройки')
-                ->first();
-        }
-
-        if ($settingsMenu) {
-            $maxSettingsOrder = \DB::table('ave_menu_items')
-                ->where('menu_id', $menuId)
-                ->where('parent_id', $settingsMenu->id)
-                ->max('order') ?? 0;
-
-            $settingsItems = [
-                [
-                    'title' => __('ave-site::install.menu_redirects'),
-                    'icon' => 'voyager-forward',
-                    'resource_slug' => 'site-redirects',
-                    'order' => $maxSettingsOrder + 1,
-                ],
-                [
-                    'title' => __('ave-site::install.menu_scripts'),
-                    'icon' => 'voyager-code',
-                    'resource_slug' => 'site-scripts',
-                    'order' => $maxSettingsOrder + 2,
-                ],
-                [
-                    'title' => __('ave-site::install.menu_block_regions'),
-                    'icon' => 'voyager-resize-full',
-                    'resource_slug' => 'site-block-regions',
-                    'order' => $maxSettingsOrder + 3,
-                ],
-            ];
-
-            foreach ($settingsItems as $item) {
-                $exists = \DB::table('ave_menu_items')
-                    ->where('menu_id', $menuId)
-                    ->where('resource_slug', $item['resource_slug'])
-                    ->exists();
-
-                if (!$exists) {
-                    \DB::table('ave_menu_items')->insert([
-                        'menu_id' => $menuId,
-                        'parent_id' => $settingsMenu->id,
-                        'title' => $item['title'],
-                        'status' => 1,
-                        'icon' => $item['icon'],
-                        'route' => null,
-                        'url' => null,
-                        'target' => '_self',
-                        'order' => $item['order'],
-                        'permission_key' => null,
-                        'resource_slug' => $item['resource_slug'],
-                        'ability' => 'viewAny',
-                        'is_divider' => 0,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                }
-            }
-        } else {
-            $this->warn('Settings menu not found. Redirects, Scripts and Block Groups were not added.');
-        }
-
-        $this->info('   Menu items created successfully');
     }
 
     protected function createBlockRegions(): void
