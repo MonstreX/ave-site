@@ -245,7 +245,7 @@ class Resource extends BaseResource
     {
         return [
             'title',
-            'slug',
+            'key',
             'region_id',
             'order',
             'status',
@@ -261,8 +261,8 @@ class Resource extends BaseResource
     {
         $attributes['title'] = trim(($attributes['title'] ?? $original->title) . ' (copy)');
 
-        $baseSlug = $attributes['slug'] ?? $original->slug ?? $attributes['title'] ?? 'block';
-        $attributes['slug'] = static::generateUniqueSlug($baseSlug);
+        $baseKey = $attributes['key'] ?? $original->key ?? Str::slug($attributes['title'] ?? 'block');
+        $attributes['key'] = static::generateUniqueKey($baseKey);
 
         $attributes['order'] = (int) ($original->order ?? 0) + 1;
 
@@ -277,22 +277,22 @@ class Resource extends BaseResource
         return $attributes;
     }
 
-    protected static function generateUniqueSlug(string $base): string
+    protected static function generateUniqueKey(string $base): string
     {
-        $slug = Str::slug($base);
+        $key = Str::slug($base);
 
-        if ($slug === '') {
-            $slug = 'block';
+        if ($key === '') {
+            $key = 'block';
         }
 
-        $originalSlug = $slug;
+        $originalKey = $key;
         $counter = 1;
 
-        while (BlockModel::where('slug', $slug)->exists()) {
-            $slug = $originalSlug . '-' . $counter;
+        while (BlockModel::where('key', $key)->exists()) {
+            $key = $originalKey . '-' . $counter;
             $counter++;
         }
 
-        return $slug;
+        return $key;
     }
 }
