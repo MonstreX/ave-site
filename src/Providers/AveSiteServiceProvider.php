@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Monstrex\AveSite\Commands\InstallCommand;
+use Monstrex\AveSite\Commands\UninstallCommand;
 use Monstrex\AveSite\Models\Setting;
 use Monstrex\AveSite\Services\{
     DataService,
@@ -99,6 +100,7 @@ class AveSiteServiceProvider extends ServiceProvider
             // Register commands
             $this->commands([
                 InstallCommand::class,
+                UninstallCommand::class,
             ]);
         }
     }

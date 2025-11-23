@@ -212,22 +212,21 @@ Add to `config/app.php` providers array (usually auto-discovered):
 
 ## Uninstallation
 
-To remove the package:
-
-1. Remove from `composer.json`
-2. Run `composer update`
-3. Manually drop database tables if needed:
-   ```sql
-   DROP TABLE ave_site_pages;
-   DROP TABLE ave_site_blocks;
-   DROP TABLE ave_site_block_regions;
-   DROP TABLE ave_site_forms;
-   DROP TABLE ave_site_settings;
-   DROP TABLE ave_site_localizations;
+1. Run the uninstall command to clean database tables, migration records, config and menu entries:
+   ```bash
+   php artisan ave-site:uninstall
    ```
-4. Remove menu items from `ave_menu_items` table
-5. Delete `config/ave-site.php`
-6. Delete published views from `resources/views/vendor/ave-site/`
+   Useful options:
+   - `--dry-run` - preview actions without changing anything
+   - `--keep-config`, `--keep-views`, `--keep-menu` - skip deleting specific resources
+   - `--force` - skip confirmation prompts
+2. Remove the dependency from `composer.json` and run `composer update`
+3. Clear caches:
+   ```bash
+   php artisan cache:clear
+   php artisan config:clear
+   ```
+4. Delete any custom Ave Site resources or overrides you published manually (e.g. `app/AveSite`, `resources/views/vendor/ave-site`)
 
 ## Next Steps
 
