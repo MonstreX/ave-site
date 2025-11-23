@@ -12,15 +12,15 @@ return [
     'columns' => [
         'title' => 'Название',
         'key' => 'Ключ',
-        'region' => 'Регион',
+        'region' => 'Группа блоков',
         'status' => 'Активен',
         'order' => 'Порядок',
     ],
     'fields' => [
         'title' => 'Название',
         'key' => 'Ключ',
-        'region' => 'Регион',
-        'region_placeholder' => '-- Без региона --',
+        'region' => 'Группа блоков',
+        'region_placeholder' => '-- Без группы --',
         'status' => 'Активен',
         'order' => 'Порядок сортировки',
         'content' => 'Содержимое',

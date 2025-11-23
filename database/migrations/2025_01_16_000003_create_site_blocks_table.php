@@ -17,15 +17,15 @@ return new class extends Migration
             $table->boolean('status')->default(true);
 
             // Visibility Rules
-            $table->text('urls')->nullable(); // URL patterns (по строке на pattern)
+            $table->text('urls')->nullable(); // URL patterns (one per line)
             $table->tinyInteger('rules')->default(0); // 0=EXCEPT, 1=ONLY
 
             // Content
             $table->longText('content')->nullable(); // Liquid template
-            $table->string('images')->nullable(); // Изображения (основное)
+            $table->string('images')->nullable(); // Primary image reference
             $table->json('elements')->nullable(); // FieldSet elements
 
-            // Details (JSON): DataSources, validator (для форм), и т.д.
+            // Details (JSON): DataSources, validators (for forms), etc.
             $table->longText('details')->nullable();
 
             $table->timestamps();

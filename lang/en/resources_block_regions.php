@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'label' => 'Block Regions',
-    'singular' => 'Region',
+    'label' => 'Block Groups',
+    'singular' => 'Block Group',
     'columns' => [
         'title' => 'Title',
         'key' => 'Key',

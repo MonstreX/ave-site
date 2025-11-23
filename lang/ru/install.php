@@ -3,7 +3,7 @@
 return [
     'menu_pages' => 'Страницы',
     'menu_blocks' => 'Блоки и виджеты',
-    'menu_block_regions' => 'Регионы блоков',
+    'menu_block_regions' => 'Группы блоков',
     'menu_forms' => 'Формы',
     'menu_localizations' => 'Локализация',
     'menu_site_settings' => 'Настройки сайта',

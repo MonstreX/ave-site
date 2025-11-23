@@ -27,7 +27,7 @@ class Setting extends Model
     }
 
     /**
-     * Получить набор значений полей как key=>value
+     * Get decoded field values as a key=>value array
      */
     public function getFieldsArray(): array
     {

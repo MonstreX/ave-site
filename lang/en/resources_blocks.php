@@ -12,15 +12,15 @@ return [
     'columns' => [
         'title' => 'Title',
         'key' => 'Key',
-        'region' => 'Region',
+        'region' => 'Block Group',
         'status' => 'Active',
         'order' => 'Order',
     ],
     'fields' => [
         'title' => 'Title',
         'key' => 'Key',
-        'region' => 'Region',
-        'region_placeholder' => '-- No region --',
+        'region' => 'Block Group',
+        'region_placeholder' => '-- No block group --',
         'status' => 'Active',
         'order' => 'Sort Order',
         'content' => 'Content',

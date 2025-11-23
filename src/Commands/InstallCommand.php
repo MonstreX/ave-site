@@ -53,8 +53,8 @@ class InstallCommand extends Command
         ]);
         $this->newLine();
 
-        // Create default block regions
-        $this->info('📋 Creating default block regions...');
+        // Create default block groups
+        $this->info('📋 Creating default block groups...');
         $this->createBlockRegions();
         $this->newLine();
 
@@ -81,7 +81,7 @@ class InstallCommand extends Command
         $this->newLine();
 
         $this->comment('Next steps:');
-        $this->line('  1. Create block regions in admin panel');
+        $this->line('  1. Create block groups in admin panel');
         $this->line('  2. Create pages and blocks');
         $this->line('  3. Configure settings via admin panel');
         $this->newLine();
@@ -248,7 +248,7 @@ class InstallCommand extends Command
                 }
             }
         } else {
-            $this->warn('Settings menu not found. Redirects, Scripts and Block Regions were not added.');
+            $this->warn('Settings menu not found. Redirects, Scripts and Block Groups were not added.');
         }
 
         $this->info('   Menu items created successfully');
@@ -302,7 +302,7 @@ class InstallCommand extends Command
             );
         }
 
-        $this->info('   Block regions created successfully');
+        $this->info('   Block groups created successfully');
     }
 
     protected function createDefaultSettings(): void

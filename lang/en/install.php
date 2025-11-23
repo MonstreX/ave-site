@@ -3,7 +3,7 @@
 return [
     'menu_pages' => 'Pages',
     'menu_blocks' => 'Blocks & Widgets',
-    'menu_block_regions' => 'Block Regions',
+    'menu_block_regions' => 'Block Groups',
     'menu_forms' => 'Forms',
     'menu_localizations' => 'Localization',
     'menu_site_settings' => 'Site Settings',

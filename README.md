@@ -90,7 +90,7 @@ The package creates the following tables:
 
 - `ave_site_pages` - Hierarchical pages with SEO
 - `ave_site_blocks` - Content blocks with Liquid templates
-- `ave_site_block_regions` - Block regions/positions
+- `ave_site_block_regions` - Block groups/positions
 - `ave_site_forms` - Form definitions with validation
 - `ave_site_settings` - JSON-schema based site settings
 - `ave_site_localizations` - Database translations

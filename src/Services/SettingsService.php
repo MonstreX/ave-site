@@ -7,7 +7,7 @@ use Monstrex\AveSite\Models\Setting;
 class SettingsService
 {
     /**
-     * Получить настройку (формат: "group.field")
+     * Get a specific setting value (format: "group.field")
      */
     public function get(string $key, $default = null)
     {
@@ -29,7 +29,7 @@ class SettingsService
     }
 
     /**
-     * Получить группу настроек
+     * Get an entire settings group as an associative array
      */
     public function getGroup(string $group): array
     {

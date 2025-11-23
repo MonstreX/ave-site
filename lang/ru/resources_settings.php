@@ -56,4 +56,12 @@ return [
         'send_test_email' => 'Отправить тестовое письмо',
         'select_option' => '-- Выберите --',
     ],
+    'actions' => [
+        'save' => 'Сохранить настройки',
+        'remove_media' => 'Удалить медиа',
+        'remove_media_confirm' => 'Вы уверены, что хотите удалить этот медиафайл?',
+        'remove_media_title' => 'Удалить медиафайл',
+        'remove_media_button' => 'Удалить',
+        'cancel_button' => 'Отмена',
+    ],
 ];

@@ -9,7 +9,7 @@ class AveSiteMenuSeeder extends Seeder
 {
     public function run(): void
     {
-        // Найдем главное меню (main)
+        // Locate the main admin menu (key "admin")
         $mainMenu = DB::table('ave_menus')->where('key', 'admin')->first();
 
         if (!$mainMenu) {
@@ -17,7 +17,7 @@ class AveSiteMenuSeeder extends Seeder
             return;
         }
 
-        // Получим максимальный order
+        // Determine the highest order among root items
         $maxOrder = DB::table('ave_menu_items')
             ->where('menu_id', $mainMenu->id)
             ->whereNull('parent_id')
@@ -25,7 +25,7 @@ class AveSiteMenuSeeder extends Seeder
 
         $order = $maxOrder + 1;
 
-        // Создадим пункт меню для Redirects (EN)
+        // Create Redirects menu item (EN)
         $this->createMenuItem($mainMenu->id, [
             'title' => 'Redirects',
             'url' => '/admin/resource/site-redirects',
@@ -34,7 +34,7 @@ class AveSiteMenuSeeder extends Seeder
             'locale' => 'en',
         ]);
 
-        // Создадим пункт меню для Redirects (RU)
+        // Create Redirects menu item (RU)
         $this->createMenuItem($mainMenu->id, [
             'title' => 'Редиректы',
             'url' => '/admin/resource/site-redirects',

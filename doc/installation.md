@@ -51,7 +51,7 @@ This command performs the following actions:
 1. **Runs migrations** - Creates all required database tables:
    - `ave_site_pages` - Hierarchical pages
    - `ave_site_blocks` - Content blocks
-   - `ave_site_block_regions` - Block regions/areas
+   - `ave_site_block_regions` - Block groups/areas
    - `ave_site_forms` - Form definitions
    - `ave_site_settings` - Site configuration
    - `ave_site_localizations` - Database translations
@@ -62,7 +62,7 @@ This command performs the following actions:
    - **Content** (group)
      - Pages
      - Blocks
-     - Block Regions
+     - Block Groups
      - Forms
      - Localizations
    - **Site Settings**
@@ -111,12 +111,12 @@ php artisan ave-site:install --force
 
 ## Post-Installation Setup
 
-### 1. Create Block Regions
+### 1. Create Block Groups
 
-Before creating blocks, define regions where blocks will be placed:
+Before creating blocks, define groups where blocks will be placed:
 
-1. Go to **Content > Block Regions** in admin panel
-2. Create regions like:
+1. Go to **Content > Block Groups** in admin panel
+2. Create groups like:
    - `header` - Header area
    - `footer` - Footer area
    - `sidebar` - Sidebar area

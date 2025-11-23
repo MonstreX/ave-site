@@ -77,7 +77,7 @@ Regions are named areas where blocks are placed:
 
 ### Creating Regions
 
-1. Go to **Content > Block Regions**
+1. Go to **Content > Block Groups**
 2. Click **Create**
 3. Enter:
    - **Key** - Identifier (e.g., `header`, `footer`)

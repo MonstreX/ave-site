@@ -15,21 +15,21 @@
     @if (session('success'))
         <div class="alert alert-success">
             <i class="voyager-check"></i>
-            <strong>Success:</strong> {{ session('success') }}
+            <strong>@lang('ave-site::notifications.success'):</strong> {{ session('success') }}
         </div>
     @endif
 
     @if (session('error'))
         <div class="alert alert-danger">
             <i class="voyager-x"></i>
-            <strong>Error:</strong> {{ session('error') }}
+            <strong>@lang('ave-site::notifications.error'):</strong> {{ session('error') }}
         </div>
     @endif
 
     @if ($errors->any())
         <div class="alert alert-danger">
             <i class="voyager-x"></i>
-            <strong>Error:</strong> @lang('ave-site::resources_settings.messages.validation_errors')
+            <strong>@lang('ave-site::notifications.error'):</strong> @lang('ave-site::resources_settings.messages.validation_errors')
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -174,7 +174,7 @@
                                                         <button type="button"
                                                                 class="media-action media-preview-delete"
                                                                 data-field="{{$key_field}}"
-                                                                title="Remove media">
+                                                                title="@lang('ave-site::resources_settings.actions.remove_media')">
                                                             <svg class="icon"><use href="#delete"></use></svg>
                                                         </button>
                                                     </div>
@@ -219,7 +219,7 @@
         <div class="row">
             <div class="col-md-12 mb-30">
                 <button type="submit" class="btn btn-primary">
-                    <i class="voyager-save"></i> Save Settings
+                    <i class="voyager-save"></i> @lang('ave-site::resources_settings.actions.save')
                 </button>
             </div>
         </div>
@@ -227,6 +227,13 @@
 </div>
 
 <script>
+const settingsMessages = {
+    confirmMessage: @json(__('ave-site::resources_settings.actions.remove_media_confirm')),
+    confirmTitle: @json(__('ave-site::resources_settings.actions.remove_media_title')),
+    confirmButton: @json(__('ave-site::resources_settings.actions.remove_media_button')),
+    cancelButton: @json(__('ave-site::resources_settings.actions.cancel_button')),
+};
+
 // Initialize media removal handlers
 function setupMediaHandlers() {
     document.querySelectorAll('.media-preview-delete').forEach(function(btn) {
@@ -234,10 +241,10 @@ function setupMediaHandlers() {
             e.preventDefault();
             const field = this.dataset.field;
 
-            const confirmed = await window.Ave.confirm('Are you sure you want to remove this media?', {
-                title: 'Remove Media',
-                confirmText: 'Remove',
-                cancelText: 'Cancel',
+            const confirmed = await window.Ave.confirm(settingsMessages.confirmMessage, {
+                title: settingsMessages.confirmTitle,
+                confirmText: settingsMessages.confirmButton,
+                cancelText: settingsMessages.cancelButton,
                 variant: 'error'
             });
 

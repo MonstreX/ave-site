@@ -13,7 +13,7 @@ use Illuminate\Support\MessageBag;
 use Webwizo\Shortcodes\Facades\Shortcode;
 
 /**
- * BlockService - Renders blocks and block regions with Liquid templates
+ * BlockService - Renders blocks and block groups with Liquid templates
  */
 class BlockService implements BlockContract
 {

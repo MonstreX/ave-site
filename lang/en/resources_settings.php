@@ -56,4 +56,12 @@ return [
         'send_test_email' => 'Send Test Email',
         'select_option' => '-- Select --',
     ],
+    'actions' => [
+        'save' => 'Save Settings',
+        'remove_media' => 'Remove media',
+        'remove_media_confirm' => 'Are you sure you want to remove this media?',
+        'remove_media_title' => 'Remove Media',
+        'remove_media_button' => 'Remove',
+        'cancel_button' => 'Cancel',
+    ],
 ];
