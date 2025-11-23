@@ -2,8 +2,6 @@
 
 namespace Monstrex\AveSite\Resources\Block;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 use Monstrex\AveSite\Models\Block as BlockModel;
 use Monstrex\Ave\Core\Columns\Column;
 use Monstrex\Ave\Core\Columns\BooleanColumn;
@@ -241,58 +239,16 @@ class Resource extends BaseResource
         ]);
     }
 
-    public static function cloneableFields(): array
-    {
-        return [
-            'title',
-            'key',
-            'region_id',
-            'order',
-            'status',
-            'content',
-            'urls',
-            'rules',
-            'details',
-            'elements',
-        ];
-    }
-
-    public static function mutateCloneAttributes(Model $original, array $attributes): array
-    {
-        $attributes['title'] = trim(($attributes['title'] ?? $original->title) . ' (copy)');
-
-        $baseKey = $attributes['key'] ?? $original->key ?? Str::slug($attributes['title'] ?? 'block');
-        $attributes['key'] = static::generateUniqueKey($baseKey);
-
-        $attributes['order'] = (int) ($original->order ?? 0) + 1;
-
-        if (isset($attributes['elements'])) {
-            $attributes['elements'] = json_decode(json_encode($attributes['elements']), true);
-        }
-
-        if (isset($attributes['details'])) {
-            $attributes['details'] = json_decode(json_encode($attributes['details']), true);
-        }
-
-        return $attributes;
-    }
-
-    protected static function generateUniqueKey(string $base): string
-    {
-        $key = Str::slug($base);
-
-        if ($key === '') {
-            $key = 'block';
-        }
-
-        $originalKey = $key;
-        $counter = 1;
-
-        while (BlockModel::where('key', $key)->exists()) {
-            $key = $originalKey . '-' . $counter;
-            $counter++;
-        }
-
-        return $key;
-    }
+    protected static array $cloneable = [
+        'title' => ' (copy)',
+        'key' => '-copy',
+        'region_id',
+        'order',
+        'status',
+        'content',
+        'urls',
+        'rules',
+        'details',
+        'elements',
+    ];
 }
