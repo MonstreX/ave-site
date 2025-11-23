@@ -8,6 +8,12 @@ return [
         'no_position' => 'Без позиции',
         'sidebar' => 'Сайдбар',
     ],
+    'pages' => [
+        'home_title' => 'Главная',
+        'home_slug' => 'home',
+        'error_title' => 'Ошибка 404',
+        'error_slug' => '404',
+    ],
     'settings' => [
         'general' => [
             'title' => 'Общие настройки',

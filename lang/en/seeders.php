@@ -8,6 +8,12 @@ return [
         'no_position' => 'No Position',
         'sidebar' => 'Sidebar',
     ],
+    'pages' => [
+        'home_title' => 'Home',
+        'home_slug' => 'home',
+        'error_title' => 'Error 404',
+        'error_slug' => '404',
+    ],
     'settings' => [
         'general' => [
             'title' => 'General Settings',
