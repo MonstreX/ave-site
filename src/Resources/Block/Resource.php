@@ -32,6 +32,17 @@ class Resource extends BaseResource
     public static ?string $icon = 'voyager-puzzle';
     public static ?string $slug = 'site-blocks';
     public static ?string $group = null;
+    public static array $cloneable = [
+        'title' => ' (copy)',
+        'key' => '-copy',
+        'region_id',
+        'order',
+        'status',
+        'content',
+        'urls',
+        'rules',
+        'details',
+    ];
 
     public static function getLabel(): string
     {
@@ -239,15 +250,4 @@ class Resource extends BaseResource
         ]);
     }
 
-    public static array $cloneable = [
-        'title' => ' (copy)',
-        'key' => '-copy',
-        'region_id',
-        'order',
-        'status',
-        'content',
-        'urls',
-        'rules',
-        'details',
-    ];
 }
