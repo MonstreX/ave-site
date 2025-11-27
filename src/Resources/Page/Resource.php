@@ -112,7 +112,7 @@ class Resource extends BaseResource
                                 ->from('title')
                                 ->separator('-')
                                 ->locale('ru')
-                                ->unique('ave_pages')
+                                ->unique('ave_site_pages')
                                 ->required(),
                         ]),
                     ]),
