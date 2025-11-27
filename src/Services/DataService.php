@@ -448,7 +448,7 @@ class DataService implements DataContract
                 if ($width && $height) {
                     $processor->cover((int)$width, (int)$height); // Crop to exact size
                 } elseif ($width || $height) {
-                    $processor->scale((int)$width, (int)$height); // Maintain aspect ratio
+                    $processor->scale($width ? (int)$width : null, $height ? (int)$height : null); // Maintain aspect ratio
                 }
 
                 // Encode with format and quality
