@@ -16,6 +16,7 @@ use Monstrex\Ave\Core\Fields\Media;
 use Monstrex\Ave\Core\Fields\Number;
 use Monstrex\Ave\Core\Fields\RichEditor;
 use Monstrex\Ave\Core\Fields\Select;
+use Monstrex\Ave\Core\Fields\Slug;
 use Monstrex\Ave\Core\Fields\TextInput;
 use Monstrex\Ave\Core\Fields\Toggle;
 use Monstrex\Ave\Core\Form;
@@ -106,8 +107,12 @@ class Resource extends BaseResource
                                 ->required(),
                         ]),
                         Col::make(6)->schema([
-                            TextInput::make('slug')
+                            Slug::make('slug')
                                 ->label(__('ave-site::resources_pages.fields.slug'))
+                                ->from('title')
+                                ->separator('-')
+                                ->locale('ru')
+                                ->unique('ave_pages')
                                 ->required(),
                         ]),
                     ]),
