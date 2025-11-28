@@ -3,7 +3,7 @@
 namespace Monstrex\AveSite\Services;
 
 use Monstrex\Ave\Core\Fields\Media;
-use Monstrex\Ave\Core\Fields\FieldSet;
+use Monstrex\Ave\Core\Fields\Fieldset;
 use Monstrex\Ave\Core\Fields\CodeEditor;
 
 /**

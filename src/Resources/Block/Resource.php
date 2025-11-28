@@ -18,7 +18,7 @@ use Monstrex\Ave\Core\Fields\Toggle;
 use Monstrex\Ave\Core\Fields\RadioGroup;
 use Monstrex\Ave\Core\Fields\Number;
 use Monstrex\Ave\Core\Fields\Media;
-use Monstrex\Ave\Core\Fields\FieldSet;
+use Monstrex\Ave\Core\Fields\Fieldset;
 use Monstrex\Ave\Core\Fields\BelongsToSelect;
 use Monstrex\Ave\Core\Form;
 use Monstrex\Ave\Core\Resource as BaseResource;
