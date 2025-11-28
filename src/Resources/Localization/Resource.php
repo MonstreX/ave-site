@@ -66,17 +66,13 @@ class Resource extends BaseResource
                         ->label(__('ave-site::resources_localizations.fields.key'))
                         ->required(),
                 ]),
-            ]),
-            Row::make()->schema([
-                Col::make(6)->schema([
-                    Textarea::make('en')
+                Col::make()->schema([
+                    TextInput::make('en')
                         ->label(__('ave-site::resources_localizations.fields.en'))
-                        ->rows(6),
                 ]),
-                Col::make(6)->schema([
-                    Textarea::make('ru')
+                Col::make()->schema([
+                    TextInput::make('ru')
                         ->label(__('ave-site::resources_localizations.fields.ru'))
-                        ->rows(6),
                 ]),
             ]),
         ]);
