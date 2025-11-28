@@ -198,7 +198,7 @@ class Resource extends BaseResource
                 Tab::make(__('ave-site::resources_blocks.tabs.elements'))->schema([
                     Row::make()->schema([
                         Col::make(12)->schema([
-                            FieldSet::make('elements')
+                            Fieldset::make('elements')
                         ->label(__('ave-site::resources_blocks.fields.elements'))
                         ->help(__('ave-site::resources_blocks.fields.elements_help'))
                         ->displayAs('cards')

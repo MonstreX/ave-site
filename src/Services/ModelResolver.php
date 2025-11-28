@@ -145,7 +145,7 @@ class ModelResolver
             return 'media';
         }
 
-        if ($component instanceof FieldSet) {
+        if ($component instanceof Fieldset) {
             return 'fieldset';
         }
 
