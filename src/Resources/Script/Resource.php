@@ -79,20 +79,20 @@ class Resource extends BaseResource
                         ->label(__('ave-site::resources_scripts.fields.status'))
                         ->default(true),
                 ]),
-                Col::make(10)->schema([
+            ]),
+            Row::make()->schema([
+                Col::make(4)->schema([
                     TextInput::make('title')
                         ->label(__('ave-site::resources_scripts.fields.title'))
                         ->required(),
                 ]),
-            ]),
-            Row::make()->schema([
                 Col::make(4)->schema([
                     TextInput::make('key')
                         ->label(__('ave-site::resources_scripts.fields.key'))
                         ->placeholder('google-analytics')
                         ->required(),
                 ]),
-                Col::make(4)->schema([
+                Col::make(2)->schema([
                     Select::make('position')
                         ->label(__('ave-site::resources_scripts.fields.position'))
                         ->options([
@@ -103,7 +103,7 @@ class Resource extends BaseResource
                         ->default('body_end')
                         ->required(),
                 ]),
-                Col::make(4)->schema([
+                Col::make(2)->schema([
                     Number::make('order')
                         ->label(__('ave-site::resources_scripts.fields.order'))
                         ->default(0),
