@@ -43,6 +43,7 @@ class Resource extends BaseResource
     public static function table($context): Table
     {
         return Table::make()
+            ->sortable('order')
             ->columns([
                 Column::make('id')
                     ->label(__('ave-site::resources_scripts.columns.id'))
