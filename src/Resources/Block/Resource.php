@@ -150,7 +150,6 @@ class Resource extends BaseResource
                         Col::make(12)->schema([
                             Media::make('images')
                                 ->label(__('ave-site::resources_blocks.fields.images'))
-                                ->help(__('ave-site::resources_blocks.fields.images_help'))
                                 ->collection('block_images')
                                 ->multiple(true, maxFiles: 50)
                                 ->columns(6)
@@ -160,9 +159,9 @@ class Resource extends BaseResource
                         ]),
                     ]),
                     Row::make()->schema([
-                        Col::make(4)->schema([
+                        Col::make()->schema([
                             RadioGroup::make('rules')
-                                ->label(__('ave-site::resources_blocks.fields.rules'))
+                                //->label(__('ave-site::resources_blocks.fields.rules'))
                                 ->options([
                                     '0' => __('ave-site::resources_blocks.rules_hide'),
                                     '1' => __('ave-site::resources_blocks.rules_show'),
