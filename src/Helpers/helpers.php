@@ -594,12 +594,6 @@ if (!function_exists('scripts')) {
 
             foreach ($scripts as $script) {
                 $content = trim($script->content);
-
-                // Wrap in script tag if not already wrapped
-                if (!str_starts_with($content, '<script') && !str_starts_with($content, '<style')) {
-                    $content = "<script>\n{$content}\n</script>";
-                }
-
                 $output[] = $content;
             }
 

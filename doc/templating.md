@@ -60,7 +60,7 @@ Ave Site uses the [Liquid](https://shopify.github.io/liquid/) template engine fo
 
 ## Available Liquid Filters
 
-The package registers 11 custom filters:
+The package registers 14 custom filters:
 
 ### site_setting
 
@@ -143,6 +143,50 @@ Resize/crop image.
 2. Height
 3. Format (optional): 'webp', 'png', 'jpg'
 4. Quality (optional): 1-100
+
+### responsive_image
+
+Generate responsive `<img>` tag with srcset.
+
+```liquid
+{{ '/storage/photo.jpg' | responsive_image: 800, 600 }}
+{{ image.url | responsive_image: 1200 }}
+```
+
+**Parameters:**
+1. Width
+2. Height (optional)
+
+Generates an `<img>` tag with multiple srcset sizes for responsive images.
+
+### responsive_picture
+
+Generate responsive `<picture>` element with WebP and fallback.
+
+```liquid
+{{ '/storage/photo.jpg' | responsive_picture: 800, 600 }}
+{{ image.url | responsive_picture: 1200 }}
+```
+
+**Parameters:**
+1. Width
+2. Height (optional)
+
+Generates a `<picture>` element with WebP source and fallback image.
+
+### breadcrumbs
+
+Render breadcrumbs with Schema.org markup.
+
+```liquid
+{{ breadcrumbs | breadcrumbs }}
+{{ breadcrumbs | breadcrumbs: '→' }}
+```
+
+**Parameters:**
+1. Separator (optional, default: '/')
+
+Renders breadcrumb navigation with structured data markup.
 
 ### lang
 
